@@ -1,1 +1,1 @@
-# prototype-service
+# prototype-registry
