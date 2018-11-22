@@ -1,0 +1,32 @@
+version: "3"
+
+#
+# HOWTO:
+#  
+# 1) Build prototype-registry docker image locally:
+#    docker build -t kilt/prototype-registry .
+# 2) Startup both components using docker-compose:
+#    docker-compose up
+#
+# MongoDB is now accessible at localhost:27017
+# Registry Service is now accessible at http://localhost:3000
+#
+# To stop:
+#   docker-compose down
+
+services:
+  mongodb:
+    image: mongo:latest
+    environment:
+      - MONGODB_DATABASE=registry
+      - MONGO_INITDB_ROOT_USERNAME=mongoadmin
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+    ports:
+      - 27017:27017
+  registry:
+    image: kilt/prototype-registry:latest
+    environment:
+      - NODE_ENV=docker-compose
+      - MONGODB_HOST=mongodb
+    ports:
+      - 3000:3000
