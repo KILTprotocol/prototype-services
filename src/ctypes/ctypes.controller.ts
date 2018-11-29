@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, NotFoundException, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Inject, NotFoundException, Param, Post, Delete } from '@nestjs/common';
 import { CType, CTypeService } from './interfaces/ctype.interfaces';
 
 
@@ -11,6 +11,12 @@ export class CTypesController {
     console.log(`Search CType by key ${key}`);
     const result = await this.cTypesService.findByKey(key)
     return result.orElseThrow(() => new NotFoundException());
+  }
+
+  @Delete()
+  async removeAll() {
+    console.log('Remove all CTypes');
+    await this.cTypesService.removeAll();
   }
 
   @Post()

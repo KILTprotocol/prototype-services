@@ -15,7 +15,7 @@ export class MongoDbCTypesService implements CTypeService {
         if (value.isPresent) {
             throw new AlreadyRegisteredException()
         }
-        
+
         const createdCType = new this.cTypeModel(cType);
         return await createdCType.save();
     }
@@ -23,5 +23,9 @@ export class MongoDbCTypesService implements CTypeService {
     async findByKey(key: string): Promise<Optional<CType>> {
         const val = await this.cTypeModel.findOne({ key: key }).exec();
         return Optional.ofNullable(val);
+    }
+
+    async removeAll() {
+        await this.cTypeModel.deleteMany({}).exec();
     }
 }
