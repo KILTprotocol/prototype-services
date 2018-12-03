@@ -1,6 +1,6 @@
 {
   "name": "prototype-registry",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Registry service for KILT",
   "author": "botlabs",
   "license": "MIT",
