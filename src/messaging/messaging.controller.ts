@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Inject, Param, Post, Delete, BadRequestException, Headers} from '@nestjs/common';
+import {Body, Controller, Get, Inject, Param, Post, Delete, BadRequestException} from '@nestjs/common';
 import { Message, MessagingService } from './interfaces/messaging.interfaces';
 
 function uuidv4() {
@@ -29,7 +29,7 @@ export class MessagingController {
     }
 
     @Post()
-    async sendMessage(@Headers('identity') sender, @Body() message: Message) {
+    async sendMessage(@Body() message: Message) {
         if (!message.sender) {
             throw new BadRequestException("no sender");
         } else if (!message.receiver) {
@@ -38,7 +38,6 @@ export class MessagingController {
             throw new BadRequestException("no message");
         }
         message.id = uuidv4();
-        message.sender = sender;
         this.messagingService.add(message);
         return message;
     }
