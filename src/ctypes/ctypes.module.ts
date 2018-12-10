@@ -3,7 +3,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { CTypesController } from './ctypes.controller';
 import { MongoDbCTypesService } from './mongodb-ctypes.service';
 import { CTypeSchema } from './schemas/ctypes.schema';
-import { ConfigService } from 'src/config/config.service';
 
 const cTypeServiceProvider = {
   provide: 'CTypeService',
