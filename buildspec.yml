@@ -4,12 +4,12 @@ phases:
   pre_build:
     commands:
     - echo Run tests...
-    - docker build -t kilt/prototype-registry . && docker run kilt/prototype-registry yarn run test
+    - docker build -t kilt/prototype-services . && docker run kilt/prototype-services yarn run test
     - echo Test run completed successfully!
     - echo Logging in to Amazon ECR...
     - aws --version
     - $(aws ecr get-login --region eu-central-1 --no-include-email)
-    - REPOSITORY_URI=348099934012.dkr.ecr.eu-central-1.amazonaws.com/kilt/prototype-registry
+    - REPOSITORY_URI=348099934012.dkr.ecr.eu-central-1.amazonaws.com/kilt/prototype-services
     - 'IMAGE_TAG=$(sed -n ''s/.*"version": "\(.*\)",/\1/p'' package.json)'
     - docker pull $REPOSITORY_URI:latest || true
   build:
@@ -25,6 +25,6 @@ phases:
     - docker push $REPOSITORY_URI:latest
     - docker push $REPOSITORY_URI:$IMAGE_TAG
     - echo Writing image definitions file...
-    - printf '[{"name":"kilt-prototype-registry","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+    - printf '[{"name":"kilt-prototype-services","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
 artifacts:
   files: imagedefinitions.json
