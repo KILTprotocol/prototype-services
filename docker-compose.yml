@@ -24,7 +24,7 @@ services:
     ports:
       - 27017:27017
   registry:
-    image: kilt/prototype-registry:latest
+    image: 348099934012.dkr.ecr.eu-central-1.amazonaws.com/kilt/prototype-services:latest
     environment:
       - NODE_ENV=docker-compose
       - MONGODB_HOST=mongodb
