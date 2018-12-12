@@ -15,7 +15,7 @@ export class CTypesController {
   @Get()
   async getAll(): Promise<CType[]> {
     const result = await this.cTypesService.findAll();
-    return result.orElseThrow(() => new NotFoundException());
+    return result.orElseGet(() => []);
   }
 
   @Delete()
