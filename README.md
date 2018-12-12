@@ -8,6 +8,11 @@ Set of auxiliary services for the KILT prototype built upon [Nest](https://githu
 * Contacts Service
 * Registry Service
 
+## Open issues
+
+- format files according to tslint, add rules to allow console.log, etc
+- use yarn with yarn.lock OR npm with package-lock.json, but not mix this
+
 ## Installation
 
 ```bash
@@ -62,4 +67,13 @@ The services backend then starts, connects to the MongoDB and waits on port 3000
 
 ```
 http://localhost:3000
+```
+
+
+## Example Requests
+
+```
+curl -X POST http://localhost:3000/ctype -H 'Content-Type: application/json' -d '{"key": "test", "name":"testCType", "author": "Mario Neises"}'
+
+curl -s http://localhost:3000/ctype/test | jq
 ```

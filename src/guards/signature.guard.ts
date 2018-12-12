@@ -1,7 +1,6 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Observable } from 'rxjs';
 
-
 @Injectable()
 export class SignatureGuard implements CanActivate {
     canActivate(
@@ -11,7 +10,7 @@ export class SignatureGuard implements CanActivate {
         return this.validateRequest(request);
     }
 
-    validateRequest(request: any) : boolean {
+    validateRequest(request: any): boolean {
         // console.log("signature guard");
         const identity = request.headers['identity'];
         const hash = request.headers['hash'];

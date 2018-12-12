@@ -11,9 +11,9 @@ export class MongoDbCTypesService implements CTypeService {
     constructor(@InjectModel('CType') private readonly cTypeModel: Model<CType>) { }
 
     async register(cType: CType): Promise<CType> {
-        const value = await this.findByKey(cType.key)
+        const value = await this.findByKey(cType.key);
         if (value.isPresent) {
-            throw new AlreadyRegisteredException()
+            throw new AlreadyRegisteredException();
         }
 
         const createdCType = new this.cTypeModel(cType);
@@ -21,7 +21,12 @@ export class MongoDbCTypesService implements CTypeService {
     }
 
     async findByKey(key: string): Promise<Optional<CType>> {
-        const val = await this.cTypeModel.findOne({ key: key }).exec();
+        const val = await this.cTypeModel.findOne({ key }).exec();
+        return Optional.ofNullable(val);
+    }
+
+    async findAll(): Promise<Optional<CType[]>> {
+        const val = await this.cTypeModel.find().exec();
         return Optional.ofNullable(val);
     }
 
