@@ -13,10 +13,16 @@ export class InMemoryCTypesService implements CTypeService {
         return Promise.resolve(Optional.ofNullable(foundCType));
     }
 
+    async findAll(): Promise<Optional<CType[]>> {
+        const ctypes = [];
+        this.registration.forEach(ctype => ctypes.push(ctype));
+        return Promise.resolve(Optional.ofNullable(ctypes));
+    }
+
     async register(cType: CType): Promise<CType> {
         const found = await this.findByKey(cType.key);
         if (found.isPresent) {
-            throw new AlreadyRegisteredException()
+            throw new AlreadyRegisteredException();
         } else {
             this.registration.set(cType.key, cType);
             return cType;
