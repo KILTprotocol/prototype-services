@@ -10,7 +10,7 @@ describe('InMemoryCTypesService', () => {
                 key: '999',
                 name: 'myCType',
                 author: 'apasch',
-                definition: { key: '999' }
+                definition: '{ key: "999" }',
             } as CType;
             await cTypesInMemoryService.register(cType);
             const result = await cTypesInMemoryService.findByKey('999');
