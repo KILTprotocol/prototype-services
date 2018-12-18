@@ -4,4 +4,5 @@ export const CTypeSchema = new mongoose.Schema({
     key: String,
     name: String,
     author: String,
+    definition: Object,
 });
