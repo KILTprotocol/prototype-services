@@ -5,6 +5,7 @@ export interface CType extends Document {
     key: string;
     name: string;
     author: string;
+    definition: object;
 }
 
 export declare interface CTypeService {
