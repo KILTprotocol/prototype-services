@@ -14,12 +14,12 @@ export class MongoDbMessagingService implements MessagingService {
         await createdMessage.save();
     }
 
-    async findBySender(sender: string): Promise<Message[]> {
-        return await this.messageModel.find({ sender: sender }).exec();
+    async findBySender(senderKey: string): Promise<Message[]> {
+        return await this.messageModel.find({ senderKey: senderKey }).exec();
     }
 
-    async findByReceiver(receiver: string): Promise<Message[]> {
-        return await this.messageModel.find({ receiver: receiver }).exec();
+    async findByReceiver(receiverKey: string): Promise<Message[]> {
+        return await this.messageModel.find({ receiverKey: receiverKey }).exec();
     }
 
     async remove(id: string) {
