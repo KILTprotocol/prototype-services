@@ -18,6 +18,8 @@ export class ContactsController {
     async add(@Body() contact: Contact) {
         if (!contact.key) {
             throw new BadRequestException("no key");
+        } else if (!contact.encryptionKey) {
+            throw new BadRequestException("no encryption key");
         } else if (!contact.name) {
             throw new BadRequestException("no name");
         }
