@@ -3,6 +3,7 @@ import Optional from "typescript-optional";
 
 export interface Contact extends Document {
     key: string;
+    encryptionKey: string;
     name: string;
 }
 
