@@ -18,22 +18,28 @@ export class MessagingController {
         await this.messagingService.remove(id);
     }
 
-    @Get('sent/:sender')
-    async listSent(@Param('sender') sender) {
-        return this.messagingService.findBySender(sender);
+    @Get('sent/:senderKey')
+    async listSent(@Param('senderKey') senderKey) {
+        return this.messagingService.findBySender(senderKey);
     }
 
-    @Get('inbox/:receiver')
-    async listInbox(@Param('receiver') receiver) {
-        return this.messagingService.findByReceiver(receiver);
+    @Get('inbox/:receiverKey')
+    async listInbox(@Param('receiverKey') receiverKey) {
+        return this.messagingService.findByReceiver(receiverKey);
     }
 
     @Post()
     async sendMessage(@Body() message: Message) {
         if (!message.sender) {
             throw new BadRequestException("no sender");
-        } else if (!message.receiver) {
-            throw new BadRequestException("no receiver");
+        } else if (!message.senderKey) {
+          throw new BadRequestException("no sender key");
+        } else if (!message.senderEncryptionKey) {
+          throw new BadRequestException("no sender encryption key");
+        } else if (!message.receiverKey) {
+          throw new BadRequestException("no receiver key");
+        } else if (!message.nonce) {
+          throw new BadRequestException("no nonce");
         } else if (!message.message) {
             throw new BadRequestException("no message");
         }
