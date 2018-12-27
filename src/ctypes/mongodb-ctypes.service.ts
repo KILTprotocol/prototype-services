@@ -3,14 +3,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import Optional from 'typescript-optional';
 import { AlreadyRegisteredException } from './exceptions/already-registered.exception';
-import { CType, CTypeService } from './interfaces/ctype.interfaces';
+import { CTypeModel, CTypeService } from './interfaces/ctype.interfaces';
 
 @Injectable()
 export class MongoDbCTypesService implements CTypeService {
 
-    constructor(@InjectModel('CType') private readonly cTypeModel: Model<CType>) { }
+    constructor(@InjectModel('CTypeModel') private readonly cTypeModel: Model<CTypeModel>) { }
 
-    async register(cType: CType): Promise<CType> {
+    async register(cType: CTypeModel): Promise<CTypeModel> {
         const value = await this.findByKey(cType.key);
         if (value.isPresent) {
             throw new AlreadyRegisteredException();
@@ -20,12 +20,12 @@ export class MongoDbCTypesService implements CTypeService {
         return await createdCType.save();
     }
 
-    async findByKey(key: string): Promise<Optional<CType>> {
+    async findByKey(key: string): Promise<Optional<CTypeModel>> {
         const val = await this.cTypeModel.findOne({ key }).exec();
         return Optional.ofNullable(val);
     }
 
-    async findAll(): Promise<Optional<CType[]>> {
+    async findAll(): Promise<Optional<CTypeModel[]>> {
         const val = await this.cTypeModel.find().exec();
         return Optional.ofNullable(val);
     }

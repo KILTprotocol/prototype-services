@@ -1,5 +1,5 @@
 import { InMemoryCTypesService } from './in-memory-ctypes.service';
-import { CType } from './interfaces/ctype.interfaces';
+import { CTypeModel } from './interfaces/ctype.interfaces';
 
 describe('InMemoryCTypesService', () => {
     const cTypesInMemoryService: InMemoryCTypesService = new InMemoryCTypesService();
@@ -11,7 +11,7 @@ describe('InMemoryCTypesService', () => {
                 name: 'myCType',
                 author: 'apasch',
                 definition: '{ key: "999" }',
-            } as CType;
+            } as CTypeModel;
             await cTypesInMemoryService.register(cType);
             const result = await cTypesInMemoryService.findByKey('999');
             expect(result.isPresent).toBe(true);
