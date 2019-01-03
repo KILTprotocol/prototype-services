@@ -44,11 +44,11 @@ export class CTypesController {
   @Post()
   async register(@Body() cTypeInput: CTypeModel) {
     console.log('Validate CType definition: ' + cTypeInput.definition);
-    const _cTypeModel: CType = this.getCType(cTypeInput);
+    const cTypeModel: CType = this.getCType(cTypeInput);
 
     console.log(`Check CType on chain`);
     const blockchain: Blockchain = await this.blockchainService.connect();
-    const storedValue = await _cTypeModel.verifyStored(blockchain);
+    const storedValue = await cTypeModel.verifyStored(blockchain);
     if (storedValue) {
       console.log(`All valid => register ctype ` + cTypeInput.name);
       this.cTypesService.register(cTypeInput);
