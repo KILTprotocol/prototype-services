@@ -1,6 +1,5 @@
-import {Blockchain} from "@kiltprotocol/prototype-sdk";
-
+import { Blockchain } from '@kiltprotocol/prototype-sdk'
 
 export declare interface BlockchainService {
-  connect(): Promise<Blockchain>;
+  connect(): Promise<Blockchain>
 }

@@ -1,14 +1,14 @@
-import { Module, Global } from '@nestjs/common';
-import { UniversalBlockchainService } from './universal-blockchain.service';
+import { Module, Global } from '@nestjs/common'
+import { UniversalBlockchainService } from './universal-blockchain.service'
 
 const blockchainServiceProvider = {
   provide: 'BlockchainService',
-  useClass: UniversalBlockchainService
-};
+  useClass: UniversalBlockchainService,
+}
 
 @Global()
-@Module({  
+@Module({
   providers: [blockchainServiceProvider],
-  exports: [blockchainServiceProvider]
+  exports: [blockchainServiceProvider],
 })
-export class BlockchainModule { }
+export class BlockchainModule {}

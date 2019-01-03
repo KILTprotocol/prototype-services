@@ -1,7 +1,7 @@
-import * as mongoose from 'mongoose';
+import * as mongoose from 'mongoose'
 
 export const ContactSchema = new mongoose.Schema({
-    key: String,
-    encryptionKey: String,
-    name: String
-});
+  key: String,
+  encryptionKey: String,
+  name: String,
+})
