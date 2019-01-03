@@ -3,16 +3,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { CTypesController } from './ctypes.controller';
 import { MongoDbCTypesService } from './mongodb-ctypes.service';
 import { CTypeSchema } from './schemas/ctypes.schema';
-import {UniversalBlockchainService} from 'src/blockchain/universal.blockchain.service';
+import { BlockchainModule } from '../blockchain/blockchain.module';
 
 const cTypeServiceProvider = {
   provide: 'CTypeService',
   useClass: MongoDbCTypesService
-};
-
-const blockchainServiceProvider = {
-  provide: 'BlockchainService',
-  useClass: UniversalBlockchainService
 };
 
 @Module({  
@@ -21,6 +16,6 @@ const blockchainServiceProvider = {
     MongooseModule.forRoot(`mongodb://mongoadmin:secret@${process.env.MONGODB_HOST}/registry?authSource=admin`)
   ],
   controllers: [CTypesController],
-  providers: [cTypeServiceProvider, blockchainServiceProvider],
+  providers: [cTypeServiceProvider],
 })
 export class CTypesModule { }
