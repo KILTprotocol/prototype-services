@@ -31,7 +31,7 @@ export class MongoDbCTypesService implements CTypeService {
     return Optional.ofNullable(val)
   }
 
-  public async removeAll() {
+  public async removeAll(): Promise<void> {
     await this.cTypeModel.deleteMany({}).exec()
   }
 }

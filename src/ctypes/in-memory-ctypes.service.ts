@@ -28,7 +28,7 @@ export class InMemoryCTypesService implements CTypeService {
     }
   }
 
-  public async removeAll() {
+  public async removeAll(): Promise<void> {
     this.registration.clear()
   }
 }
