@@ -7,6 +7,7 @@ import {
   BadRequestException,
   NotFoundException,
   Body,
+  Delete,
 } from '@nestjs/common'
 import { Contact, ContactsService } from './interfaces/contacts.interfaces'
 
@@ -37,5 +38,11 @@ export class ContactsController {
   public async findByKey(@Param('key') key): Promise<Contact> {
     const result = await this.contactService.findByKey(key)
     return result.orElseThrow(() => new NotFoundException())
+  }
+
+  @Delete()
+  public async removeAll() {
+    console.log('Remove all contacts')
+    await this.contactService.removeAll()
   }
 }

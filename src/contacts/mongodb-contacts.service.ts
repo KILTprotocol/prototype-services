@@ -26,4 +26,8 @@ export class MongoDbMContactsService implements ContactsService {
   public async list(): Promise<Contact[]> {
     return await this.contactModel.find().exec()
   }
+
+  public async removeAll() {
+    await this.contactModel.deleteMany({}).exec()
+  }
 }

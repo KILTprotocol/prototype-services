@@ -25,4 +25,8 @@ export class MongoDbMessagingService implements MessagingService {
   public async remove(id: string) {
     this.messageModel.deleteOne({ id }).exec()
   }
+
+  public async removeAll() {
+    await this.messageModel.deleteMany({}).exec()
+  }
 }

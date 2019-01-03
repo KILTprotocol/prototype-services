@@ -8,7 +8,8 @@ export interface Contact extends Document {
 }
 
 export declare interface ContactsService {
-  add(contact: Contact)
+  add(contact: Contact): void
   list(): Promise<Contact[]>
   findByKey(key: string): Promise<Optional<Contact>>
+  removeAll(): void
 }
