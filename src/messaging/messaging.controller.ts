@@ -27,7 +27,14 @@ export class MessagingController {
 
   @Delete(':id')
   public async removeMessage(@Param('id') id) {
+    console.log(`Remove message for id ${id}`)
     await this.messagingService.remove(id)
+  }
+
+  @Delete()
+  public async removeAll() {
+    console.log('Remove all messages')
+    await this.messagingService.removeAll()
   }
 
   @Get('sent/:senderKey')

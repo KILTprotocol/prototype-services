@@ -7,9 +7,9 @@ import { Message, MessagingService } from './interfaces/messaging.interfaces'
 export class MongoDbMessagingService implements MessagingService {
   constructor(
     @InjectModel('Message') private readonly messageModel: Model<Message>
-  ) {}
+  ) { }
 
-  public async add(message: Message) {
+  public async add(message: Message): Promise<void> {
     const createdMessage = new this.messageModel(message)
     await createdMessage.save()
   }
@@ -22,7 +22,11 @@ export class MongoDbMessagingService implements MessagingService {
     return await this.messageModel.find({ receiverKey }).exec()
   }
 
-  public async remove(id: string) {
+  public async remove(id: string): Promise<void> {
     this.messageModel.deleteOne({ id }).exec()
+  }
+
+  public async removeAll(): Promise<void> {
+    await this.messageModel.deleteMany({}).exec()
   }
 }

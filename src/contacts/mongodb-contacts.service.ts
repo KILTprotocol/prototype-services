@@ -10,7 +10,7 @@ export class MongoDbMContactsService implements ContactsService {
     @InjectModel('Contact') private readonly contactModel: Model<Contact>
   ) {}
 
-  public async add(contact: Contact) {
+  public async add(contact: Contact): Promise<void> {
     const modifiedContact: Contact = (await this.findByKey(contact.key)).orElse(
       new this.contactModel(contact)
     )
@@ -25,5 +25,9 @@ export class MongoDbMContactsService implements ContactsService {
 
   public async list(): Promise<Contact[]> {
     return await this.contactModel.find().exec()
+  }
+
+  public async removeAll(): Promise<void> {
+    await this.contactModel.deleteMany({}).exec()
   }
 }

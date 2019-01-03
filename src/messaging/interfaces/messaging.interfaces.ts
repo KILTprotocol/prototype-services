@@ -11,8 +11,9 @@ export interface Message extends Document {
 }
 
 export declare interface MessagingService {
-  add(message: Message)
+  add(message: Message): void
   findBySender(senderKey: string): Promise<Message[]>
   findByReceiver(receiverKey: string): Promise<Message[]>
-  remove(id: string)
+  remove(id: string): void
+  removeAll(): void
 }

@@ -12,5 +12,5 @@ export declare interface CTypeService {
   register(cType: CTypeModel): Promise<CTypeModel>
   findByKey(key: string): Promise<Optional<CTypeModel>>
   findAll(): Promise<Optional<CTypeModel[]>>
-  removeAll()
+  removeAll(): void
 }
