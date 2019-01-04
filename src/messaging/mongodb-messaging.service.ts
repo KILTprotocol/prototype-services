@@ -7,7 +7,7 @@ import { Message, MessagingService } from './interfaces/messaging.interfaces'
 export class MongoDbMessagingService implements MessagingService {
   constructor(
     @InjectModel('Message') private readonly messageModel: Model<Message>
-  ) { }
+  ) {}
 
   public async add(message: Message): Promise<void> {
     const createdMessage = new this.messageModel(message)
