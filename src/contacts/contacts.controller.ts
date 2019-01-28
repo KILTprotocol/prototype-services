@@ -9,17 +9,13 @@ import {
   Param,
   Post,
 } from '@nestjs/common'
-import {
-  Contact,
-  ContactsService
-} from './interfaces/contacts.interfaces'
+import { Contact, ContactsService } from './interfaces/contacts.interfaces'
 
 @Controller('contacts')
 export class ContactsController {
   constructor(
     @Inject('ContactsService') private readonly contactService: ContactsService
-  ) {
-  }
+  ) {}
 
   @Post()
   public async add(@Body() contact: Contact) {

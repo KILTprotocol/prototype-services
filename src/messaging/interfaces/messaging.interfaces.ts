@@ -9,15 +9,18 @@ export interface Message {
   senderAddress: Contact['publicIdentity']['address']
 }
 
-export interface MessageDB extends Document, Message {
-}
+export interface MessageDB extends Document, Message {}
 
 export declare interface MessagingService {
   add(message: Message): void
 
-  findBySenderAddress(senderAddress: Contact['publicIdentity']['address']): Promise<Message[]>
+  findBySenderAddress(
+    senderAddress: Contact['publicIdentity']['address']
+  ): Promise<Message[]>
 
-  findByReceiverAddress(receiverAddress: Contact['publicIdentity']['address']): Promise<Message[]>
+  findByReceiverAddress(
+    receiverAddress: Contact['publicIdentity']['address']
+  ): Promise<Message[]>
 
   remove(messageId: string): void
 
