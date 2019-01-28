@@ -1,17 +1,16 @@
 import {
+  BadRequestException,
+  Body,
   Controller,
+  Delete,
   Get,
   Inject,
+  NotFoundException,
   Param,
   Post,
-  BadRequestException,
-  NotFoundException,
-  Body,
-  Delete,
 } from '@nestjs/common'
 import {
   Contact,
-  ContactDB,
   ContactsService
 } from './interfaces/contacts.interfaces'
 
@@ -19,7 +18,8 @@ import {
 export class ContactsController {
   constructor(
     @Inject('ContactsService') private readonly contactService: ContactsService
-  ) {}
+  ) {
+  }
 
   @Post()
   public async add(@Body() contact: Contact) {
