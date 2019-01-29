@@ -37,32 +37,28 @@ export class MessagingController {
     await this.messagingService.removeAll()
   }
 
-  @Get('sent/:senderKey')
-  public async listSent(@Param('senderKey') senderKey) {
-    return this.messagingService.findBySender(senderKey)
+  @Get('sent/:senderAddress')
+  public async listSent(@Param('senderAddress') senderAddress) {
+    return this.messagingService.findBySenderAddress(senderAddress)
   }
 
-  @Get('inbox/:receiverKey')
-  public async listInbox(@Param('receiverKey') receiverKey) {
-    return this.messagingService.findByReceiver(receiverKey)
+  @Get('inbox/:receiverAddress')
+  public async listInbox(@Param('receiverAddress') receiverAddress) {
+    return this.messagingService.findByReceiverAddress(receiverAddress)
   }
 
   @Post()
   public async sendMessage(@Body() message: Message) {
-    if (!message.sender) {
-      throw new BadRequestException('no sender')
-    } else if (!message.senderKey) {
-      throw new BadRequestException('no sender key')
-    } else if (!message.senderEncryptionKey) {
-      throw new BadRequestException('no sender encryption key')
-    } else if (!message.receiverKey) {
-      throw new BadRequestException('no receiver key')
+    if (!message.senderAddress) {
+      throw new BadRequestException('no sender address')
+    } else if (!message.receiverAddress) {
+      throw new BadRequestException('no receiver address')
     } else if (!message.nonce) {
       throw new BadRequestException('no nonce')
     } else if (!message.message) {
       throw new BadRequestException('no message')
     }
-    message.id = uuidv4()
+    message.messageId = uuidv4()
     this.messagingService.add(message)
     return message
   }
