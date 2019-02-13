@@ -3,8 +3,8 @@ version: 0.2
 phases:
   build:
     commands:
-    - echo Running CI...
+    - echo Run 'build / lint / test'
     - docker build --build-arg KILT_NPM_AUTH_TOKEN=$KILT_NPM_AUTH_TOKEN -t kilt/prototype-services . 
-    - docker run kilt/prototype-services yarn test
     - docker run kilt/prototype-services yarn lint
-    - echo CI run successful!
+    - docker run kilt/prototype-services yarn test
+    - echo 'build / lint / test' successful!
