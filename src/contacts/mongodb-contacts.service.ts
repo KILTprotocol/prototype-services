@@ -1,3 +1,4 @@
+import * as sdk from '@kiltprotocol/prototype-sdk'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
@@ -22,7 +23,7 @@ export class MongoDbMContactsService implements ContactsService {
     await modifiedContact.save()
   }
 
-  public async findByAddress(address: string): Promise<Optional<Contact>> {
+  public async findByAddress(address: sdk.PublicIdentity['address']): Promise<Optional<Contact>> {
     const result = await this._findByAddress(address)
     return result.map(
       (contact: ContactDB): Contact => convertToContact(contact)
@@ -32,7 +33,7 @@ export class MongoDbMContactsService implements ContactsService {
   public async list(): Promise<Contact[]> {
     const result: ContactDB[] = await this.contactModel.find().exec()
     return result.map(
-      (contact: ContactDB): Contact => convertToContact(contact)
+      (contactDB: ContactDB): Contact => convertToContact(contactDB)
     )
   }
 
@@ -40,7 +41,7 @@ export class MongoDbMContactsService implements ContactsService {
     await this.contactModel.deleteMany({}).exec()
   }
 
-  private async _findByAddress(address: string): Promise<Optional<ContactDB>> {
+  private async _findByAddress(address: sdk.PublicIdentity['address']): Promise<Optional<ContactDB>> {
     const result: ContactDB = await this.contactModel
       .findOne({ 'publicIdentity.address': address })
       .exec()
@@ -48,8 +49,8 @@ export class MongoDbMContactsService implements ContactsService {
   }
 }
 
-function convertToContact(contact: ContactDB): Contact {
-  const { metaData, publicIdentity } = contact
+function convertToContact(contactDB: ContactDB): Contact {
+  const { metaData, publicIdentity } = contactDB
   return {
     metaData,
     publicIdentity,
