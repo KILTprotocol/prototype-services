@@ -1,19 +1,20 @@
+import * as sdk from '@kiltprotocol/prototype-sdk'
+import { Blockchain } from '@kiltprotocol/prototype-sdk'
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Inject,
   NotFoundException,
   Param,
   Post,
-  Delete,
 } from '@nestjs/common'
-import { CTypeModel, CTypeService } from './interfaces/ctype.interfaces'
-import { CType } from '@kiltprotocol/prototype-sdk'
-import { InvalidCtypeDefinitionException } from './exceptions/invalid-ctype-definition.exception'
-import { Blockchain } from '@kiltprotocol/prototype-sdk'
-import { CTypeNotOnChainException } from './exceptions/ctype-not-on-chain.exception'
+import cloneDeep from 'lodash/cloneDeep'
 import { BlockchainService } from '../blockchain/interfaces/blockchain.interfaces'
+import { CTypeNotOnChainException } from './exceptions/ctype-not-on-chain.exception'
+import { InvalidCtypeDefinitionException } from './exceptions/invalid-ctype-definition.exception'
+import { CType, CTypeService } from './interfaces/ctype.interfaces'
 
 @Controller('ctype')
 export class CTypesController {
@@ -23,17 +24,16 @@ export class CTypesController {
     private readonly blockchainService: BlockchainService
   ) {}
 
-  @Get(':key')
-  public async getByKey(@Param('key') key): Promise<CTypeModel> {
-    console.log(`Search CType by key ${key}`)
-    const result = await this.cTypesService.findByKey(key)
+  @Get(':hash')
+  public async getByKey(@Param('hash') hash): Promise<CType> {
+    console.log(`Search CType by hash ${hash}`)
+    const result = await this.cTypesService.findByHash(hash)
     return result.orElseThrow(() => new NotFoundException())
   }
 
   @Get()
-  public async getAll(): Promise<CTypeModel[]> {
-    const result = await this.cTypesService.findAll()
-    return result.orElseGet(() => [])
+  public async getAll(): Promise<CType[]> {
+    return await this.cTypesService.findAll()
   }
 
   @Delete()
@@ -43,26 +43,27 @@ export class CTypesController {
   }
 
   @Post()
-  public async register(@Body() cTypeInput: CTypeModel) {
-    console.log('Validate CType definition: ' + cTypeInput.definition)
-    const cTypeModel: CType = this.getCType(cTypeInput)
-
-    console.log(`Check CType on chain`)
-    const blockchain: Blockchain = await this.blockchainService.connect()
-    const storedValue = await cTypeModel.verifyStored(blockchain)
-    if (storedValue) {
-      console.log(`All valid => register ctype ` + cTypeInput.name)
-      this.cTypesService.register(cTypeInput)
-    } else {
-      throw new CTypeNotOnChainException()
-    }
+  public async register(@Body() cTypeInput: CType) {
+    console.log('Validate CType definition: ' + { ...cTypeInput.cType })
+    return this.verifyCType(cTypeInput).then(verified => {
+      if (verified) {
+        console.log(
+          `All valid => registering cType ` +
+            cTypeInput.cType.metadata.title.default
+        )
+        this.cTypesService.register(cTypeInput)
+      } else {
+        throw new CTypeNotOnChainException()
+      }
+    })
   }
 
-  private getCType(cTypeInput: CTypeModel): CType {
+  private async verifyCType(cTypeInput: CType): Promise<boolean> {
     try {
-      const ctypeDefinition: any = JSON.parse(cTypeInput.definition)
-      delete ctypeDefinition.hash
-      return new CType(ctypeDefinition)
+      const { cType } = cloneDeep(cTypeInput)
+      delete cType.hash
+      const blockchain: Blockchain = await this.blockchainService.connect()
+      return await new sdk.CType(cType).verifyStored(blockchain)
     } catch (e) {
       console.log('error: ' + e)
       throw new InvalidCtypeDefinitionException()

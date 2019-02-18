@@ -13,7 +13,7 @@ describe('InMemoryCTypesService', () => {
         definition: '{ key: "999" }',
       } as CTypeModel
       await cTypesInMemoryService.register(cType)
-      const result = await cTypesInMemoryService.findByKey('999')
+      const result = await cTypesInMemoryService.findByHash('999')
       expect(result.isPresent).toBe(true)
       result.ifPresent(foundCType => {
         expect(foundCType.key).toBe('999')
