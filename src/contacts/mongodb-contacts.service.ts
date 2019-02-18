@@ -23,7 +23,9 @@ export class MongoDbMContactsService implements ContactsService {
     await modifiedContact.save()
   }
 
-  public async findByAddress(address: sdk.PublicIdentity['address']): Promise<Optional<Contact>> {
+  public async findByAddress(
+    address: sdk.PublicIdentity['address']
+  ): Promise<Optional<Contact>> {
     const result = await this._findByAddress(address)
     return result.map(
       (contact: ContactDB): Contact => convertToContact(contact)
@@ -41,7 +43,9 @@ export class MongoDbMContactsService implements ContactsService {
     await this.contactModel.deleteMany({}).exec()
   }
 
-  private async _findByAddress(address: sdk.PublicIdentity['address']): Promise<Optional<ContactDB>> {
+  private async _findByAddress(
+    address: sdk.PublicIdentity['address']
+  ): Promise<Optional<ContactDB>> {
     const result: ContactDB = await this.contactModel
       .findOne({ 'publicIdentity.address': address })
       .exec()

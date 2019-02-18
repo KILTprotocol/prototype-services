@@ -12,16 +12,15 @@ const cTypeServiceProvider = {
 @Module({
   imports: [
     MongooseModule.forFeature([
-      {name: 'CType', schema: CTypeSchema, collection: 'CType'},
+      { name: 'CType', schema: CTypeSchema, collection: 'CType' },
     ]),
     MongooseModule.forRoot(
       `mongodb://mongoadmin:secret@${
         process.env.MONGODB_HOST
-        }/registry?authSource=admin`
+      }/registry?authSource=admin`
     ),
   ],
   controllers: [CTypesController],
   providers: [cTypeServiceProvider],
 })
-export class CTypesModule {
-}
+export class CTypesModule {}

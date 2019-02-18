@@ -10,13 +10,11 @@ import {
   Param,
   Post,
 } from '@nestjs/common'
+import cloneDeep from 'lodash/cloneDeep'
 import { BlockchainService } from '../blockchain/interfaces/blockchain.interfaces'
 import { CTypeNotOnChainException } from './exceptions/ctype-not-on-chain.exception'
 import { InvalidCtypeDefinitionException } from './exceptions/invalid-ctype-definition.exception'
-import {
-  CType,
-  CTypeService
-} from './interfaces/ctype.interfaces'
+import { CType, CTypeService } from './interfaces/ctype.interfaces'
 
 @Controller('ctype')
 export class CTypesController {
@@ -24,8 +22,7 @@ export class CTypesController {
     @Inject('CTypeService') private readonly cTypesService: CTypeService,
     @Inject('BlockchainService')
     private readonly blockchainService: BlockchainService
-  ) {
-  }
+  ) {}
 
   @Get(':hash')
   public async getByKey(@Param('hash') hash): Promise<CType> {
@@ -47,21 +44,23 @@ export class CTypesController {
 
   @Post()
   public async register(@Body() cTypeInput: CType) {
-    console.log('Validate CType definition: ' + {...cTypeInput.cType})
-    return this.verifyCType(cTypeInput)
-        .then((verified) => {
-          if (verified) {
-            console.log(`All valid => registering cType ` + cTypeInput.cType.metadata.title.default)
-            this.cTypesService.register(cTypeInput)
-          } else {
-            throw new CTypeNotOnChainException()
-          }
-        })
+    console.log('Validate CType definition: ' + { ...cTypeInput.cType })
+    return this.verifyCType(cTypeInput).then(verified => {
+      if (verified) {
+        console.log(
+          `All valid => registering cType ` +
+            cTypeInput.cType.metadata.title.default
+        )
+        this.cTypesService.register(cTypeInput)
+      } else {
+        throw new CTypeNotOnChainException()
+      }
+    })
   }
 
   private async verifyCType(cTypeInput: CType): Promise<boolean> {
     try {
-      const {cType} = JSON.parse(JSON.stringify(cTypeInput))
+      const { cType } = cloneDeep(cTypeInput)
       delete cType.hash
       const blockchain: Blockchain = await this.blockchainService.connect()
       return await new sdk.CType(cType).verifyStored(blockchain)
