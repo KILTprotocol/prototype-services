@@ -60,8 +60,7 @@ export class CTypesController {
 
   private async verifyCType(cTypeInput: CType): Promise<boolean> {
     try {
-      const { cType } = cloneDeep(cTypeInput)
-      delete cType.hash
+      const { cType } = cTypeInput
       const blockchain: Blockchain = await this.blockchainService.connect()
       return await new sdk.CType(cType).verifyStored(blockchain)
     } catch (e) {
