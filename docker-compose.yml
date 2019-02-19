@@ -1,0 +1,37 @@
+version: "3"
+
+#
+# HOWTO:
+#  
+# 1) Log in to ECS registry (make sure you have an active AWS profile)
+#    $(aws ecr get-login --no-include-email --region eu-central-1)
+# 2) Startup both components using docker-compose:
+#    docker-compose up
+#
+# MongoDB is now accessible at localhost:27017
+# Services are now accessible at http://localhost:3000
+#
+# To stop:
+#   docker-compose down
+#
+# You can also start a single service (e.g. only the MongoDB):
+#   docker-compose up mongodb
+
+
+
+services:
+  mongodb:
+    image: mongo:latest
+    environment:
+      - MONGODB_DATABASE=registry
+      - MONGO_INITDB_ROOT_USERNAME=mongoadmin
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+    ports:
+      - 27017:27017
+  services:
+    image: 348099934012.dkr.ecr.eu-central-1.amazonaws.com/kilt/prototype-services:latest
+    environment:
+      - NODE_ENV=docker-compose
+      - MONGODB_HOST=mongodb
+    ports:
+      - 3000:3000
