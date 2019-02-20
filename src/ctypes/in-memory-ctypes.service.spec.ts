@@ -1,5 +1,6 @@
 import { InMemoryCTypesService } from './in-memory-ctypes.service'
-import { CTypeModel } from './interfaces/ctype.interfaces'
+import { CType } from './interfaces/ctype.interfaces'
+import Optional from 'typescript-optional';
 
 describe('InMemoryCTypesService', () => {
   const cTypesInMemoryService: InMemoryCTypesService = new InMemoryCTypesService()
@@ -7,26 +8,35 @@ describe('InMemoryCTypesService', () => {
   describe('root', () => {
     it('should create and find cType(s)', async () => {
       const cType = {
-        key: '999',
-        name: 'myCType',
-        author: 'apasch',
-        definition: '{ key: "999" }',
-      } as CTypeModel
+        cType: {
+          hash: '999',
+          schema: {},
+          metadata: {
+            title: {
+              default: 'myCTYPE'
+            },
+            description: {
+              default: 'myCTYPE description'
+            },
+            properties: {}
+          }
+        },
+        metaData: {
+          author: 'apasch'
+        }
+      } as CType
       await cTypesInMemoryService.register(cType)
-      const result = await cTypesInMemoryService.findByHash('999')
+      const result: Optional<CType> = await cTypesInMemoryService.findByHash('999')
       expect(result.isPresent).toBe(true)
-      result.ifPresent(foundCType => {
-        expect(foundCType.key).toBe('999')
-        expect(foundCType.name).toBe('myCType')
-        expect(foundCType.author).toBe('apasch')
+      result.ifPresent((foundCType: CType) => {
+        expect(foundCType.cType.hash).toBe('999')
+        expect(foundCType.cType.metadata.title.default).toBe('myCTYPE')
+        expect(foundCType.metaData.author).toBe('apasch')
       })
 
-      const results = await cTypesInMemoryService.findAll()
-      expect(results.isPresent).toBe(true)
-      results.ifPresent(ctypes => {
-        expect(ctypes[0]).toBe(result.get())
-        expect(ctypes.length).toBe(1)
-      })
+      const results: CType[] = await cTypesInMemoryService.findAll()
+      expect(results[0]).toBe(result.get())
+      expect(results.length).toBe(1)
     })
   })
 })
