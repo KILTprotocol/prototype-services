@@ -8,7 +8,8 @@ import {
   Delete,
   BadRequestException,
 } from '@nestjs/common'
-import { Message, MessagingService } from './interfaces/messaging.interfaces'
+import { MessagingService } from './interfaces/messaging.interfaces'
+import { IEncryptedMessage } from '@kiltprotocol/prototype-sdk'
 
 function uuidv4() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
@@ -48,7 +49,7 @@ export class MessagingController {
   }
 
   @Post()
-  public async sendMessage(@Body() message: Message) {
+  public async sendMessage(@Body() message: IEncryptedMessage) {
     if (!message.senderAddress) {
       throw new BadRequestException('no sender address')
     } else if (!message.receiverAddress) {
@@ -57,8 +58,13 @@ export class MessagingController {
       throw new BadRequestException('no nonce')
     } else if (!message.message) {
       throw new BadRequestException('no message')
+    } else if (!message.hash) {
+      throw new BadRequestException('no hash')
+    } else if (!message.signature) {
+      throw new BadRequestException('no signature')
     }
     message.messageId = uuidv4()
+    message.receivedAt = Date.now()
     this.messagingService.add(message)
     return message
   }
