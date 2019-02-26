@@ -5,6 +5,7 @@ import { BlockchainService } from './interfaces/blockchain.interfaces'
 
 @Injectable()
 export class UniversalBlockchainService implements BlockchainService {
+  private static instance: Promise<Blockchain>
   constructor(
     @Inject('ConfigService') private readonly configService: ConfigService
   ) {}
@@ -12,6 +13,9 @@ export class UniversalBlockchainService implements BlockchainService {
   public async connect(): Promise<Blockchain> {
     const bootNodeAddress = this.configService.get('BOOT_NODE_ADDRESS')
     console.log(`Connecting to  ${bootNodeAddress}`)
-    return Promise.resolve(Blockchain.build(bootNodeAddress))
+    if (!UniversalBlockchainService.instance) {
+      UniversalBlockchainService.instance = Blockchain.build(bootNodeAddress)
+    }
+    return Promise.resolve(UniversalBlockchainService.instance)
   }
 }
