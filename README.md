@@ -77,3 +77,11 @@ curl -X POST http://localhost:3000/ctype -H 'Content-Type: application/json' -d 
 
 curl -s http://localhost:3000/ctype/test | jq
 ```
+
+## Release / Deployment
+
+Deployment is triggered by a push to the master branch as a result to a release build. 
+
+To build a release, start the release build job for the services project in *AWS CodeBuild*. See [here](https://github.com/KILTprotocol/release-build-job/blob/master/README.md#usage) for more info on building releases.
+
+After a successful release build, the new version of the services is deployed to Amazon ECS.
