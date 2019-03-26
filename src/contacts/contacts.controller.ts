@@ -10,6 +10,8 @@ import {
   Post,
 } from '@nestjs/common'
 import { Contact, ContactsService } from './interfaces/contacts.interfaces'
+import { BlockchainService } from '../blockchain/interfaces/blockchain.interfaces'
+import { Crypto } from '@kiltprotocol/prototype-sdk'
 
 @Controller('contacts')
 export class ContactsController {
@@ -25,6 +27,19 @@ export class ContactsController {
       throw new BadRequestException('no boxPublicKeyAsHex')
     } else if (!contact.metaData.name) {
       throw new BadRequestException('no name')
+    }
+    if (contact.did) {
+      if (!contact.signature) {
+        throw new BadRequestException('no signature')
+      }
+      // TODO check signature
+      // TODO check content?
+      let hash = Crypto.hash(JSON.stringify(contact.did))
+      if (
+        !Crypto.verify(hash, contact.signature, contact.publicIdentity.address)
+      ) {
+        throw new BadRequestException('bad signature')
+      }
     }
     this.contactService.add(contact)
   }
@@ -44,5 +59,14 @@ export class ContactsController {
   public async removeAll() {
     console.log('Remove all contacts')
     await this.contactService.removeAll()
+  }
+
+  @Get('did/:address')
+  public async getDidDocument(@Param('address') address): Promise<object> {
+    const result = await this.contactService.findByAddress(address)
+    if (!result.isPresent || !result.get().did) {
+      throw new NotFoundException()
+    }
+    return result.get().did
   }
 }

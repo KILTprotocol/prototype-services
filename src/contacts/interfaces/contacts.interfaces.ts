@@ -6,6 +6,8 @@ export interface Contact {
   metaData: {
     name: string
   }
+  did?: object
+  signature?: string
   publicIdentity: sdk.PublicIdentity
 }
 

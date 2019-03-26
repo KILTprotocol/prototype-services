@@ -20,6 +20,7 @@ export class MongoDbMContactsService implements ContactsService {
       contact.publicIdentity.address
     )).orElse(new this.contactModel(contact as ContactDB))
     modifiedContact.metaData.name = contact.metaData.name
+    modifiedContact.did = contact.did
     await modifiedContact.save()
   }
 
@@ -54,9 +55,10 @@ export class MongoDbMContactsService implements ContactsService {
 }
 
 function convertToContact(contactDB: ContactDB): Contact {
-  const { metaData, publicIdentity } = contactDB
+  const { metaData, did, publicIdentity } = contactDB
   return {
     metaData,
+    did,
     publicIdentity,
   }
 }
