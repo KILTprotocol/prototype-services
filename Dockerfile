@@ -13,6 +13,7 @@ RUN echo "//registry.npmjs.org/:_authToken=$KILT_NPM_AUTH_TOKEN" > .npmrc
 RUN yarn config set @kiltprotocol:registry https://registry.npmjs.org
 
 RUN yarn install
+RUN yarn upgrade "@kiltprotocol/prototype-sdk"
 RUN yarn build
 
 EXPOSE 3000
