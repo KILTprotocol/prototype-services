@@ -32,13 +32,12 @@ export class ContactsController {
       if (!contact.signature) {
         throw new BadRequestException('no signature')
       }
-      // TODO check signature
-      // TODO check content?
-      let hash = Crypto.hash(JSON.stringify(contact.did))
+
+      const hash = Crypto.hashStr(JSON.stringify(contact.did))
       if (
         !Crypto.verify(hash, contact.signature, contact.publicIdentity.address)
       ) {
-        throw new BadRequestException('bad signature')
+        throw new BadRequestException('bad signature for hash')
       }
     }
     this.contactService.add(contact)
