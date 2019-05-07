@@ -12,7 +12,7 @@ import {
 import { Contact, ContactsService } from './interfaces/contacts.interfaces'
 import { BlockchainService } from '../blockchain/interfaces/blockchain.interfaces'
 import { Crypto } from '@kiltprotocol/prototype-sdk'
-import Optional from 'typescript-optional';
+import Optional from 'typescript-optional'
 
 @Controller('contacts')
 export class ContactsController {
@@ -63,10 +63,12 @@ export class ContactsController {
 
   @Get('did/:address')
   public async getDidDocument(@Param('address') address): Promise<object> {
-    const result:Optional<Contact> = await this.contactService.findByAddress(address)
+    const result: Optional<Contact> = await this.contactService.findByAddress(
+      address
+    )
     return result
-      .filter((contact:Contact) => !!contact.did)
-      .map((contact:Contact) => contact.did)
+      .filter((contact: Contact) => !!contact.did)
+      .map((contact: Contact) => contact.did)
       .orElseThrow(() => new NotFoundException())
   }
 }
