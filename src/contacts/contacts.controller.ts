@@ -11,10 +11,9 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { Contact, ContactsService } from './interfaces/contacts.interfaces'
-import { BlockchainService } from '../blockchain/interfaces/blockchain.interfaces'
 import { Crypto } from '@kiltprotocol/prototype-sdk'
 import Optional from 'typescript-optional'
-import { AuthGuard } from 'src/auth/auth.guard'
+import { AuthGuard } from '../auth/auth.guard'
 
 @Controller('contacts')
 export class ContactsController {

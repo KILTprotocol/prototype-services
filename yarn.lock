@@ -42,12 +42,14 @@
     protobufjs "^6.8.6"
 
 "@kiltprotocol/prototype-sdk@^0.x":
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/@kiltprotocol/prototype-sdk/-/prototype-sdk-0.10.0.tgz#d84204e55692cc59df8057d8d2e54b67d2a63219"
-  integrity sha512-+plmMUTCbmkc+Knqpdxya9Dve6j/cR+ZxRd/2h9mgf4nzEzeypL3h2XDhf6GKTofOk3+JRGJ+HiIGcRuRkuk0A==
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/@kiltprotocol/prototype-sdk/-/prototype-sdk-0.11.0.tgz#1cd312ea7ec61bcc56e4ee468b0b317ab944641a"
+  integrity sha512-OAuBoa1BvOSdIV6rRpyOTygCi9KBYBSTcDxKIHwyDbFejDh6gytEYZ0dMV4fXgkmKfCSxk+a4PYXDfcRv2gjow==
   dependencies:
     "@polkadot/api" "^0.51.1"
+    "@types/jsonabc" "^2.3.1"
     ajv "^6.6.1"
+    jsonabc "^2.3.1"
     lodash "^4.17.11"
     typescript-logging "^0.6.3"
     uuid "^3.3.2"
@@ -443,6 +445,11 @@
   version "0.0.29"
   resolved "https://registry.yarnpkg.com/@types/json5/-/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"
   integrity sha1-7ihweulOEdK4J7y+UnC86n8+ce4=
+
+"@types/jsonabc@^2.3.1":
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/@types/jsonabc/-/jsonabc-2.3.1.tgz#3aa5d3f938331ef2472d3ea56c6b4c805bef6198"
+  integrity sha512-SOR8DMQQVUmk3JnNp7FU75U+vp/VcFcghvS68mUQEuq4FKDANIQ9dxDA5qEQMDahBCd5Vyhk81ywn0JbcLpZZw==
 
 "@types/long@^4.0.0":
   version "4.0.0"
@@ -3907,6 +3914,11 @@ json5@^1.0.1:
   integrity sha512-aKS4WQjPenRxiQsC93MNfjx+nbF4PAdYzmd/1JIj8HYzqfbu86beTuNgXDzPknWk0n0uARlyewZo4s++ES36Ow==
   dependencies:
     minimist "^1.2.0"
+
+jsonabc@^2.3.1:
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/jsonabc/-/jsonabc-2.3.1.tgz#800a1bd158fb30ace2b4613f8725adfcb040bfb4"
+  integrity sha1-gAob0Vj7MKzitGE/hyWt/LBAv7Q=
 
 jsprim@^1.2.2:
   version "1.4.1"
