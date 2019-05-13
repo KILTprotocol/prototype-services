@@ -14,7 +14,7 @@ import { BlockchainService } from '../blockchain/interfaces/blockchain.interface
 import { CTypeNotOnChainException } from './exceptions/ctype-not-on-chain.exception'
 import { InvalidCtypeDefinitionException } from './exceptions/invalid-ctype-definition.exception'
 import { CType, CTypeService } from './interfaces/ctype.interfaces'
-import { AuthGuard } from 'src/auth/auth.guard'
+import { AuthGuard } from '../auth/auth.guard'
 
 @Controller('ctype')
 export class CTypesController {
