@@ -9,12 +9,14 @@ import {
   NotFoundException,
   Param,
   Post,
+  UseGuards,
 } from '@nestjs/common'
 import cloneDeep from 'lodash/cloneDeep'
 import { BlockchainService } from '../blockchain/interfaces/blockchain.interfaces'
 import { CTypeNotOnChainException } from './exceptions/ctype-not-on-chain.exception'
 import { InvalidCtypeDefinitionException } from './exceptions/invalid-ctype-definition.exception'
 import { CType, CTypeService } from './interfaces/ctype.interfaces'
+import { AuthGuard } from 'src/auth/auth.guard'
 
 @Controller('ctype')
 export class CTypesController {
@@ -36,6 +38,7 @@ export class CTypesController {
     return await this.cTypesService.findAll()
   }
 
+  @UseGuards(AuthGuard)
   @Delete()
   public async removeAll() {
     console.log('Remove all CTypes')

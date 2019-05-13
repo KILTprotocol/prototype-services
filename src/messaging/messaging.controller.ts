@@ -7,9 +7,11 @@ import {
   Post,
   Delete,
   BadRequestException,
+  UseGuards,
 } from '@nestjs/common'
 import { MessagingService } from './interfaces/messaging.interfaces'
 import { IEncryptedMessage } from '@kiltprotocol/prototype-sdk'
+import { AuthGuard } from 'src/auth/auth.guard'
 
 function uuidv4() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
@@ -32,6 +34,7 @@ export class MessagingController {
     await this.messagingService.remove(id)
   }
 
+  @UseGuards(AuthGuard)
   @Delete()
   public async removeAll() {
     console.log('Remove all messages')
