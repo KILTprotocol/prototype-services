@@ -9,5 +9,6 @@ export const ContactSchema = new mongoose.Schema({
   publicIdentity: {
     address: String,
     boxPublicKeyAsHex: String,
+    serviceAddress: String,
   },
 })

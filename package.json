@@ -1,13 +1,13 @@
 {
   "name": "prototype-services",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Auxiliary services for the KILT prototype",
   "author": "botlabs",
   "license": "MIT",
   "scripts": {
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\"",
-    "start": "export NODE_ENV=dev-local; export MONGODB_HOST=localhost; ts-node -r tsconfig-paths/register src/main.ts",
+    "start": "export NODE_ENV=dev-local; export MONGODB_HOST=localhost; export SECRET=s3cr3t; ts-node -r tsconfig-paths/register src/main.ts",
     "start:dev": "nodemon",
     "start:debug": "nodemon --config nodemon-debug.json",
     "start:provided-env": "node dist/main.js",

@@ -8,11 +8,13 @@ import {
   NotFoundException,
   Param,
   Post,
+  UseGuards,
 } from '@nestjs/common'
 import { Contact, ContactsService } from './interfaces/contacts.interfaces'
 import { BlockchainService } from '../blockchain/interfaces/blockchain.interfaces'
 import { Crypto } from '@kiltprotocol/prototype-sdk'
 import Optional from 'typescript-optional'
+import { AuthGuard } from 'src/auth/auth.guard'
 
 @Controller('contacts')
 export class ContactsController {
@@ -55,6 +57,7 @@ export class ContactsController {
     return result.orElseThrow(() => new NotFoundException())
   }
 
+  @UseGuards(AuthGuard)
   @Delete()
   public async removeAll() {
     console.log('Remove all contacts')

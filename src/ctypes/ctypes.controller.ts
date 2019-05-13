@@ -1,5 +1,4 @@
 import * as sdk from '@kiltprotocol/prototype-sdk'
-import { Blockchain } from '@kiltprotocol/prototype-sdk'
 import {
   Body,
   Controller,
@@ -9,12 +8,13 @@ import {
   NotFoundException,
   Param,
   Post,
+  UseGuards,
 } from '@nestjs/common'
-import cloneDeep from 'lodash/cloneDeep'
 import { BlockchainService } from '../blockchain/interfaces/blockchain.interfaces'
 import { CTypeNotOnChainException } from './exceptions/ctype-not-on-chain.exception'
 import { InvalidCtypeDefinitionException } from './exceptions/invalid-ctype-definition.exception'
 import { CType, CTypeService } from './interfaces/ctype.interfaces'
+import { AuthGuard } from 'src/auth/auth.guard'
 
 @Controller('ctype')
 export class CTypesController {
@@ -36,6 +36,7 @@ export class CTypesController {
     return await this.cTypesService.findAll()
   }
 
+  @UseGuards(AuthGuard)
   @Delete()
   public async removeAll() {
     console.log('Remove all CTypes')
@@ -44,7 +45,6 @@ export class CTypesController {
 
   @Post()
   public async register(@Body() cTypeInput: CType) {
-    console.log('Validate CType definition: ' + { ...cTypeInput.cType })
     return this.verifyCType(cTypeInput).then(verified => {
       if (verified) {
         console.log(
@@ -61,8 +61,7 @@ export class CTypesController {
   private async verifyCType(cTypeInput: CType): Promise<boolean> {
     try {
       const { cType } = cTypeInput
-      const blockchain: Blockchain = await this.blockchainService.connect()
-      return await new sdk.CType(cType).verifyStored(blockchain)
+      return await new sdk.CType(cType).verifyStored()
     } catch (e) {
       console.log('error: ' + e)
       throw new InvalidCtypeDefinitionException()
