@@ -3,7 +3,7 @@
   "version": "0.10.0",
   "description": "Auxiliary services for the KILT prototype",
   "author": "botlabs",
-  "license": "MIT",
+  "license": "BSD-4-Clause",
   "scripts": {
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\"",
