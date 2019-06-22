@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { MessagingService } from './interfaces/messaging.interfaces'
-import { IEncryptedMessage } from '@kiltprotocol/prototype-sdk'
+import { IEncryptedMessage } from '@kiltprotocol/sdk-js'
 import { AuthGuard } from '../auth/auth.guard'
 
 function uuidv4() {

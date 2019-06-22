@@ -1,4 +1,4 @@
-import Kilt, { IBlockchainApi } from '@kiltprotocol/prototype-sdk'
+import Kilt, { IBlockchainApi } from '@kiltprotocol/sdk-js'
 import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common'
 import { ConfigService } from '../config/config.service'
 import { BlockchainService } from './interfaces/blockchain.interfaces'

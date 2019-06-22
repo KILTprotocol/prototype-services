@@ -11,7 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { Contact, ContactsService } from './interfaces/contacts.interfaces'
-import { Crypto } from '@kiltprotocol/prototype-sdk'
+import { Crypto } from '@kiltprotocol/sdk-js'
 import Optional from 'typescript-optional'
 import { AuthGuard } from '../auth/auth.guard'
 

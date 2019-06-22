@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { MessageDB, MessagingService } from './interfaces/messaging.interfaces'
-import { IEncryptedMessage } from '@kiltprotocol/prototype-sdk'
+import { IEncryptedMessage } from '@kiltprotocol/sdk-js'
 
 @Injectable()
 export class MongoDbMessagingService implements MessagingService {
