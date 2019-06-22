@@ -1,6 +1,6 @@
 import { Document } from 'mongoose'
 import { Contact } from '../../contacts/interfaces/contacts.interfaces'
-import { IEncryptedMessage } from '@kiltprotocol/prototype-sdk'
+import { IEncryptedMessage } from '@kiltprotocol/sdk-js'
 
 export interface MessageDB extends Document, IEncryptedMessage {}
 
