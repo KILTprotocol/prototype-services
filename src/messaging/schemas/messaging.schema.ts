@@ -11,4 +11,5 @@ export const MessageSchema = new mongoose.Schema({
   signature: String,
   receiverAddress: String,
   senderAddress: String,
+  senderBoxPublicKey: String
 })

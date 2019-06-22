@@ -41,10 +41,10 @@
     lodash.camelcase "^4.3.0"
     protobufjs "^6.8.6"
 
-"@kiltprotocol/sdk-js@^0.12.0":
-  version "0.12.0"
-  resolved "https://registry.yarnpkg.com/@kiltprotocol/sdk-js/-/sdk-js-0.12.0.tgz#b454cb5201baf4b6001318a8672666cec7dde149"
-  integrity sha512-zOuZujSt+iUb6rFyVuUALKmt9QdONdhp4TTZ6wowyOkGSYWyVKRWdSNWEbSWTo0b9u9fL4Qp06GKySu5ePy7Pg==
+"@kiltprotocol/sdk-js@^0.x":
+  version "0.13.0"
+  resolved "https://registry.yarnpkg.com/@kiltprotocol/sdk-js/-/sdk-js-0.13.0.tgz#c9557625d45040476b54b9e0e0b76f8d5085e972"
+  integrity sha512-5lcmgoYuKCxKxAAjV04tVP9EgNPGd3xpx5MGkR7XGAmluNOvRG4cuHUYGcd/C9bocUOzZqb97+rB39zl01WcDg==
   dependencies:
     "@polkadot/api" "^0.51.1"
     "@types/jsonabc" "^2.3.1"
