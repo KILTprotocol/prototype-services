@@ -6,6 +6,7 @@ import { ContactsModule } from './contacts/contacts.module'
 import { BlockchainModule } from './blockchain/blockchain.module'
 import { TerminusModule } from '@nestjs/terminus'
 import { TerminusOptionsService } from './health/terminus-options.service'
+import { FaucetModule } from './faucet/faucet.module'
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { TerminusOptionsService } from './health/terminus-options.service'
     MessagingModule,
     ContactsModule,
     BlockchainModule,
+    FaucetModule,
     TerminusModule.forRootAsync({
       useClass: TerminusOptionsService,
     }),
