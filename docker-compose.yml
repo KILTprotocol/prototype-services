@@ -33,5 +33,6 @@ services:
     environment:
       - NODE_ENV=docker-compose
       - MONGODB_HOST=mongodb
+      - FAUCET_ACCOUNT=faucet
     ports:
       - 3000:3000

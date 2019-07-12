@@ -1,4 +1,4 @@
-import * as sdk from '@kiltprotocol/sdk-js'
+import { PublicIdentity } from '@kiltprotocol/sdk-js'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
@@ -25,7 +25,7 @@ export class MongoDbMContactsService implements ContactsService {
   }
 
   public async findByAddress(
-    address: sdk.PublicIdentity['address']
+    address: PublicIdentity['address']
   ): Promise<Optional<Contact>> {
     const result = await this._findByAddress(address)
     return result.map(
@@ -45,7 +45,7 @@ export class MongoDbMContactsService implements ContactsService {
   }
 
   private async _findByAddress(
-    address: sdk.PublicIdentity['address']
+    address: PublicIdentity['address']
   ): Promise<Optional<ContactDB>> {
     const result: ContactDB = await this.contactModel
       .findOne({ 'publicIdentity.address': address })

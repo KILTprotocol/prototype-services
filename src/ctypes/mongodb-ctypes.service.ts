@@ -1,4 +1,4 @@
-import * as sdk from '@kiltprotocol/sdk-js'
+import { ICType } from '@kiltprotocol/sdk-js'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
@@ -26,7 +26,7 @@ export class MongoDbCTypesService implements CTypeService {
     await createdCType.save()
   }
 
-  public async findByHash(hash: sdk.ICType['hash']): Promise<Optional<CType>> {
+  public async findByHash(hash: ICType['hash']): Promise<Optional<CType>> {
     const result = await this._findByHash(hash)
     return result.map((cTypeDB: CTypeDB): CType => convertToCType(cTypeDB))
   }
@@ -40,9 +40,7 @@ export class MongoDbCTypesService implements CTypeService {
     await this.cTypeDBModel.deleteMany({}).exec()
   }
 
-  private async _findByHash(
-    hash: sdk.ICType['hash']
-  ): Promise<Optional<CTypeDB>> {
+  private async _findByHash(hash: ICType['hash']): Promise<Optional<CTypeDB>> {
     const result: CTypeDB = await this.cTypeDBModel.findOne({ hash }).exec()
     return Optional.ofNullable(result)
   }
