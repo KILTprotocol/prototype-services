@@ -8,12 +8,14 @@ import {
   BadRequestException,
 } from '@nestjs/common'
 import { Request } from 'express'
-import { FaucetService } from './interfaces/faucet.interfaces'
-import { FaucetDropThrottledException } from './exceptions/faucet-drop-throttled.exception'
-
 import BN from 'bn.js'
-import { FaucetDropFailedTransferException } from './exceptions/faucet-drop-failed-transfer'
 import { hexToU8a } from '@polkadot/util'
+
+import { FaucetService } from './interfaces/faucet.interfaces'
+import {
+  FaucetDropThrottledException,
+  FaucetDropFailedTransferException,
+} from './exceptions'
 
 const KILT_MICRO_COIN: number = 1_000_000
 const DEFAULT_TOKEN_AMOUNT: number = 500 * KILT_MICRO_COIN
