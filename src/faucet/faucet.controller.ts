@@ -57,7 +57,7 @@ export class FaucetController {
       const faucetAccount: Identity = Identity.buildFromSeed(
         hexToU8a(process.env.FAUCET_ACCOUNT)
       )
-      let status: TxStatus = await Balance.makeTransfer(
+      const status: TxStatus = await Balance.makeTransfer(
         faucetAccount,
         address,
         new BN(DEFAULT_TOKEN_AMOUNT)

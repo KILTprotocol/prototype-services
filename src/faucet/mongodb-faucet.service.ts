@@ -59,7 +59,7 @@ export class MongoDbFaucetService implements FaucetService {
       }
     }
 
-    const result = {
+    const result: FaucetDrop = {
       amount,
       email,
       publickey,
@@ -67,11 +67,11 @@ export class MongoDbFaucetService implements FaucetService {
       dropped: error === NO_ERROR,
       error,
       created: Date.now(),
-    } as FaucetDrop
+    }
 
-    const createdFaucetDrop = new this.faucetDropDBModel(result as FaucetDropDB)
+    const createdFaucetDrop = new this.faucetDropDBModel(result)
     await createdFaucetDrop.save()
-    return Promise.resolve(createdFaucetDrop as FaucetDrop)
+    return Promise.resolve(createdFaucetDrop)
   }
 
   public async updateOnTransactionFailure(drop: FaucetDrop): Promise<void> {
