@@ -1,4 +1,4 @@
-import * as sdk from '@kiltprotocol/prototype-sdk'
+import * as sdk from '@kiltprotocol/sdk-js'
 import { Document } from 'mongoose'
 import Optional from 'typescript-optional'
 

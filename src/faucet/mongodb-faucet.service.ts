@@ -1,4 +1,4 @@
-import * as sdk from '@kiltprotocol/prototype-sdk'
+import * as sdk from '@kiltprotocol/sdk-js'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
