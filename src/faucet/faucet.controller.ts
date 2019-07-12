@@ -10,11 +10,13 @@ import {
 import { Request } from 'express'
 import BN from 'bn.js'
 import { hexToU8a } from '@polkadot/util'
+import { decodeAddress } from '@polkadot/keyring/address'
 
 import { FaucetService } from './interfaces/faucet.interfaces'
 import {
   FaucetDropThrottledException,
   FaucetDropFailedTransferException,
+  FaucetDropInvalidAddressException,
 } from './exceptions'
 
 const KILT_MICRO_COIN: number = 1_000_000
@@ -36,6 +38,13 @@ export class FaucetController {
       throw new BadRequestException('no public key')
     }
     console.log(`Faucet drop requested for ${pubKey} from ${request.ip}`)
+
+    try {
+      decodeAddress(pubKey)
+    } catch {
+      throw new FaucetDropInvalidAddressException()
+    }
+
     const result = await this.faucetService.drop(
       email,
       pubKey,
