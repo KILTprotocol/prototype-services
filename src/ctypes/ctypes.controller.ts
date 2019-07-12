@@ -1,4 +1,4 @@
-import * as sdk from '@kiltprotocol/sdk-js'
+import { CType as SDKCtype } from '@kiltprotocol/sdk-js'
 import {
   Body,
   Controller,
@@ -61,7 +61,7 @@ export class CTypesController {
   private async verifyCType(cTypeInput: CType): Promise<boolean> {
     try {
       const { cType } = cTypeInput
-      return await new sdk.CType(cType).verifyStored()
+      return await new SDKCtype(cType).verifyStored()
     } catch (e) {
       console.log('error: ' + e)
       throw new InvalidCtypeDefinitionException()

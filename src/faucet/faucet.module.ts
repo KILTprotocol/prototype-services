@@ -12,16 +12,19 @@ const faucetServiceProvider = {
 @Module({
   imports: [
     MongooseModule.forFeature([
-      { name: 'FaucetDrop', schema: FaucetDropSchema, collection: 'FaucetDrop' },
+      {
+        name: 'FaucetDrop',
+        schema: FaucetDropSchema,
+        collection: 'FaucetDrop',
+      },
     ]),
     MongooseModule.forRoot(
       `mongodb://mongoadmin:secret@${
-      process.env.MONGODB_HOST
+        process.env.MONGODB_HOST
       }/registry?authSource=admin`
     ),
   ],
   controllers: [FaucetController],
   providers: [faucetServiceProvider],
 })
-export class FaucetModule {
-}
+export class FaucetModule {}

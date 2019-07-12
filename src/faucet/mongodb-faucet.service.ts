@@ -1,9 +1,11 @@
-import * as sdk from '@kiltprotocol/sdk-js'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
-import { FaucetDrop, FaucetDropDB, FaucetService } from './interfaces/faucet.interfaces'
-import Optional from 'typescript-optional'
+import {
+  FaucetDrop,
+  FaucetDropDB,
+  FaucetService,
+} from './interfaces/faucet.interfaces'
 
 const MAX_REQUESTS_PER_ID = 1
 const MAX_IDENTITIES_PER_IP = 100
@@ -18,29 +20,39 @@ const ERROR_TRANSACTION_FAILED = 4
 
 @Injectable()
 export class MongoDbFaucetService implements FaucetService {
-
   constructor(
-    @InjectModel('FaucetDrop') private readonly faucetDropDBModel: Model<FaucetDropDB>
-  ) {
-  }
+    @InjectModel('FaucetDrop')
+    private readonly faucetDropDBModel: Model<FaucetDropDB>
+  ) {}
 
-  public async drop(email: string, publickey: string, ip: string, amount: number): Promise<FaucetDrop> {
+  public async drop(
+    email: string,
+    publickey: string,
+    ip: string,
+    amount: number
+  ): Promise<FaucetDrop> {
     let error: number = NO_ERROR
-    const dropsPerIdentity: number = await this.faucetDropDBModel.countDocuments({
-      'publickey': publickey,
-      'error': 0
-    }).exec()
+    const dropsPerIdentity: number = await this.faucetDropDBModel
+      .countDocuments({
+        publickey,
+        error: 0,
+      })
+      .exec()
     if (dropsPerIdentity >= MAX_REQUESTS_PER_ID) {
       error = ERROR_MAX_REQUESTS_PER_ID
     } else {
-      const dropsPerIP: number = await this.faucetDropDBModel.countDocuments({ 'requestip': ip, 'error': 0 }).exec()
+      const dropsPerIP: number = await this.faucetDropDBModel
+        .countDocuments({ requestip: ip, error: 0 })
+        .exec()
       if (dropsPerIP >= MAX_IDENTITIES_PER_IP) {
         error = ERROR_MAX_REQUESTS_PER_IP
       } else {
-        const dropsPerDay: number = await this.faucetDropDBModel.countDocuments({
-          'created': { '$gt': Date.now() - ONE_DAY },
-          'error': 0
-        }).exec()
+        const dropsPerDay: number = await this.faucetDropDBModel
+          .countDocuments({
+            created: { $gt: Date.now() - ONE_DAY },
+            error: 0,
+          })
+          .exec()
         if (dropsPerDay >= MAX_REQUESTS_PER_DAY) {
           error = ERROR_MAX_REQUESTS_PER_DAY
         }

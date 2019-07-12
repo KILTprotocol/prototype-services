@@ -1,6 +1,6 @@
 import { InMemoryCTypesService } from './in-memory-ctypes.service'
 import { CType } from './interfaces/ctype.interfaces'
-import Optional from 'typescript-optional';
+import Optional from 'typescript-optional'
 
 describe('InMemoryCTypesService', () => {
   const cTypesInMemoryService: InMemoryCTypesService = new InMemoryCTypesService()
@@ -13,20 +13,22 @@ describe('InMemoryCTypesService', () => {
           schema: {},
           metadata: {
             title: {
-              default: 'myCTYPE'
+              default: 'myCTYPE',
             },
             description: {
-              default: 'myCTYPE description'
+              default: 'myCTYPE description',
             },
-            properties: {}
-          }
+            properties: {},
+          },
         },
         metaData: {
-          author: 'apasch'
-        }
+          author: 'apasch',
+        },
       } as CType
       await cTypesInMemoryService.register(cType)
-      const result: Optional<CType> = await cTypesInMemoryService.findByHash('999')
+      const result: Optional<CType> = await cTypesInMemoryService.findByHash(
+        '999'
+      )
       expect(result.isPresent).toBe(true)
       result.ifPresent((foundCType: CType) => {
         expect(foundCType.cType.hash).toBe('999')
