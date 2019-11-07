@@ -48,8 +48,7 @@ export class CTypesController {
     return this.verifyCType(cTypeInput).then(verified => {
       if (verified) {
         console.log(
-          `All valid => registering cType ` +
-            cTypeInput.cType.metadata.title.default
+          `All valid => registering cType ` + cTypeInput.cType.schema.$id
         )
         this.cTypesService.register(cTypeInput)
       } else {

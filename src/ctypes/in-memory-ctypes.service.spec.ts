@@ -11,15 +11,6 @@ describe('InMemoryCTypesService', () => {
         cType: {
           hash: '999',
           schema: {},
-          metadata: {
-            title: {
-              default: 'myCTYPE',
-            },
-            description: {
-              default: 'myCTYPE description',
-            },
-            properties: {},
-          },
         },
         metaData: {
           author: 'apasch',
@@ -32,7 +23,7 @@ describe('InMemoryCTypesService', () => {
       expect(result.isPresent).toBe(true)
       result.ifPresent((foundCType: CType) => {
         expect(foundCType.cType.hash).toBe('999')
-        expect(foundCType.cType.metadata.title.default).toBe('myCTYPE')
+        // expect(foundCType.cType.metadata.title.default).toBe('myCTYPE')
         expect(foundCType.metaData.author).toBe('apasch')
       })
 
