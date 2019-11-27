@@ -42,9 +42,9 @@
     protobufjs "^6.8.6"
 
 "@kiltprotocol/sdk-js@^0.x":
-  version "0.16.0"
-  resolved "https://registry.yarnpkg.com/@kiltprotocol/sdk-js/-/sdk-js-0.16.0.tgz#e5b5250f103a241cbe93427f2f12fb4584f6abf6"
-  integrity sha512-ZSyULuiIUCRv8VUhlLv9qqQKtMo25qfb4dxWfL2lAsijR8YZkLVy0jH5yXl5cgqJT9FEMNPOvr8KZ49MZUB13w==
+  version "0.16.1"
+  resolved "https://registry.yarnpkg.com/@kiltprotocol/sdk-js/-/sdk-js-0.16.1.tgz#a535783134829ff633b9aaab50edccf8677295ba"
+  integrity sha512-+ssIgXfLoVff1HsQQgGy518k5drHqY2dacJ/c6HFtrtU3jC8Xba5DTNAY/qzTr5N5YbDmxT7sEHnzcigtMPr4g==
   dependencies:
     "@polkadot/api" "^0.96.1"
     "@polkadot/keyring" "^1.7.0-beta.5"
