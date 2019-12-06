@@ -57,7 +57,7 @@ or DIDs.
 
 All prototype-services are implemented in TypeScript using node.js as a service framework and MongoDB to store data.
 To simplify the demo ecosystem, all services are implemented as a centralised solution.
-They're built upon [Nest](https://github.com/nestjs/nest) framework:
+They're built upon [Nest](https://github.com/nestjs/nest) framework.
 
 ## Installing the services
 
