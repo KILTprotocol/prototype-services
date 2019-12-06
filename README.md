@@ -1,3 +1,8 @@
+<p align="center">
+<img width="220" src="https://user-images.githubusercontent.com/9762897/67468312-9176b700-f64a-11e9-8d88-1441380a71f6.jpg">  
+  <div align="center"><sup><a href="kilt.io">kilt.io</a></sup></div> 
+</p>
+
 # kilt/prototype-services
 
 ## TL;DR
@@ -9,7 +14,7 @@ If you're running both a blockchain node and the demo-client locally for develop
 
 ## Important note
 
-- All prototype-service are centralised. In the future, there could be decentralised, centralised or even offline ways to
+- All prototype-services are centralised. In the future, there could be decentralised, centralised or even offline ways to
   distribute the CTYPE or send messages.
 - ⚠️⚠️⚠️ The prototype-services are implemented for demo purposes only; we don't recommend using them in production.
 
@@ -53,7 +58,6 @@ or DIDs.
 All prototype-services are implemented in TypeScript using node.js as a service framework and MongoDB to store data.
 To simplify the demo ecosystem, all services are implemented as a centralised solution.
 They're built upon [Nest](https://github.com/nestjs/nest) framework:
-The services backend uses MongoDB to store and retrieve information.
 
 ## Installing the services
 
@@ -84,6 +88,8 @@ $ yarn start
 ```bash
 $ yarn start:prod
 ```
+
+## Testing
 
 ```bash
 # unit tests
