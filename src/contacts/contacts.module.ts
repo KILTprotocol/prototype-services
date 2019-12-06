@@ -14,11 +14,6 @@ const contactsServiceProvider = {
     MongooseModule.forFeature([
       { name: 'Contact', schema: ContactSchema, collection: 'Contact' },
     ]),
-    MongooseModule.forRoot(
-      `mongodb://mongoadmin:secret@${
-        process.env.MONGODB_HOST
-      }/registry?authSource=admin`
-    ),
   ],
   controllers: [ContactsController],
   providers: [contactsServiceProvider],
