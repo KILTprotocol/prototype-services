@@ -14,11 +14,6 @@ const messagingServiceProvider = {
     MongooseModule.forFeature([
       { name: 'Message', schema: MessageSchema, collection: 'Message' },
     ]),
-    MongooseModule.forRoot(
-      `mongodb://mongoadmin:secret@${
-        process.env.MONGODB_HOST
-      }/registry?authSource=admin`
-    ),
   ],
   controllers: [MessagingController],
   providers: [messagingServiceProvider],

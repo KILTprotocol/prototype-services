@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common'
 import { ConfigModule } from './config/config.module'
+import { MyMongooseModule } from './mongoose/mongoose.module'
 import { CTypesModule } from './ctypes/ctypes.module'
 import { MessagingModule } from './messaging/messaging.module'
 import { ContactsModule } from './contacts/contacts.module'
@@ -11,6 +12,7 @@ import { FaucetModule } from './faucet/faucet.module'
 @Module({
   imports: [
     ConfigModule,
+    MyMongooseModule,
     CTypesModule,
     MessagingModule,
     ContactsModule,
