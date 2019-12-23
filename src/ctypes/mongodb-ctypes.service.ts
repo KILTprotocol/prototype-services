@@ -17,9 +17,8 @@ export class MongoDbCTypesService implements CTypeService {
     if (value.isPresent) {
       throw new AlreadyRegisteredException()
     }
-
     const createdCType = new this.cTypeDBModel({
-      metaData: cType.metaData,
+      metaData: JSON.stringify(cType.metaData),
       cType: JSON.stringify(cType.cType),
       hash: cType.cType.hash,
     } as CTypeDB)
@@ -49,7 +48,7 @@ export class MongoDbCTypesService implements CTypeService {
 function convertToCType(cTypeDB: CTypeDB): CType {
   const { metaData, cType } = cTypeDB
   return {
-    metaData,
+    metaData: JSON.parse(metaData),
     cType: JSON.parse(cType),
   }
 }
