@@ -73,7 +73,7 @@ export class FaucetController {
         address,
         new BN(DEFAULT_TOKEN_AMOUNT)
       )
-      return Promise.resolve(status.type === 'Finalised')
+      return Promise.resolve(status.type === 'Finalized')
     } catch (e) {
       console.error(e)
       return Promise.resolve(false)
