@@ -10,7 +10,7 @@ import {
 import { Request } from 'express'
 import BN from 'bn.js'
 import { hexToU8a } from '@polkadot/util'
-import { decodeAddress } from '@polkadot/keyring/address'
+import { decodeAddress } from '@polkadot/keyring'
 
 import { FaucetService } from './interfaces/faucet.interfaces'
 import {
