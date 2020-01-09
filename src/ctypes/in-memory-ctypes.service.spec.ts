@@ -1,14 +1,14 @@
 import { InMemoryCTypesService } from './in-memory-ctypes.service'
 import { CType } from './interfaces/ctype.interfaces'
 import Optional from 'typescript-optional'
-import { IMetadata } from '@kiltprotocol/sdk-js/build/types/CTypeMetedata'
+import { ICTypeMetadata } from '@kiltprotocol/sdk-js'
 
 describe('InMemoryCTypesService', () => {
   const cTypesInMemoryService: InMemoryCTypesService = new InMemoryCTypesService()
 
   describe('root', () => {
     it('should create and find cType(s)', async () => {
-      const meta: IMetadata = {
+      const meta: ICTypeMetadata['metadata'] = {
         title: {
           default: 'myCTYPE',
         },
@@ -16,7 +16,7 @@ describe('InMemoryCTypesService', () => {
           default: 'myCTYPE description',
         },
         properties: {},
-      }as IMetadata
+      }
       const cType: CType = {
         cType: {
           hash: '999',
