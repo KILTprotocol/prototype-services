@@ -41,7 +41,7 @@
     lodash.camelcase "^4.3.0"
     protobufjs "^6.8.6"
 
-"@kiltprotocol/sdk-js@0.17.0":
+"@kiltprotocol/sdk-js@^0.x":
   version "0.17.0"
   resolved "https://registry.yarnpkg.com/@kiltprotocol/sdk-js/-/sdk-js-0.17.0.tgz#9af16539859219c988aaa69e3642d7cdb94537fe"
   integrity sha512-O+imN6Z2h854iD891EaJO276oVDWVvZzrC+keOB1YByZYplyyk7etVv+Ekr2PAsWGAtVCKI6as2QX4m0BLLwFQ==
