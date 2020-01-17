@@ -24,14 +24,15 @@ describe('InMemoryCTypesService', () => {
             $id: '',
             $schema: '',
             properties: {},
-            type: 'object'},
+            type: 'object',
+          },
           owner: 'apasch',
-      },
-      metaData:{
-        metadata: meta,
-        ctypeHash: '999'
+        },
+        metaData: {
+          metadata: meta,
+          ctypeHash: '999',
+        },
       }
-    }
 
       await cTypesInMemoryService.register(cType)
       const result: Optional<CType> = await cTypesInMemoryService.findByHash(
@@ -45,7 +46,7 @@ describe('InMemoryCTypesService', () => {
       })
 
       const results: CType[] = await cTypesInMemoryService.findAll()
-      console.log(JSON.stringify(results,null,4))
+      console.log(JSON.stringify(results, null, 4))
       expect(results[0]).toBe(result.get())
       expect(results.length).toBe(1)
     })
