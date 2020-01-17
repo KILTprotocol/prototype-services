@@ -49,7 +49,7 @@ export class CTypesController {
       if (verified) {
         console.log(
           `All valid => registering cType ` +
-            cTypeInput.cType.metadata.title.default
+            JSON.stringify(cTypeInput.cType,null,4)
         )
         this.cTypesService.register(cTypeInput)
       } else {
