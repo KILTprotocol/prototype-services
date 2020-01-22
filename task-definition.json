@@ -1,0 +1,65 @@
+{
+  "family": "devnet-demo-services",
+  "taskRoleArn": "arn:aws:iam::348099934012:role/ecsTaskExecutionRole",
+  "executionRoleArn": "arn:aws:iam::348099934012:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "demo-services",
+      "image": "348099934012.dkr.ecr.eu-central-1.amazonaws.com/kilt/prototype-services:0.13.2",
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/kilt-prototype-services-taskdef",
+          "awslogs-region": "eu-central-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "hostPort": 3000,
+          "protocol": "tcp"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "FAUCET_ACCOUNT",
+          "valueFrom": "arn:aws:ssm:eu-central-1:348099934012:parameter/ECS/devnet/faucet_account"
+        },
+        {
+          "name": "MONGODB_USER",
+          "valueFrom": "arn:aws:ssm:eu-central-1:348099934012:parameter/ECS/devnet/mongodb_user"
+        },
+        {
+          "name": "MONGODB_PASS",
+          "valueFrom": "arn:aws:ssm:eu-central-1:348099934012:parameter/ECS/devnet/mongodb_pass"
+        },
+        {
+          "name": "SECRET",
+          "valueFrom": "arn:aws:ssm:eu-central-1:348099934012:parameter/ECS/devnet/services_secret"
+        }
+      ],
+      "environment": [
+        {
+          "name": "BOOT_NODE_ADDRESS",
+          "value": "wss://full-nodes-lb.devnet.kilt.io:9944"
+        },
+        {
+          "name": "NODE_ENV",
+          "value": "dev-aws"
+        },
+        {
+          "name": "MONGODB_HOST",
+          "value": "mongodb.devnet.kilt.io"
+        }
+      ],
+      "essential": true
+    }
+  ],
+  "cpu": "512",
+  "memory": "1024",
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "networkMode": "awsvpc"
+}
