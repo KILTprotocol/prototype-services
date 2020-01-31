@@ -31,7 +31,7 @@ on:
     branches:
       - tw-270-releases
 
-name: Deploy to Amazon ECS
+name: Release
 
 jobs:
   test:
@@ -54,7 +54,7 @@ jobs:
   build:
     needs: test
     
-    name: Push to ECR and DockerHub
+    name: Build build-image
     runs-on: ubuntu-latest
 
     steps:
@@ -65,12 +65,12 @@ jobs:
       id: build-image
       run: |
         docker build -t kilt/demo-services .
-        docker save -o /tmp/demo-services.tar kilt/demo-services
+        docker save -o /tmp/cache/demo-services.tar kilt/demo-services
 
     - name: Cache image
       uses: actions/cache@v1
       with:
-        path: /tmp/demo-services.tar
+        path: /tmp/cache
         key: ${{ runner.os }}-demo-services
   push:
     needs: build
@@ -96,12 +96,12 @@ jobs:
     - name: Cache image
       uses: actions/cache@v1
       with:
-        path: /tmp/demo-services
+        path: /tmp/cache
         key: ${{ runner.os }}-demo-services
 
     - name: Load image
       run: |
-        docker load -i /tmp/demo-services.tar
+        docker load -i /tmp/cache/demo-services.tar
 
     - name: Tag, and push image to Amazon ECR
       id: build-image
