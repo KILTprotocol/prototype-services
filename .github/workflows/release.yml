@@ -54,7 +54,7 @@ jobs:
   build:
     needs: test
     
-    name: Build build-image
+    name: Build image
     runs-on: ubuntu-latest
 
     steps:
@@ -65,6 +65,7 @@ jobs:
       id: build-image
       run: |
         docker build -t kilt/demo-services .
+        mkdir -p /tmp/cache
         docker save -o /tmp/cache/demo-services.tar kilt/demo-services
 
     - name: Cache image
