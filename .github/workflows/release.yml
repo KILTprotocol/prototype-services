@@ -47,7 +47,7 @@ jobs:
   push:
     needs: build
 
-    name: Push to ECR
+    name: Push to Amazon ECR
     runs-on: ubuntu-latest
 
     steps:
@@ -90,14 +90,14 @@ jobs:
   pushDocker:
     needs: build
 
-    name: Push to Docker
+    name: Push to Docker Hub
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Login to docker
+    - name: Login to Docker Hub
       env:
         DOCKER_USER: ${{ secrets.DOCKER_USER }}
         DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
