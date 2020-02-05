@@ -93,6 +93,11 @@ jobs:
     - name: Login to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
+    
+    - name: Check for existence of Tag
+      run: |
+        IMAGE_TAG=$(sed -n 's/.*"version": "\(.*\)",/\1/p' package.json)
+        checkForTagOnAws.sh kilt/prototype-services $IMAGE_TAG
 
     - name: Cache image
       uses: actions/cache@v1
@@ -115,6 +120,5 @@ jobs:
         IMAGE_TAG=$(sed -n 's/.*"version": "\(.*\)",/\1/p' package.json)
         docker tag kilt/demo-services $ECR_REGISTRY/$ECR_REPOSITORY:latest
         docker tag kilt/demo-services $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        # docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
-        echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
