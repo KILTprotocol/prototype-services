@@ -97,7 +97,7 @@ jobs:
     - name: Check for existence of Tag
       run: |
         IMAGE_TAG=$(sed -n 's/.*"version": "\(.*\)",/\1/p' package.json)
-        checkForTagOnAws.sh kilt/prototype-services $IMAGE_TAG
+        ./checkForTagOnAws.sh kilt/prototype-services $IMAGE_TAG
 
     - name: Cache image
       uses: actions/cache@v1
