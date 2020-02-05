@@ -1,5 +1,4 @@
 node_modules
 dist
 *.iml
-.npmrc
 yarn-error.log
