@@ -62,7 +62,7 @@ jobs:
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
   buildDocker:
-    needs: build
+    needs: test
 
     name: Build image and push to Docker Hub
     runs-on: ubuntu-latest
