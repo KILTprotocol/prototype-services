@@ -94,7 +94,7 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
     
-    - name: Check for existence of Tag
+    - name: Check for existence of tag
       run: |
         IMAGE_TAG=$(sed -n 's/.*"version": "\(.*\)",/\1/p' package.json)
         ./checkForTagOnAws.sh kilt/prototype-services $IMAGE_TAG
@@ -122,3 +122,46 @@ jobs:
         docker tag kilt/demo-services $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         # docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+  pushDocker:
+    needs: build
+
+    name: Push to Docker
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Check for existence of tag
+      run: |
+        IMAGE_TAG=$(sed -n 's/.*"version": "\(.*\)",/\1/p' package.json)
+        ./checkForTagOnDocker.sh kilt/prototype-services $IMAGE_TAG
+    
+    - name: Login to docker
+      env:
+        DOCKER_USER: ${{ secrets.DOCKER_USER }}
+        DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
+      run: |
+        docker login --username=$DOCKER_USER --password=DOCKER_PASS
+
+    - name: Cache image
+      uses: actions/cache@v1
+      with:
+        path: /tmp/cache
+        key: ${{ runner.os }}-demo-services-${{ github.sha }}
+
+    - name: Load image
+      run: |
+        docker load -i /tmp/cache/demo-services.tar
+
+    - name: Tag, and push image to Amazon ECR
+      id: build-image
+      env:
+        DOCKER_REPOSITORY: kilt/prototype-services
+      run: |
+        IMAGE_TAG=$(sed -n 's/.*"version": "\(.*\)",/\1/p' package.json)
+        docker tag kilt/demo-services $DOCKER_REPOSITORY:latest
+        docker tag kilt/demo-services $DOCKER_REPOSITORY:$IMAGE_TAG
+        docker push $DOCKER_REPOSITORY:$IMAGE_TAG
+        docker push $DOCKER_REPOSITORY:latest
