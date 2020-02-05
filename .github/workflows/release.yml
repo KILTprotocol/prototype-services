@@ -158,7 +158,7 @@ jobs:
     - name: Tag, and push image to Amazon ECR
       id: build-image
       env:
-        DOCKER_REPOSITORY: kilt/prototype-services
+        DOCKER_REPOSITORY: kiltprotocol/demo-services
       run: |
         IMAGE_TAG=$(sed -n 's/.*"version": "\(.*\)",/\1/p' package.json)
         docker tag kilt/demo-services $DOCKER_REPOSITORY:latest
