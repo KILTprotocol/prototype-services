@@ -22,10 +22,10 @@ jobs:
           yarn install --frozen-lockfile
           yarn lint
           yarn test
-  build:
+  buildECR:
     needs: test
     
-    name: Build image
+    name: Build image and push to Amazon ECR
     runs-on: ubuntu-latest
 
     steps:
@@ -36,21 +36,7 @@ jobs:
       id: build-image
       run: |
         docker build -t kilt/demo-services .
-        mkdir -p /tmp/cache
-        docker save -o /tmp/cache/demo-services.tar kilt/demo-services
 
-    - name: Cache image
-      uses: actions/cache@v1
-      with:
-        path: /tmp/cache
-        key: ${{ runner.os }}-demo-services-${{ github.sha }}
-  push:
-    needs: build
-
-    name: Push to Amazon ECR
-    runs-on: ubuntu-latest
-
-    steps:
     - name: Checkout
       uses: actions/checkout@v2
 
@@ -64,12 +50,6 @@ jobs:
     - name: Login to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
-    
-    - name: Get cached image
-      uses: actions/cache@v1
-      with:
-        path: /tmp/cache
-        key: ${{ runner.os }}-demo-services-${{ github.sha }}
 
     - name: Load image
       run: |
@@ -87,15 +67,20 @@ jobs:
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
-  pushDocker:
+  buildDocker:
     needs: build
 
-    name: Push to Docker Hub
+    name: Build image and push to Docker Hub
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+
+    - name: Build image
+      id: build-image
+      run: |
+        docker build -t kilt/demo-services .
 
     - name: Login to Docker Hub
       env:
@@ -103,12 +88,6 @@ jobs:
         DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
       run: |
         echo $DOCKER_PASS | docker login --username=$DOCKER_USER --password-stdin
-
-    - name: Get cached image
-      uses: actions/cache@v1
-      with:
-        path: /tmp/cache
-        key: ${{ runner.os }}-demo-services-${{ github.sha }}
 
     - name: Load image
       run: |
