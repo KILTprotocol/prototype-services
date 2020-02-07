@@ -36,9 +36,6 @@ jobs:
       run: |
         docker build -t kilt/demo-services .
 
-    - name: Checkout
-      uses: actions/checkout@v2
-
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
