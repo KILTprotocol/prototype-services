@@ -41,6 +41,8 @@ services:
       - MONGODB_PASS=secret
       - FAUCET_ACCOUNT=faucet
       - BOOT_NODE_ADDRESS=ws://mashnet-node:9944
+    volumes:
+      - ./src:/app/src
     command: yarn start
     ports:
       - 3000:3000
