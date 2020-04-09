@@ -34,6 +34,7 @@ services:
     command: ./target/release/mashnet-node --dev --ws-port 9944 --ws-external
   services:
     build: .
+    image: local/prototype-services
     environment:
       - NODE_ENV=docker-compose
       - MONGODB_HOST=mongodb
