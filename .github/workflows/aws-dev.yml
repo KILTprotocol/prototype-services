@@ -31,13 +31,14 @@ on:
 
 name: Deploy to Amazon ECS
 
+env:
+  ECR_REPOSITORY: kilt/prototype-services
+  IMAGE_TAG: latest-develop
+
 jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-
-    outputs:
-      image: ${{ steps.build-image.outputs.image_name }}
 
     steps:
     - name: Checkout
@@ -58,15 +59,13 @@ jobs:
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: kilt/prototype-services
-        IMAGE_TAG: latest-develop
       run: |
         # Build a docker container and
         # push it to ECR so that it can
         # be deployed to ECS.
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG name=image_name::$ECR_REPOSITORY:$IMAGE_TAG"
+        echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
     - name: Fill in the new image ID in the Amazon ECS task definition
       id: task-def
@@ -110,10 +109,9 @@ jobs:
     - name: Tag and push dev image to Docker Hub
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        SOURCE_IMAGE: ${{ needs.deploy.outputs.image }}
         DOCKER_REPOSITORY: kiltprotocol/demo-services
         IMAGE_TAG: develop
       run: |
-        docker pull $ECR_REGISTRY/$SOURCE_IMAGE
-        docker tag $SOURCE_IMAGE $DOCKER_REPOSITORY:$IMAGE_TAG
+        docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        docker tag $ECR_REPOSITORY:$IMAGE_TAG $DOCKER_REPOSITORY:$IMAGE_TAG
         docker push $DOCKER_REPOSITORY:$IMAGE_TAG
