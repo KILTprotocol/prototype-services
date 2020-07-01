@@ -1,9 +1,11 @@
 FROM node:10-alpine
+ARG NODE_AUTH_TOKEN=""
 
 WORKDIR /app
 
 COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+COPY ?npmrc ?yarnrc ./
+RUN yarn install
 
 COPY . ./
 RUN yarn build
