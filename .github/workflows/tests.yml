@@ -27,11 +27,14 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+        registry-url: https://npm.pkg.github.com
+        scope: '@kiltprotocol'
     - name: yarn install, lint, test and build
       run: |
-        yarn install --frozen-lockfile
+        yarn upgrade --scope @kiltprotocol --latest
         yarn lint
         yarn test
         yarn build
       env:
         CI: true
+        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
