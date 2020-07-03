@@ -57,7 +57,7 @@ jobs:
 
     - name: set sdk dependency to 'latest' & set up .npmrc to connect to github packages
       run: |
-        run: echo $(jq '.dependencies."@kiltprotocol/sdk-js"="latest"' package.json) > package.json
+        echo $(jq '.dependencies."@kiltprotocol/sdk-js"="latest"' package.json) > package.json
         mv -f .npmrc.github .npmrc
 
     - name: Build, tag, and push image to Amazon ECR
