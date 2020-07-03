@@ -55,6 +55,9 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
+    - name: Remove npmrc to avoid collision with the next step
+      run: rm -f .npmrc
+
     - name: set up .npmrc & .yarnrc to connect to github packages
       uses: actions/setup-node@v1
       with:
