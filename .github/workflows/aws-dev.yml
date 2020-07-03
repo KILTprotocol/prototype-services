@@ -55,6 +55,16 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
+    - name: set up .npmrc & .yarnrc to connect to github packages
+      uses: actions/setup-node@v1
+      with:
+        node-version: 10
+        registry-url: https://npm.pkg.github.com
+        scope: '@kiltprotocol'
+
+    - name: set sdk dependency to 'latest'
+      run: echo $(jq '.dependencies."@kiltprotocol/portablegabi"="latest"' package.json) > package.json
+
     - name: Build, tag, and push image to Amazon ECR
       id: build-image
       env:
@@ -63,7 +73,7 @@ jobs:
         # Build a docker container and
         # push it to ECR so that it can
         # be deployed to ECS.
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$ECR_IMAGE_TAG .
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$ECR_IMAGE_TAG --build-arg NODE_AUTH_TOKEN=${{ secrets.GITHUB_TOKEN }} .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$ECR_IMAGE_TAG
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$ECR_IMAGE_TAG"
 
