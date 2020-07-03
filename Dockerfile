@@ -1,10 +1,13 @@
 FROM node:10-alpine
+ARG NODE_AUTH_TOKEN=""
 
 WORKDIR /app
 
-COPY . ./
-
+COPY package.json yarn.lock ./
+COPY ?npmrc ?yarnrc ./
 RUN yarn install
+
+COPY . ./
 RUN yarn build
 
 EXPOSE 3000
