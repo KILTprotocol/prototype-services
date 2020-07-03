@@ -1,4 +1,4 @@
-import { Balance, Identity, TxStatus } from '@kiltprotocol/sdk-js'
+import { Balance, Identity, SubmittableResult } from '@kiltprotocol/sdk-js'
 import {
   Controller,
   Inject,
@@ -68,12 +68,12 @@ export class FaucetController {
       const faucetAccount: Identity = Identity.buildFromSeed(
         hexToU8a(process.env.FAUCET_ACCOUNT)
       )
-      const status: TxStatus = await Balance.makeTransfer(
+      const status: SubmittableResult = await Balance.makeTransfer(
         faucetAccount,
         address,
         new BN(DEFAULT_TOKEN_AMOUNT)
       )
-      return Promise.resolve(status.type === 'Finalized')
+      return Promise.resolve(status.isFinalized)
     } catch (e) {
       console.error(e)
       return Promise.resolve(false)
