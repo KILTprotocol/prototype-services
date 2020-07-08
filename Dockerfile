@@ -6,6 +6,7 @@ WORKDIR /app
 COPY package.json yarn.lock ./
 COPY ?npmrc ?yarnrc ./
 RUN yarn install
+RUN rm -f .npmrc
 
 COPY . ./
 RUN yarn build
