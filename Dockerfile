@@ -6,12 +6,14 @@ WORKDIR /app
 COPY package.json yarn.lock ./
 COPY ?npmrc ?yarnrc ./
 RUN yarn install
-RUN rm -f .npmrc
 
 COPY . ./
 RUN yarn build
 
 EXPOSE 3000
+
+# Cleanup
+RUN rm -f .npmrc
 
 # $NODE_ENV must be exported with -e
 CMD ["yarn", "run", "start:provided-env"]
