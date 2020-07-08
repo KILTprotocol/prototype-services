@@ -21,7 +21,8 @@ describe('InMemoryCTypesService', () => {
         cType: {
           hash: '999',
           schema: {
-            $id: '',
+            $id:  '',
+            title: '',
             $schema: '',
             properties: {},
             type: 'object',
