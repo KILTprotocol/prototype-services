@@ -1,4 +1,4 @@
-import Kilt, { IBlockchainApi } from '@kiltprotocol/sdk-js'
+import Kilt, { Blockchain } from '@kiltprotocol/sdk-js'
 import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common'
 import { ConfigService } from '../config/config.service'
 import { BlockchainService } from './interfaces/blockchain.interfaces'
@@ -6,12 +6,12 @@ import { BlockchainService } from './interfaces/blockchain.interfaces'
 @Injectable()
 export class UniversalBlockchainService
   implements BlockchainService, OnApplicationBootstrap {
-  private static instance: Promise<IBlockchainApi>
+  private static instance: Promise<Blockchain>
   constructor(
     @Inject('ConfigService') private readonly configService: ConfigService
   ) {}
 
-  public async connect(): Promise<IBlockchainApi> {
+  public async connect(): Promise<Blockchain> {
     const bootNodeAddress = this.configService.get('BOOT_NODE_ADDRESS')
     console.log(`Connecting to  ${bootNodeAddress}`)
     if (!UniversalBlockchainService.instance) {
