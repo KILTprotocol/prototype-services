@@ -28,7 +28,7 @@ services:
     ports:
       - 27017:27017
   mashnet-node:
-    image: kiltprotocol/mashnet-node
+    image: kiltprotocol/mashnet-node:develop
     ports:
       - 9944:9944
     command: ./target/release/mashnet-node --dev --ws-port 9944 --ws-external
@@ -36,11 +36,9 @@ services:
     build: .
     image: local/prototype-services
     environment:
-      - NODE_ENV=docker-compose
       - MONGODB_HOST=mongodb
       - MONGODB_USER=mongoadmin
       - MONGODB_PASS=secret
-      - FAUCET_ACCOUNT=faucet
       - BOOT_NODE_ADDRESS=ws://mashnet-node:9944
     volumes:
       - ./src:/app/src
