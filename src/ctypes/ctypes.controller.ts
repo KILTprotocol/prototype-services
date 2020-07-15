@@ -53,14 +53,21 @@ export class CTypesController {
             JSON.stringify(cTypeInput.cType, null, 4)
         )
         try {
-        await this.cTypesService.register(cTypeInput)
-        } 
-        catch(error){
-          if (error.message === `CType with Hash: ${cTypeInput.cType.hash} already registered`){
-            console.log(`The CType with hash: ${cTypeInput.cType.hash} already exists in this DB!`)
+          await this.cTypesService.register(cTypeInput)
+        } catch (error) {
+          if (
+            error.message ===
+            `CType with Hash: ${cTypeInput.cType.hash} already registered`
+          ) {
+            console.log(
+              `The CType with hash: ${
+                cTypeInput.cType.hash
+              } already exists in this DB!`
+            )
             throw new AlreadyRegisteredException()
+          } else {
+            throw error
           }
-          else throw error
         }
       } else {
         throw new CTypeNotOnChainException()
