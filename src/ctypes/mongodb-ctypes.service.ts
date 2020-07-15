@@ -15,7 +15,7 @@ export class MongoDbCTypesService implements CTypeService {
   public async register(cType: CType): Promise<void> {
     const value = await this.findByHash(cType.cType.hash)
     if (value.isPresent) {
-      throw new AlreadyRegisteredException()
+      throw new Error(`CType with Hash: ${cType.cType.hash} already registered`)
     }
     const createdCType = new this.cTypeDBModel({
       metaData: JSON.stringify(cType.metaData),

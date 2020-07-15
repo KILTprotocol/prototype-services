@@ -15,6 +15,7 @@ import { CTypeNotOnChainException } from './exceptions/ctype-not-on-chain.except
 import { InvalidCtypeDefinitionException } from './exceptions/invalid-ctype-definition.exception'
 import { CType, CTypeService } from './interfaces/ctype.interfaces'
 import { AuthGuard } from '../auth/auth.guard'
+import { AlreadyRegisteredException } from './exceptions/already-registered.exception'
 
 @Controller('ctype')
 export class CTypesController {
@@ -45,13 +46,22 @@ export class CTypesController {
 
   @Post()
   public async register(@Body() cTypeInput: CType) {
-    return this.verifyCType(cTypeInput).then(verified => {
+    return this.verifyCType(cTypeInput).then(async verified => {
       if (verified) {
         console.log(
           `All valid => registering cType ` +
             JSON.stringify(cTypeInput.cType, null, 4)
         )
-        this.cTypesService.register(cTypeInput)
+        try {
+        await this.cTypesService.register(cTypeInput)
+        } 
+        catch(error){
+          if (error.message === `CType with Hash: ${cTypeInput.cType.hash} already registered`){
+            console.log(`The CType with hash: ${cTypeInput.cType.hash} already exists in this DB!`)
+            throw new AlreadyRegisteredException()
+          }
+          else throw error
+        }
       } else {
         throw new CTypeNotOnChainException()
       }
