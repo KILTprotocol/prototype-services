@@ -19,8 +19,8 @@ import {
   FaucetDropInvalidAddressException,
 } from './exceptions'
 
-const KILT_MICRO_COIN: number = 1_000_000
-const DEFAULT_TOKEN_AMOUNT: number = 500 * KILT_MICRO_COIN
+const KILT_FEMTO_COIN: number = 1_000_000_000_000_000
+const DEFAULT_TOKEN_AMOUNT: number = 500 * KILT_FEMTO_COIN
 
 @Controller('faucet')
 export class FaucetController {
