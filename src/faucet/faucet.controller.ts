@@ -19,8 +19,8 @@ import {
   FaucetDropInvalidAddressException,
 } from './exceptions'
 
-const KILT_FEMTO_COIN: number = 1_000_000_000_000_000
-const DEFAULT_TOKEN_AMOUNT: number = 500 * KILT_FEMTO_COIN
+const KILT_FEMTO_COIN = '1000000000000000'
+const DEFAULT_TOKEN_AMOUNT = 500
 
 @Controller('faucet')
 export class FaucetController {
@@ -71,7 +71,7 @@ export class FaucetController {
       const status: SubmittableResult = await Balance.makeTransfer(
         faucetAccount,
         address,
-        new BN(DEFAULT_TOKEN_AMOUNT)
+        new BN(KILT_FEMTO_COIN).muln(DEFAULT_TOKEN_AMOUNT)
       )
       return Promise.resolve(status.isFinalized)
     } catch (e) {
