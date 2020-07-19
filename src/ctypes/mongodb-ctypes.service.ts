@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import Optional from 'typescript-optional'
-import { AlreadyRegisteredException } from './exceptions/already-registered.exception'
 import { CType, CTypeDB, CTypeService } from './interfaces/ctype.interfaces'
 
 @Injectable()
@@ -12,10 +11,10 @@ export class MongoDbCTypesService implements CTypeService {
     @InjectModel('CType') private readonly cTypeDBModel: Model<CTypeDB>
   ) {}
 
-  public async register(cType: CType): Promise<void> {
+  public async register(cType: CType): Promise<boolean> {
     const value = await this.findByHash(cType.cType.hash)
     if (value.isPresent) {
-      throw new Error(`CType with Hash: ${cType.cType.hash} already registered`)
+      return false
     }
     const createdCType = new this.cTypeDBModel({
       metaData: JSON.stringify(cType.metaData),
@@ -23,6 +22,7 @@ export class MongoDbCTypesService implements CTypeService {
       hash: cType.cType.hash,
     } as CTypeDB)
     await createdCType.save()
+    return true
   }
 
   public async findByHash(hash: ICType['hash']): Promise<Optional<CType>> {
