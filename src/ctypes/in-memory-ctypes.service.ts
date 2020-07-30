@@ -18,12 +18,13 @@ export class InMemoryCTypesService implements CTypeService {
     return Promise.resolve(ctypes)
   }
 
-  public async register(cType: CType): Promise<void> {
+  public async register(cType: CType): Promise<boolean> {
     const found = await this.findByHash(cType.cType.hash)
     if (found.isPresent) {
-      throw new AlreadyRegisteredException()
+      return false
     } else {
       this.registration.set(cType.cType.hash, cType)
+      return true
     }
   }
 
