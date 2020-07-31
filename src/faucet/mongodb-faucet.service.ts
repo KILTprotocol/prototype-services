@@ -80,4 +80,8 @@ export class MongoDbFaucetService implements FaucetService {
     const updatedFaucetDrop = new this.faucetDropDBModel(drop)
     await updatedFaucetDrop.save()
   }
+
+  public async reset(): Promise<void> {
+    await this.faucetDropDBModel.deleteMany({}).exec()
+  }
 }

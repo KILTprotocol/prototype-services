@@ -21,4 +21,6 @@ export declare interface FaucetService {
   ): Promise<FaucetDrop>
 
   updateOnTransactionFailure(drop: FaucetDrop): Promise<void>
+
+  reset(): Promise<void>
 }
