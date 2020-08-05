@@ -14,7 +14,7 @@ export interface CTypeDB extends Document {
 }
 
 export declare interface CTypeService {
-  register(cType: CType): Promise<void>
+  register(cType: CType): Promise<boolean>
   findByHash(hash: ICType['hash']): Promise<Optional<CType>>
   findAll(): Promise<CType[]>
   removeAll(): void

@@ -104,18 +104,13 @@ $ yarn test:cov
 
 ## Running services in docker locally
 
-Make sure you have an active AWS profile (eg. \$AWS_PROFILE pointing to the kilt-profile).
-Login to the ECS Registry:
-
-```
-$(aws ecr get-login --no-include-email --region eu-central-1)
-```
-
 Start MongoDB and services with `docker-compose`:
 
 ```
 docker-compose up
 ```
+This will build the services image locally when first used. 
+Use `docker-compose up --build` to rebuild if necessary.
 
 The services backend then starts, connects to the MongoDB and waits on port 3000:
 

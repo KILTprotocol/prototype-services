@@ -1,4 +1,4 @@
-import { Balance, Identity, TxStatus } from '@kiltprotocol/sdk-js'
+import { Balance, Identity, SubmittableResult } from '@kiltprotocol/sdk-js'
 import {
   Controller,
   Inject,
@@ -19,8 +19,8 @@ import {
   FaucetDropInvalidAddressException,
 } from './exceptions'
 
-const KILT_MICRO_COIN: number = 1_000_000
-const DEFAULT_TOKEN_AMOUNT: number = 500 * KILT_MICRO_COIN
+const KILT_FEMTO_COIN = '1000000000000000'
+const DEFAULT_TOKEN_AMOUNT = 500
 
 @Controller('faucet')
 export class FaucetController {
@@ -65,15 +65,15 @@ export class FaucetController {
   private async transferTokens(address: string): Promise<boolean> {
     try {
       console.log(`Transfer tokens from faucet to ${address}`)
-      const faucetAccount: Identity = Identity.buildFromSeed(
+      const faucetAccount: Identity = await Identity.buildFromSeed(
         hexToU8a(process.env.FAUCET_ACCOUNT)
       )
-      const status: TxStatus = await Balance.makeTransfer(
+      const status: SubmittableResult = await Balance.makeTransfer(
         faucetAccount,
         address,
-        new BN(DEFAULT_TOKEN_AMOUNT)
+        new BN(KILT_FEMTO_COIN).muln(DEFAULT_TOKEN_AMOUNT)
       )
-      return Promise.resolve(status.type === 'Finalized')
+      return Promise.resolve(status.isFinalized)
     } catch (e) {
       console.error(e)
       return Promise.resolve(false)

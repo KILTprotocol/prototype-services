@@ -1,23 +1,22 @@
-version: "3"
+### docker-compose network for fast and easy development and testing of prototype services ###
+#
+# The default `docker-compose up` spins up a mongo database and a local devnet
+# to which the services connect. The protype-services will build (`yarn start`)
+# and launch. Once you see `Nest application successfully started` in your console,
+# you can connect to the services on <http://localhost:3000/>.
+# To map to a different port, start with `docker-compose run -p 1234:3001 services`
+# instead (in this example, you could access the services on <http://localhost:1234/>).
+# You can also build and run the services directly on your machine but still connect
+# to containerized database and mashnet-node:
+# ```
+# docker-compose up mongodb mashnet-node
+# yarn install
+# yarn start
+# ```
+# In any scenario, use `docker-compose down -v` for teardown, which removes containers
+# and purges the data volumes, resetting all state.
 
-#
-# HOWTO:
-#  
-# 1) Log in to ECS registry (make sure you have an active AWS profile)
-#    $(aws ecr get-login --no-include-email --region eu-central-1)
-# 2) Startup both components using docker-compose:
-#    docker-compose up
-#
-# MongoDB is now accessible at localhost:27017
-# Services are now accessible at http://localhost:3000
-#
-# To stop:
-#   docker-compose down
-#
-# You can also start a single service (e.g. only the MongoDB):
-#   docker-compose up mongodb
-
-
+version: '3'
 
 services:
   mongodb:
@@ -28,13 +27,24 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=secret
     ports:
       - 27017:27017
+  mashnet-node:
+    image: kiltprotocol/mashnet-node:develop
+    ports:
+      - 9944:9944
+    command: ./target/release/mashnet-node --dev --ws-port 9944 --ws-external
   services:
-    image: 348099934012.dkr.ecr.eu-central-1.amazonaws.com/kilt/prototype-services:latest
+    build: .
+    image: local/prototype-services
     environment:
-      - NODE_ENV=docker-compose
       - MONGODB_HOST=mongodb
       - MONGODB_USER=mongoadmin
       - MONGODB_PASS=secret
-      - FAUCET_ACCOUNT=faucet
+      - BOOT_NODE_ADDRESS=ws://mashnet-node:9944
+    volumes:
+      - ./src:/app/src
+    command: yarn start
     ports:
       - 3000:3000
+    links:
+      - mongodb
+      - mashnet-node
