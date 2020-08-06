@@ -20,13 +20,43 @@ export class MongoDbMessagingService implements MessagingService {
   public async findBySenderAddress(
     senderAddress: IEncryptedMessage['senderAddress']
   ): Promise<IEncryptedMessage[]> {
-    return await this.messageModel.find({ senderAddress }).exec()
+    return (await this.messageModel.find({ senderAddress }).exec()).map(
+      (singleDBMessage: MessageDB) => {
+        return {
+          message: singleDBMessage.message,
+          nonce: singleDBMessage.nonce,
+          createdAt: singleDBMessage.createdAt,
+          hash: singleDBMessage.hash,
+          signature: singleDBMessage.signature,
+          receiverAddress: singleDBMessage.receiverAddress,
+          senderAddress: singleDBMessage.senderAddress,
+          senderBoxPublicKey: singleDBMessage.senderBoxPublicKey,
+          messageId: singleDBMessage.messageId,
+          receivedAt: singleDBMessage.receivedAt,
+        } as IEncryptedMessage
+      }
+    ) as IEncryptedMessage[]
   }
 
   public async findByReceiverAddress(
     receiverAddress: IEncryptedMessage['receiverAddress']
   ): Promise<IEncryptedMessage[]> {
-    return await this.messageModel.find({ receiverAddress }).exec()
+    return (await this.messageModel.find({ receiverAddress }).exec()).map(
+      (singleDBMessage: MessageDB) => {
+        return {
+          message: singleDBMessage.message,
+          nonce: singleDBMessage.nonce,
+          createdAt: singleDBMessage.createdAt,
+          hash: singleDBMessage.hash,
+          signature: singleDBMessage.signature,
+          receiverAddress: singleDBMessage.receiverAddress,
+          senderAddress: singleDBMessage.senderAddress,
+          senderBoxPublicKey: singleDBMessage.senderBoxPublicKey,
+          messageId: singleDBMessage.messageId,
+          receivedAt: singleDBMessage.receivedAt,
+        } as IEncryptedMessage
+      }
+    ) as IEncryptedMessage[]
   }
 
   public async remove(
