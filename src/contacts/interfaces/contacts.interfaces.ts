@@ -14,8 +14,8 @@ export interface Contact {
 export interface ContactDB extends Document, Contact {}
 
 export declare interface ContactsService {
-  add(contact: Contact): void
+  add(contact: Contact): Promise<void>
   list(): Promise<Contact[]>
   findByAddress(address: PublicIdentity['address']): Promise<Optional<Contact>>
-  removeAll(): void
+  removeAll(): Promise<void>
 }
