@@ -41,7 +41,7 @@ export class CTypesController {
   @Delete()
   public async removeAll() {
     console.log('Remove all CTypes')
-    this.cTypesService.removeAll()
+    await this.cTypesService.removeAll()
   }
 
   @Post()
