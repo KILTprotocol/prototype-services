@@ -2,20 +2,21 @@ import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
 import { Identity, Balance } from '@kiltprotocol/sdk-js'
+import BN from 'bn.js'
 import { FaucetService } from '../src/faucet/interfaces/faucet.interfaces'
 import { MockMongooseModule, mongodbInstance } from './MockMongooseModule'
 import { FaucetModule } from '../src/faucet/faucet.module'
 
 jest.mock('@kiltprotocol/sdk-js/build/balance/Balance.chain', () => {
   return {
-    makeTransfer: () => Promise.resolve({ isFinalized: true }),
+    makeTransfer: jest.fn(() => Promise.resolve({ isFinalized: true })),
   }
 })
 
 const FAUCET_SEED =
   '0xcdfd6024d2b0eba27d54cc92a44cd9a627c69b2dbda15ed7e58085425119ae03'
 
-describe('faucet (e2e)', () => {
+describe('faucet endpoint (e2e)', () => {
   let app: INestApplication
   let idAlice: Identity
   let faucetService: FaucetService
@@ -38,10 +39,20 @@ describe('faucet (e2e)', () => {
     await faucetService.reset()
   })
 
-  it('faucet endpoint rejects invalid requests', async () => {
+  it('rejects malformed requests', async () => {
     return request(app.getHttpServer())
       .post(`/faucet/drop`)
       .send(idAlice.getBoxPublicKey())
+      .expect(400)
+  })
+
+  xit('handles invalid destination address / public key', async () => {
+    require('@kiltprotocol/sdk-js/build/balance/Balance.chain').makeTransfer.mockRejectedValueOnce(
+      'transfer destination invalid'
+    )
+    await request(app.getHttpServer())
+      .post(`/faucet/drop`)
+      .send('pubkey=0x1234')
       .expect(400)
   })
 
@@ -55,7 +66,7 @@ describe('faucet (e2e)', () => {
     expect(spy).toHaveBeenCalledWith(
       expect.objectContaining({ seedAsHex: FAUCET_SEED }),
       idAlice.getBoxPublicKey(),
-      expect.anything()
+      expect.any(BN)
     )
   })
 
