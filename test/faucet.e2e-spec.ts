@@ -2,12 +2,10 @@ import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
 import { Identity, Balance } from '@kiltprotocol/sdk-js'
-import { AppModule } from '../src/app.module'
 import { FaucetService } from '../src/faucet/interfaces/faucet.interfaces'
+import { MockMongooseModule, mongodbInstance } from './MockMongooseModule'
+import { FaucetModule } from '../src/faucet/faucet.module'
 
-jest.mock(
-  '@kiltprotocol/sdk-js/build/blockchainApiConnection/BlockchainApiConnection'
-)
 jest.mock('@kiltprotocol/sdk-js/build/balance/Balance.chain', () => {
   return {
     makeTransfer: () => Promise.resolve({ isFinalized: true }),
@@ -24,7 +22,7 @@ describe('faucet (e2e)', () => {
 
   beforeAll(async () => {
     const moduleFixture = await Test.createTestingModule({
-      imports: [AppModule],
+      imports: [FaucetModule, MockMongooseModule],
     }).compile()
 
     app = moduleFixture.createNestApplication()
@@ -74,6 +72,6 @@ describe('faucet (e2e)', () => {
   })
 
   afterAll(async () => {
-    await app.close()
+    await Promise.all([app.close(), mongodbInstance.stop()])
   })
 })

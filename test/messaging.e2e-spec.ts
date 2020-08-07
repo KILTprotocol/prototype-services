@@ -7,12 +7,9 @@ import {
   IEncryptedMessage,
 } from '@kiltprotocol/sdk-js'
 import supertest from 'supertest'
-import { AppModule } from '../src/app.module'
 import { MessagingService } from '../src/messaging/interfaces/messaging.interfaces'
-
-jest.mock(
-  '@kiltprotocol/sdk-js/build/blockchainApiConnection/BlockchainApiConnection'
-)
+import { MessagingModule } from '../src/messaging/messaging.module'
+import { MockMongooseModule, mongodbInstance } from './MockMongooseModule'
 
 function assertErrorMessageIs(
   message: string,
@@ -30,7 +27,7 @@ let messagingService: MessagingService
 
 beforeAll(async () => {
   const moduleFixture = await Test.createTestingModule({
-    imports: [AppModule],
+    imports: [MessagingModule, MockMongooseModule],
   }).compile()
 
   app = moduleFixture.createNestApplication()
@@ -351,7 +348,7 @@ describe('messaging (e2e)', () => {
     })
   })
 
-  it.only('send -> receive -> decrypt -> delete', async () => {
+  it('send -> receive -> decrypt -> delete', async () => {
     await messagingService.removeAll()
     const encrypted = message.encrypt()
     const messageId: string = await request
@@ -379,5 +376,5 @@ describe('messaging (e2e)', () => {
 })
 
 afterAll(async () => {
-  await app.close()
+  await Promise.all([app.close(), mongodbInstance.stop()])
 })

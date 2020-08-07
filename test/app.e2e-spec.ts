@@ -3,6 +3,7 @@ import { Test } from '@nestjs/testing'
 import request from 'supertest'
 import { AppModule } from '../src/app.module'
 import { Identity } from '@kiltprotocol/sdk-js'
+import { MongoMemoryServer } from 'mongodb-memory-server'
 
 jest.mock(
   '@kiltprotocol/sdk-js/build/blockchainApiConnection/BlockchainApiConnection'
@@ -10,8 +11,12 @@ jest.mock(
 
 describe('AppController availability (e2e)', () => {
   let app: INestApplication
+  const mongodbInstance = new MongoMemoryServer({
+    instance: { dbName: 'registry', ip: 'localhost', port: 27017, auth:false},
+  })
 
   beforeAll(async () => {
+    await mongodbInstance.ensureInstance()
     const moduleFixture = await Test.createTestingModule({
       imports: [AppModule],
     }).compile()
@@ -73,6 +78,6 @@ describe('AppController availability (e2e)', () => {
   })
 
   afterAll(async () => {
-    await app.close()
+    await Promise.all([app.close(), mongodbInstance.stop()])
   })
 })
