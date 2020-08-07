@@ -5,7 +5,7 @@ import { IEncryptedMessage } from '@kiltprotocol/sdk-js'
 export interface MessageDB extends Document, IEncryptedMessage {}
 
 export declare interface MessagingService {
-  add(message: IEncryptedMessage): void
+  add(message: IEncryptedMessage): Promise<void>
 
   findBySenderAddress(
     senderAddress: Contact['publicIdentity']['address']
@@ -15,7 +15,7 @@ export declare interface MessagingService {
     receiverAddress: Contact['publicIdentity']['address']
   ): Promise<IEncryptedMessage[]>
 
-  remove(messageId: string): void
+  remove(messageId: string): Promise<void>
 
-  removeAll(): void
+  removeAll(): Promise<void>
 }
