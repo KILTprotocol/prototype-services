@@ -33,7 +33,7 @@ describe('faucet endpoint (e2e)', () => {
     idAlice = await Identity.buildFromURI('//Alice')
 
     process.env['FAUCET_ACCOUNT'] = FAUCET_SEED
-  })
+  }, 30000)
 
   beforeEach(async () => {
     await faucetService.reset()

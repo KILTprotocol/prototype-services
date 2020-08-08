@@ -85,7 +85,7 @@ describe('ctypes endpoint (e2e)', () => {
 
     ctypeService = app.get('CTypeService')
     idAlice = await sdk.Identity.buildFromURI('//Alice')
-  })
+  }, 30000)
 
   beforeEach(async () => {
     await ctypeService.removeAll()

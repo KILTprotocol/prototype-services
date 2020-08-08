@@ -55,7 +55,7 @@ jobs:
     - name: yarn install, lint, test and build
       run: |
         yarn upgrade --scope @kiltprotocol --latest
-        yarn test:e2e
+        yarn test:e2e --forceExit
       env:
         CI: true
         NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

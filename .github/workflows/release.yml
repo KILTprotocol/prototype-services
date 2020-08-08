@@ -22,7 +22,7 @@ jobs:
           yarn install --frozen-lockfile
           yarn lint
           yarn test
-          yarn test:e2e
+          yarn test:e2e --forceExit
   buildECR:
     needs: test
     

@@ -35,7 +35,7 @@ beforeAll(async () => {
 
   messagingService = app.get('MessagingService')
   request = supertest(app.getHttpServer())
-})
+}, 30000)
 
 describe('messaging (e2e)', () => {
   let sender: Identity

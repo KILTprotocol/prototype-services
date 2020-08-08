@@ -12,7 +12,7 @@ jest.mock(
 describe('AppController availability (e2e)', () => {
   let app: INestApplication
   const mongodbInstance = new MongoMemoryServer({
-    instance: { dbName: 'registry', ip: 'localhost', port: 27017, auth:false},
+    instance: { dbName: 'registry', ip: 'localhost', port: 27017, auth: false },
   })
 
   beforeAll(async () => {
@@ -23,7 +23,7 @@ describe('AppController availability (e2e)', () => {
 
     app = moduleFixture.createNestApplication()
     await app.init()
-  })
+  }, 30000)
 
   it('root responds with 404 (GET)', () => {
     return request(app.getHttpServer())
