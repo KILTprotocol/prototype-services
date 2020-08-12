@@ -237,6 +237,7 @@ describe('messaging (e2e)', () => {
       expect(inbox).toHaveLength(0)
     })
 
+    // TODO, see KILTprotocol/ticket#685
     xit('rejects delete requests for unknown id', async () => {
       await request.delete('/messaging/idx').expect(400)
     })

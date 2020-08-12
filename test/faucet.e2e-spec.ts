@@ -46,6 +46,7 @@ describe('faucet endpoint (e2e)', () => {
       .expect(400)
   })
 
+  // TODO, see KILTprotocol/ticket#686
   xit('handles invalid destination address / public key', async () => {
     require('@kiltprotocol/sdk-js/build/balance/Balance.chain').makeTransfer.mockRejectedValueOnce(
       'transfer destination invalid'

@@ -200,7 +200,7 @@ describe('contacts endpoint (e2e)', () => {
 
       beforeAll(() => {
         didAlice = sdk.Did.fromIdentity(idAlice).createDefaultDidDocument()
-        // TODO: I would expect this to work, but it doesn't:
+        // TODO (KILTprotocol/ticket#687): I would expect this to work, but it doesn't:
         // signature = sdk.Did.signDidDocument(didAlice, idAlice).signature
         signature = idAlice.signStr(
           sdk.Crypto.hashStr(JSON.stringify(didAlice))
