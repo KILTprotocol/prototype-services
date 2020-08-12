@@ -42,7 +42,7 @@ export class ContactsController {
         throw new BadRequestException('bad signature for hash')
       }
     }
-    this.contactService.add(contact)
+    await this.contactService.add(contact)
   }
 
   @Get()
