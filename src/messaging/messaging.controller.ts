@@ -13,7 +13,7 @@ import { MessagingService } from './interfaces/messaging.interfaces'
 import { IEncryptedMessage } from '@kiltprotocol/sdk-js'
 import { AuthGuard } from '../auth/auth.guard'
 
-function uuidv4() {
+export const uuidv4 = () => {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
     const r = (Math.random() * 16) | 0
     const v = c === 'x' ? r : (r & 0x3) | 0x8
@@ -29,30 +29,36 @@ export class MessagingController {
   ) {}
 
   @Delete(':id')
-  public async removeMessage(@Param('id') id) {
+  public async removeMessage(@Param('id') id): Promise<void> {
     console.log(`Remove message for id ${id}`)
     await this.messagingService.remove(id)
   }
 
   @UseGuards(AuthGuard)
   @Delete()
-  public async removeAll() {
+  public async removeAll(): Promise<void> {
     console.log('Remove all messages')
     await this.messagingService.removeAll()
   }
 
   @Get('sent/:senderAddress')
-  public async listSent(@Param('senderAddress') senderAddress) {
+  public async listSent(
+    @Param('senderAddress') senderAddress
+  ): Promise<IEncryptedMessage[]> {
     return this.messagingService.findBySenderAddress(senderAddress)
   }
 
   @Get('inbox/:receiverAddress')
-  public async listInbox(@Param('receiverAddress') receiverAddress) {
+  public async listInbox(
+    @Param('receiverAddress') receiverAddress
+  ): Promise<IEncryptedMessage[]> {
     return this.messagingService.findByReceiverAddress(receiverAddress)
   }
 
   @Post()
-  public async sendMessage(@Body() message: IEncryptedMessage) {
+  public async sendMessage(
+    @Body() message: IEncryptedMessage
+  ): Promise<IEncryptedMessage> {
     if (!message.senderAddress) {
       throw new BadRequestException('no sender address')
     } else if (!message.receiverAddress) {

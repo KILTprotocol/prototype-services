@@ -26,8 +26,10 @@ export class MongoDbCTypesService implements CTypeService {
   }
 
   public async findByHash(hash: ICType['hash']): Promise<Optional<CType>> {
-    const result = await this._findByHash(hash)
-    return result.map((cTypeDB: CTypeDB): CType => convertToCType(cTypeDB))
+    const result = await this.cTypeDBModel.findOne({ hash }).exec()
+    return Optional.ofNullable<CTypeDB>(result).map(
+      (cTypeDB: CTypeDB): CType => convertToCType(cTypeDB)
+    )
   }
 
   public async findAll(): Promise<CType[]> {
@@ -38,11 +40,6 @@ export class MongoDbCTypesService implements CTypeService {
   public async removeAll(): Promise<void> {
     await this.cTypeDBModel.deleteMany({}).exec()
   }
-
-  private async _findByHash(hash: ICType['hash']): Promise<Optional<CTypeDB>> {
-    const result: CTypeDB = await this.cTypeDBModel.findOne({ hash }).exec()
-    return Optional.ofNullable(result)
-  }
 }
 
 function convertToCType(cTypeDB: CTypeDB): CType {
@@ -50,5 +47,5 @@ function convertToCType(cTypeDB: CTypeDB): CType {
   return {
     metaData: JSON.parse(metaData),
     cType: JSON.parse(cType),
-  }
+  } as CType
 }
