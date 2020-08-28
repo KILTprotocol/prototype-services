@@ -29,10 +29,7 @@ export class FaucetController {
   ) {}
 
   @Post('drop')
-  public async drop(
-    @Body('pubkey') pubKey: string,
-    @Req() request: Request
-  ) {
+  public async drop(@Body('pubkey') pubKey: string, @Req() request: Request) {
     if (!pubKey) {
       throw new BadRequestException('no public key')
     }
