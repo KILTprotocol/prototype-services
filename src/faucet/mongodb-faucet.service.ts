@@ -26,7 +26,6 @@ export class MongoDbFaucetService implements FaucetService {
   ) {}
 
   public async drop(
-    email: string,
     publickey: string,
     ip: string,
     amount: number
@@ -61,7 +60,6 @@ export class MongoDbFaucetService implements FaucetService {
 
     const result: FaucetDrop = {
       amount,
-      email,
       publickey,
       requestip: ip,
       dropped: error === NO_ERROR,
@@ -71,7 +69,7 @@ export class MongoDbFaucetService implements FaucetService {
 
     const createdFaucetDrop = new this.faucetDropDBModel(result)
     await createdFaucetDrop.save()
-    return Promise.resolve(createdFaucetDrop)
+    return createdFaucetDrop as FaucetDrop
   }
 
   public async updateOnTransactionFailure(drop: FaucetDrop): Promise<void> {
