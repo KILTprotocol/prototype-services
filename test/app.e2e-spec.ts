@@ -11,6 +11,10 @@ jest.mock(
 
 describe('AppController availability (e2e)', () => {
   let app: INestApplication
+  // MyMongooseModule by default expects a db named registry on port 27017
+  // You cannot register multiple db's under the same name! 
+  // Using this setup in more than one test file would break concurrent tests.
+  // To avoid this, build a test module using MockMongooseModule instead of MyMongooseModule.
   const mongodbInstance = new MongoMemoryServer({
     instance: { dbName: 'registry', ip: 'localhost', port: 27017, auth: false },
   })
