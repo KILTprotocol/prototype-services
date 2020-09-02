@@ -143,8 +143,8 @@ describe('Contact Module', () => {
           },
         }
         expect(await contactsController.add(testContact)).toEqual(undefined)
-        expect(mockedHashStr).toHaveBeenCalledTimes(0)
-        expect(mockedVerify).toHaveBeenCalledTimes(0)
+        expect(mockedHashStr).not.toHaveBeenCalled()
+        expect(mockedVerify).not.toHaveBeenCalled()
         expect(addSpy).toHaveBeenCalledTimes(1)
         expect(addSpy).toHaveBeenCalledWith(testContact)
         addSpy.mockClear()
