@@ -226,7 +226,7 @@ describe('CType Module', () => {
   class CTypeModel {
     public static find = jest
       .fn()
-      .mockReturnValue({ exec: () => [] as CTypeDB[] })
+      .mockReturnValue({ exec: async () => [] as CTypeDB[] })
     public static findOne = jest
       .fn()
       .mockReturnValue({ exec: () => Optional.ofNullable(null) })
