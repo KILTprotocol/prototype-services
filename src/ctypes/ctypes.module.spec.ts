@@ -229,7 +229,7 @@ describe('CType Module', () => {
       .mockReturnValue({ exec: async () => [] as CTypeDB[] })
     public static findOne = jest
       .fn()
-      .mockReturnValue({ exec: () => Optional.ofNullable(null) })
+      .mockReturnValue({ exec: async () => Optional.ofNullable(null) })
     public static deleteMany = jest.fn().mockReturnValue({
       exec: () => Promise.resolve<void>(undefined),
     })
