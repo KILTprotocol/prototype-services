@@ -34,14 +34,14 @@ export class MongoDbFaucetService implements FaucetService {
     const dropsPerIdentity: number = await this.faucetDropDBModel
       .countDocuments({
         publickey,
-        error: 0,
+        error: NO_ERROR,
       })
       .exec()
     if (dropsPerIdentity >= MAX_REQUESTS_PER_ID) {
       error = ERROR_MAX_REQUESTS_PER_ID
     } else {
       const dropsPerIP: number = await this.faucetDropDBModel
-        .countDocuments({ requestip: ip, error: 0 })
+        .countDocuments({ requestip: ip, error: NO_ERROR })
         .exec()
       if (dropsPerIP >= MAX_IDENTITIES_PER_IP) {
         error = ERROR_MAX_REQUESTS_PER_IP
@@ -49,7 +49,7 @@ export class MongoDbFaucetService implements FaucetService {
         const dropsPerDay: number = await this.faucetDropDBModel
           .countDocuments({
             created: { $gt: Date.now() - ONE_DAY },
-            error: 0,
+            error: NO_ERROR,
           })
           .exec()
         if (dropsPerDay >= MAX_REQUESTS_PER_DAY) {

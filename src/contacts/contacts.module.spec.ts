@@ -11,7 +11,6 @@ import {
   ContactDB,
   Contact,
 } from './interfaces/contacts.interfaces'
-import { PublicIdentity } from '@kiltprotocol/sdk-js'
 import { MongoDbMContactsService } from './mongodb-contacts.service'
 import Optional from 'typescript-optional'
 
