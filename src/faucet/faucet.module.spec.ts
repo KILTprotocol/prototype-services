@@ -48,7 +48,7 @@ describe('Faucet Module', () => {
   const KILT_FEMTO_COIN = '1000000000000000'
   const DEFAULT_TOKEN_AMOUNT = 500
 
-  describe('Controller', async () => {
+  describe('Controller', () => {
     let faucetController: FaucetController
     let faucetService: FaucetService
 
@@ -82,7 +82,7 @@ describe('Faucet Module', () => {
       faucetService = moduleRef.get('FaucetService')
     })
     afterEach(() => jest.clearAllMocks())
-    describe('drop', async () => {
+    describe('drop', () => {
       it('checks address and eligibility then tries to transfer tokens', async () => {
         const dropSpy = jest.spyOn(fakeFaucetService, 'drop')
         const buildSpy = jest
@@ -168,7 +168,7 @@ describe('Faucet Module', () => {
         )
       })
     })
-    describe('transferTokens', async () => {
+    describe('transferTokens', () => {
       it('builds faucet Id and tries to transfer default amount to the given address', async () => {
         const buildSpy = jest
           .spyOn(Identity, 'buildFromSeed')
@@ -244,7 +244,7 @@ describe('Faucet Module', () => {
     }
   }
 
-  describe('Service', async () => {
+  describe('Service', () => {
     let faucetService: FaucetService
     let model: FaucetDropModel
     beforeEach(async () => {
@@ -279,7 +279,7 @@ describe('Faucet Module', () => {
         )
       })
     })
-    describe('drop', async () => {
+    describe('drop', () => {
       it('checks eligibility of drop for address and ip and per day', async () => {
         const saveSpy = jest.spyOn(model, 'save')
         const nowSpy = jest

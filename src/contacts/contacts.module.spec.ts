@@ -21,7 +21,7 @@ jest.mock('@kiltprotocol/sdk-js/build/crypto/Crypto', () => {
   }
 })
 
-describe('Contact Module', async () => {
+describe('Contact Module', () => {
   const testContact: Contact = {
     metaData: {
       name: 'Test',
@@ -81,7 +81,7 @@ describe('Contact Module', async () => {
   const badSigContact: Contact = { ...contactWithDid, signature: '0x1' }
 
   const address = testContact.publicIdentity.address
-  describe('Controller', async () => {
+  describe('Controller', () => {
     let contactsController: ContactsController
     let contactsService: ContactsService
 
@@ -121,7 +121,7 @@ describe('Contact Module', async () => {
       jest.clearAllMocks()
     })
 
-    describe('add', async () => {
+    describe('add', () => {
       it('calls contactService.add on valid Contact without Did', async () => {
         const addSpy = jest.spyOn(contactsService, 'add')
         const noAddressContact: Contact = {
@@ -187,18 +187,18 @@ describe('Contact Module', async () => {
         expect(mockedVerify).toHaveBeenCalledTimes(2)
       })
     })
-    describe('list', async () => {
+    describe('list', () => {
       it('returns all registered Contacts', async () => {
         const serviceListSpy = jest
           .spyOn(contactsService, 'list')
           .mockResolvedValue(Promise.resolve<Contact[]>([testContact]))
-        expect(contactsController.list()).resolves.toEqual([testContact])
+        await expect(contactsController.list()).resolves.toEqual([testContact])
         expect(serviceListSpy).toHaveBeenCalledTimes(1)
         expect(serviceListSpy).toHaveBeenCalledWith()
         serviceListSpy.mockRestore()
       })
     })
-    describe('findByKey', async () => {
+    describe('findByKey', () => {
       it('gets the Contact for the given address', async () => {
         const findByAddressSpy = jest
           .spyOn(contactsService, 'findByAddress')
@@ -213,7 +213,7 @@ describe('Contact Module', async () => {
         findByAddressSpy.mockRestore()
       })
     })
-    describe('removeAll', async () => {
+    describe('removeAll', () => {
       it('calls contactService.removeAll()', async () => {
         contactsController.removeAll()
         expect(contactsService.removeAll).toHaveBeenCalledTimes(1)
@@ -231,9 +231,9 @@ describe('Contact Module', async () => {
         findByAddressSpy.mockReturnValue(
           Promise.resolve(Optional.ofNullable(testContact))
         )
-        expect(contactsController.getDidDocument(address)).rejects.toThrow(
-          NotFoundException
-        )
+        await expect(
+          contactsController.getDidDocument(address)
+        ).rejects.toThrow(NotFoundException)
         expect(findByAddressSpy).toHaveBeenCalledWith(address)
         findByAddressSpy.mockRestore()
       })
@@ -259,7 +259,7 @@ describe('Contact Module', async () => {
       return Object.assign(this, data as ContactDB)
     }
   }
-  describe('Contacts Service', async () => {
+  describe('Contacts Service', () => {
     let contactsService: ContactsService
 
     beforeEach(async () => {
@@ -280,7 +280,7 @@ describe('Contact Module', async () => {
     afterEach(() => {
       jest.clearAllMocks()
     })
-    describe('add', async () => {
+    describe('add', () => {
       it('creates a Contact and saves it', async () => {
         const saveSpy = jest.spyOn(contactsService['contactModel'], 'save')
         const findOneSpy = jest.spyOn(
@@ -306,7 +306,7 @@ describe('Contact Module', async () => {
         expect(saveSpy).toHaveBeenCalledTimes(1)
       })
     })
-    describe('findByAddress', async () => {
+    describe('findByAddress', () => {
       it('queries database and converts match', async () => {
         const findOneSpy = jest
           .spyOn(contactsService['contactModel'], 'findOne')
@@ -332,7 +332,7 @@ describe('Contact Module', async () => {
         findOneSpy.mockRestore()
       })
     })
-    describe('list', async () => {
+    describe('list', () => {
       it('queries database with inclusive parameter and converts matches', async () => {
         const findSpy = jest
           .spyOn(contactsService['contactModel'], 'find')
@@ -353,7 +353,7 @@ describe('Contact Module', async () => {
         findSpy.mockRestore()
       })
     })
-    describe('removeAll', async () => {
+    describe('removeAll', () => {
       it('calls deleteMany with inclusive parameter', async () => {
         const deleteManySpy = jest.spyOn(
           contactsService['contactModel'],

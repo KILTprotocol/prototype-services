@@ -21,7 +21,7 @@ jest.mock(
   '@kiltprotocol/sdk-js/build/blockchainApiConnection/BlockchainApiConnection'
 )
 
-describe('CType Module', async () => {
+describe('CType Module', () => {
   const SDKCTypeA: SDK.CType = SDK.CType.fromSchema({
     $schema: 'http://kilt-protocol.org/draft-01/ctype#',
     properties: {
@@ -130,19 +130,16 @@ describe('CType Module', async () => {
         mockedGetOwner.mockResolvedValue(aliceAddress)
         const testCType = { ...SDKCTypeA, owner: aliceAddress }
         const serviceCType: CType = { cType: testCType, metaData: metaDataA }
-        expect(() => {
-          const resultingOwner = ctypesController[
-            'verifyCTypeAndReturnChainOwner'
-          ](serviceCType)
-          expect(resultingOwner).resolves.toEqual(aliceAddress)
-        }).not.toThrow()
+        await expect(
+          ctypesController['verifyCTypeAndReturnChainOwner'](serviceCType)
+        ).resolves.toEqual(aliceAddress)
       })
       it('invalid CType', async () => {
         mockedGetOwner.mockResolvedValue(aliceAddress)
         const testCType = { ...SDKCTypeA, owner: aliceAddress, hash: '0x1' }
         const serviceCType: CType = { cType: testCType, metaData: metaDataA }
 
-        expect(
+        await expect(
           ctypesController['verifyCTypeAndReturnChainOwner'](serviceCType)
         ).rejects.toThrow(new InvalidCtypeDefinitionException())
       })
@@ -150,28 +147,25 @@ describe('CType Module', async () => {
         mockedGetOwner.mockResolvedValue(null)
         const testCType = { ...SDKCTypeA, owner: aliceAddress }
         const serviceCType: CType = { cType: testCType, metaData: metaDataA }
-        expect(() => {
-          const resultingOwner = ctypesController[
-            'verifyCTypeAndReturnChainOwner'
-          ](serviceCType)
-          expect(resultingOwner).resolves.toBeNull()
-        }).not.toThrow()
+        await expect(
+          ctypesController['verifyCTypeAndReturnChainOwner'](serviceCType)
+        ).resolves.toBeNull()
       })
     })
-    describe('register', async () => {
+    describe('register', () => {
       it('accepts unregistered ctypes', async () => {
         mockedGetOwner.mockResolvedValue(aliceAddress)
         const testCType = { ...SDKCTypeA, owner: aliceAddress }
         const serviceCType: CType = { cType: testCType, metaData: metaDataA }
-        expect(() => {
-          ctypesController.register(serviceCType)
-        }).not.toThrow()
+        await expect(ctypesController.register(serviceCType)).resolves.toEqual(
+          undefined
+        )
       })
       it('rejects offchain ctypes', async () => {
         mockedGetOwner.mockResolvedValue(null)
         const testCType = { ...SDKCTypeA, owner: aliceAddress }
         const serviceCType: CType = { cType: testCType, metaData: metaDataA }
-        expect(ctypesController.register(serviceCType)).rejects.toThrow(
+        await expect(ctypesController.register(serviceCType)).rejects.toThrow(
           new CTypeNotOnChainException()
         )
       })
@@ -180,27 +174,27 @@ describe('CType Module', async () => {
         const testCType = { ...SDKCTypeA, owner: aliceAddress }
         const serviceCType: CType = { cType: testCType, metaData: metaDataA }
         ctypesService.register = jest.fn().mockResolvedValue(false)
-        expect(ctypesController.register(serviceCType)).rejects.toThrow(
+        await expect(ctypesController.register(serviceCType)).rejects.toThrow(
           new AlreadyRegisteredException()
         )
       })
     })
-    describe('removeAll', async () => {
+    describe('removeAll', () => {
       it('calls cTypesService.removeAll', async () => {
         ctypesController.removeAll()
         expect(ctypesService.removeAll).toHaveBeenCalledTimes(1)
       })
     })
-    describe('getByKey', async () => {
+    describe('getByKey', () => {
       it('resolves to registered CType', async () => {
         const testCType = { ...SDKCTypeA, owner: aliceAddress }
         const serviceCType: CType = { cType: testCType, metaData: metaDataA }
         ctypesService.findByHash = jest
           .fn()
           .mockResolvedValue(Optional.ofNullable<CType>(serviceCType))
-        expect(ctypesController.getByKey(SDKCTypeA.hash)).resolves.toEqual(
-          serviceCType
-        )
+        await expect(
+          ctypesController.getByKey(SDKCTypeA.hash)
+        ).resolves.toEqual(serviceCType)
       })
       it('throws NotFoundException', async () => {
         const testCType = { ...SDKCTypeA, owner: aliceAddress }
@@ -208,12 +202,12 @@ describe('CType Module', async () => {
         ctypesService.findByHash = jest
           .fn()
           .mockResolvedValue(Optional.ofNullable<CType>(null))
-        expect(ctypesController.getByKey(SDKCTypeA.hash)).rejects.toThrow(
+        await expect(ctypesController.getByKey(SDKCTypeA.hash)).rejects.toThrow(
           NotFoundException
         )
       })
     })
-    describe('getAll', async () => {
+    describe('getAll', () => {
       it('finds all CTypes from the cTypesService', async () => {
         const testCTypeA = { ...SDKCTypeA, owner: aliceAddress }
         const serviceCTypeA: CType = { cType: testCTypeA, metaData: metaDataA }
@@ -222,7 +216,7 @@ describe('CType Module', async () => {
         ctypesService.findAll = jest
           .fn()
           .mockResolvedValue([serviceCTypeA, serviceCTypeB])
-        expect(ctypesController.getAll()).resolves.toEqual([
+        await expect(ctypesController.getAll()).resolves.toEqual([
           serviceCTypeA,
           serviceCTypeB,
         ])
@@ -249,7 +243,7 @@ describe('CType Module', async () => {
     }
   }
 
-  describe('Service', async () => {
+  describe('Service', () => {
     let ctypesService: CTypeService
     let aliceAddress: string
 
@@ -274,7 +268,7 @@ describe('CType Module', async () => {
       ctypesService = moduleRef.get('CTypeService')
     })
 
-    describe('removeAll', async () => {
+    describe('removeAll', () => {
       it('calls cTypeDBModel.deleteMany with inclusive condition', async () => {
         const deleteManySpy = jest
           .spyOn(ctypesService['cTypeDBModel'], 'deleteMany')
@@ -291,7 +285,7 @@ describe('CType Module', async () => {
         deleteManySpy.mockRestore()
       })
     })
-    describe('findByHash', async () => {
+    describe('findByHash', () => {
       it('finds the registered CTypeDB for the given hash and returns it converted to CType', async () => {
         const SDKtestCTypeA = { ...SDKCTypeA, owner: aliceAddress }
         const testCTypeA: CType = { cType: SDKtestCTypeA, metaData: metaDataA }
@@ -309,10 +303,12 @@ describe('CType Module', async () => {
               },
             }
           })
-        expect(ctypesService.findByHash(SDKtestCTypeA.hash)).resolves.toEqual(
-          Optional.ofNullable<CType>(testCTypeA)
-        )
-        expect(findOneSpy).toHaveBeenCalledWith({ hash: SDKtestCTypeA.hash })
+        await expect(
+          ctypesService.findByHash(SDKtestCTypeA.hash)
+        ).resolves.toEqual(Optional.ofNullable<CType>(testCTypeA))
+        expect(findOneSpy).toHaveBeenCalledWith({
+          hash: SDKtestCTypeA.hash,
+        })
         findOneSpy.mockRestore()
       })
       it('returns nulled Optional if the hash is not registered', async () => {
@@ -326,14 +322,14 @@ describe('CType Module', async () => {
             }
           })
 
-        expect(ctypesService.findByHash(SDKCTypeA.hash)).resolves.toEqual(
+        await expect(ctypesService.findByHash(SDKCTypeA.hash)).resolves.toEqual(
           Optional.ofNullable<CType>(null)
         )
         expect(findOneSpy).toHaveBeenCalledWith({ hash: SDKCTypeA.hash })
         findOneSpy.mockRestore()
       })
     })
-    describe('findAll', async () => {
+    describe('findAll', () => {
       it('uses cTypeDBModel.find() and returns all registered CTypesDB converted to CType', async () => {
         const SDKtestCTypeA = { ...SDKCTypeA, owner: aliceAddress }
         const testCTypeA: CType = { cType: SDKtestCTypeA, metaData: metaDataA }
@@ -358,7 +354,7 @@ describe('CType Module', async () => {
               },
             }
           })
-        expect(ctypesService.findAll()).resolves.toEqual([
+        await expect(ctypesService.findAll()).resolves.toEqual([
           testCTypeA,
           testCTypeB,
         ])
@@ -370,11 +366,11 @@ describe('CType Module', async () => {
             },
           }
         })
-        expect(ctypesService.findAll()).resolves.toEqual([])
+        await expect(ctypesService.findAll()).resolves.toEqual([])
         findSpy.mockRestore()
       })
     })
-    describe('register', async () => {
+    describe('register', () => {
       it('creates and saves CTypeDB for unregistered hash', async () => {
         const SDKtestCTypeA = { ...SDKCTypeA, owner: aliceAddress }
         const testCTypeA: CType = { cType: SDKtestCTypeA, metaData: metaDataA }
@@ -393,6 +389,7 @@ describe('CType Module', async () => {
         expect(findByHashSpy).toHaveBeenCalledTimes(1)
         expect(findByHashSpy).toHaveBeenCalledWith(testCTypeA.cType.hash)
         expect(saveSpy).toHaveBeenCalledTimes(1)
+        expect(saveSpy).toHaveBeenCalledWith(expect.objectContaining(DBCTypeA))
         findByHashSpy.mockRestore()
         saveSpy.mockRestore()
       })
