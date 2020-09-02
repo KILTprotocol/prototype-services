@@ -1,26 +1,21 @@
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
-import { AppModule } from '../src/app.module'
 import { Identity } from '@kiltprotocol/sdk-js'
-import { MongoMemoryServer } from 'mongodb-memory-server'
+import { MockMongooseModule, mongodbInstance } from './MockMongooseModule'
+import { AppModule } from '../src/app.module'
 
 jest.mock(
   '@kiltprotocol/sdk-js/build/blockchainApiConnection/BlockchainApiConnection'
 )
+jest.mock('../src/mongoose/mongoose.module', () => ({
+  MyMongooseModule: MockMongooseModule,
+}))
 
 describe('AppController availability (e2e)', () => {
   let app: INestApplication
-  // MyMongooseModule by default expects a db named registry on port 27017
-  // You cannot register multiple db's under the same name! 
-  // Using this setup in more than one test file would break concurrent tests.
-  // To avoid this, build a test module using MockMongooseModule instead of MyMongooseModule.
-  const mongodbInstance = new MongoMemoryServer({
-    instance: { dbName: 'registry', ip: 'localhost', port: 27017, auth: false },
-  })
 
   beforeAll(async () => {
-    await mongodbInstance.ensureInstance()
     const moduleFixture = await Test.createTestingModule({
       imports: [AppModule],
     }).compile()
