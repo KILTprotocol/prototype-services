@@ -20,10 +20,12 @@ import { getModelToken } from '@nestjs/mongoose'
 
 jest.mock('@kiltprotocol/sdk-js/build/balance/Balance.chain', () => {
   return {
-    makeTransfer: jest.fn(() =>
-      Promise.resolve<SubmittableResult>({
-        isFinalized: true,
-      } as SubmittableResult)
+    makeTransfer: jest.fn(
+      async (): Promise<SubmittableResult> => {
+        return {
+          isFinalized: true,
+        } as SubmittableResult
+      }
     ),
   }
 })
@@ -43,7 +45,7 @@ describe('Faucet Module', () => {
     '0xcdfd6024d2b0eba27d54cc92a44cd9a627c69b2dbda15ed7e58085425119ae03'
   let faucetIdentity: Identity
   const faucetRequest = {
-    ip: '::ffff:127.0.0.1',
+    ip: testFaucetDrop.requestip,
   } as Request
   const KILT_FEMTO_COIN = '1000000000000000'
   const DEFAULT_TOKEN_AMOUNT = 500
@@ -56,11 +58,11 @@ describe('Faucet Module', () => {
       .makeTransfer
 
     const fakeFaucetService: FaucetService = {
-      drop: jest.fn(
-        async (): Promise<FaucetDrop> => Promise.resolve(testFaucetDrop)
-      ),
+      drop: jest.fn(async (): Promise<FaucetDrop> => testFaucetDrop),
       updateOnTransactionFailure: jest.fn(
-        async (): Promise<void> => Promise.resolve(undefined)
+        async (): Promise<void> => {
+          return
+        }
       ),
     }
     beforeAll(async () => {
@@ -87,7 +89,7 @@ describe('Faucet Module', () => {
         const dropSpy = jest.spyOn(fakeFaucetService, 'drop')
         const buildSpy = jest
           .spyOn(Identity, 'buildFromSeed')
-          .mockReturnValue(Promise.resolve(faucetIdentity))
+          .mockResolvedValue(faucetIdentity)
         expect(await faucetController.drop(address, faucetRequest)).toEqual(
           undefined
         )
@@ -105,12 +107,10 @@ describe('Faucet Module', () => {
       it('updates the database on unsuccessful transfer and throws exception', async () => {
         const buildSpy = jest
           .spyOn(Identity, 'buildFromSeed')
-          .mockReturnValue(Promise.resolve(faucetIdentity))
-        mockedMakeTransfer.mockReturnValue(
-          Promise.resolve<SubmittableResult>({
-            isFinalized: false,
-          } as SubmittableResult)
-        )
+          .mockResolvedValue(faucetIdentity)
+        mockedMakeTransfer.mockResolvedValue({
+          isFinalized: false,
+        } as SubmittableResult)
         const updateSpy = jest.spyOn(
           fakeFaucetService,
           'updateOnTransactionFailure'
@@ -138,16 +138,16 @@ describe('Faucet Module', () => {
             ip: '::ffff:127.0.0.1',
           } as Request)
         ).rejects.toThrow(BadRequestException)
-        expect(dropSpy).toHaveBeenCalledTimes(0)
-        expect(mockedMakeTransfer).toHaveBeenCalledTimes(0)
+        expect(dropSpy).not.toHaveBeenCalled()
+        expect(mockedMakeTransfer).not.toHaveBeenCalled()
       })
       it('throws Exception on invalid pubKey', async () => {
         const dropSpy = jest.spyOn(fakeFaucetService, 'drop')
         await expect(
           faucetController.drop(invalidAddress, faucetRequest)
         ).rejects.toThrow(new FaucetDropInvalidAddressException())
-        expect(dropSpy).toHaveBeenCalledTimes(0)
-        expect(mockedMakeTransfer).toHaveBeenCalledTimes(0)
+        expect(dropSpy).not.toHaveBeenCalled()
+        expect(mockedMakeTransfer).not.toHaveBeenCalled()
       })
       it('throws Exception on ineligibility', async () => {
         const falseTestFaucetDrop: FaucetDrop = {
@@ -156,7 +156,7 @@ describe('Faucet Module', () => {
         }
         const dropSpy = jest
           .spyOn(fakeFaucetService, 'drop')
-          .mockReturnValue(Promise.resolve(falseTestFaucetDrop))
+          .mockResolvedValue(falseTestFaucetDrop)
 
         await expect(
           faucetController.drop(address, faucetRequest)
@@ -172,12 +172,12 @@ describe('Faucet Module', () => {
       it('builds faucet Id and tries to transfer default amount to the given address', async () => {
         const buildSpy = jest
           .spyOn(Identity, 'buildFromSeed')
-          .mockReturnValue(Promise.resolve(faucetIdentity))
-        mockedMakeTransfer.mockImplementation(() =>
-          Promise.resolve<SubmittableResult>({
+          .mockResolvedValue(faucetIdentity)
+        mockedMakeTransfer.mockImplementation(async () => {
+          return {
             isFinalized: true,
-          } as SubmittableResult)
-        )
+          } as SubmittableResult
+        })
         expect(await faucetController['transferTokens'](address)).toEqual(true)
         expect(buildSpy).toHaveBeenCalledWith(
           hexToU8a(process.env.FAUCET_ACCOUNT)
@@ -199,8 +199,8 @@ describe('Faucet Module', () => {
         expect(buildSpy).toHaveBeenCalledWith(
           hexToU8a(process.env.FAUCET_ACCOUNT)
         )
-        expect(mockedMakeTransfer).toHaveBeenCalledTimes(0)
-        buildSpy.mockImplementation(() => Promise.resolve(faucetIdentity))
+        expect(mockedMakeTransfer).not.toHaveBeenCalled()
+        buildSpy.mockResolvedValue(faucetIdentity)
         mockedMakeTransfer.mockImplementation(() => {
           throw new Error('makeTransfer failed')
         })
@@ -213,10 +213,10 @@ describe('Faucet Module', () => {
           address,
           new BN(KILT_FEMTO_COIN).muln(DEFAULT_TOKEN_AMOUNT)
         )
-        mockedMakeTransfer.mockImplementation(() => {
-          return Promise.resolve<SubmittableResult>({
+        mockedMakeTransfer.mockImplementation(async () => {
+          return {
             isFinalized: false,
-          } as SubmittableResult)
+          } as SubmittableResult
         })
         expect(await faucetController['transferTokens'](address)).toEqual(false)
         expect(buildSpy).toHaveBeenCalledWith(
@@ -233,10 +233,10 @@ describe('Faucet Module', () => {
   class FaucetDropModel {
     public static countDocuments = jest
       .fn()
-      .mockReturnValue({ exec: () => Promise.resolve(0) })
+      .mockReturnValue({ exec: async () => 0 })
     public static save = jest
       .fn()
-      .mockImplementation(object => Promise.resolve(object))
+      .mockImplementation(async (object): Promise<FaucetDropDB> => object)
     public save = jest.fn().mockReturnValue(FaucetDropModel.save(this))
 
     constructor(data: FaucetDrop) {
@@ -290,12 +290,12 @@ describe('Faucet Module', () => {
           .mockImplementation((query: any) => {
             if (query.requestip) {
               return {
-                exec: () => Promise.resolve(99),
+                exec: async () => 99,
               }
             } else if (query.created) {
-              return { exec: () => Promise.resolve(9999) }
+              return { exec: async () => 9999 }
             } else if (query.publickey) {
-              return { exec: () => Promise.resolve(0) }
+              return { exec: async () => 0 }
             }
           })
         const { publickey, requestip, amount, dropped, error, created } = {
@@ -325,13 +325,13 @@ describe('Faucet Module', () => {
           .spyOn(faucetService['faucetDropDBModel'], 'countDocuments')
           .mockImplementation((query: any) => {
             if (query.publickey) {
-              return { exec: () => Promise.resolve(1) }
+              return { exec: async () => 1 }
             } else if (query.requestip) {
               return {
-                exec: () => Promise.resolve(99),
+                exec: async () => 99,
               }
             } else if (query.created) {
-              return { exec: () => Promise.resolve(9999) }
+              return { exec: async () => 9999 }
             }
           })
         let { publickey, requestip, amount, dropped, error, created } = {
@@ -358,13 +358,13 @@ describe('Faucet Module', () => {
 
         countSpy.mockImplementation((query: any) => {
           if (query.publickey) {
-            return { exec: () => Promise.resolve(0) }
+            return { exec: async () => 0 }
           } else if (query.requestip) {
             return {
-              exec: () => Promise.resolve(100),
+              exec: async () => 100,
             }
           } else if (query.created) {
-            return { exec: () => Promise.resolve(9999) }
+            return { exec: async () => 9999 }
           }
         })
         ;({ publickey, requestip, amount, dropped, error, created } = {
@@ -390,13 +390,13 @@ describe('Faucet Module', () => {
         expect(saveSpy).toHaveBeenCalledWith(new FaucetDropModel(dropResult))
         countSpy.mockImplementation((query: any) => {
           if (query.publickey) {
-            return { exec: () => Promise.resolve(0) }
+            return { exec: async () => 0 }
           } else if (query.requestip) {
             return {
-              exec: () => Promise.resolve(99),
+              exec: async () => 99,
             }
           } else if (query.created) {
-            return { exec: () => Promise.resolve(10000) }
+            return { exec: async () => 10000 }
           }
         })
         ;({ publickey, requestip, amount, dropped, error, created } = {

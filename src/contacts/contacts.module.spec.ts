@@ -89,16 +89,23 @@ describe('Contact Module', () => {
       .hashStr
     const mockedVerify = require('@kiltprotocol/sdk-js/build/crypto/Crypto')
       .verify
+
     const fakeContactService: ContactsService = {
-      add: jest.fn(async (): Promise<void> => Promise.resolve(undefined)),
+      add: jest.fn(
+        async (): Promise<void> => {
+          return
+        }
+      ),
       findByAddress: jest.fn(
         async (): Promise<Optional<Contact>> =>
-          Promise.resolve<Optional<Contact>>(Optional.ofNullable<Contact>(null))
+          Optional.ofNullable<Contact>(null)
       ),
-      list: jest.fn(
-        async (): Promise<Contact[]> => Promise.resolve<Contact[]>([])
+      list: jest.fn(async (): Promise<Contact[]> => []),
+      removeAll: jest.fn(
+        async (): Promise<void> => {
+          return
+        }
       ),
-      removeAll: jest.fn(async (): Promise<void> => Promise.resolve(undefined)),
     }
 
     beforeEach(async () => {
@@ -157,9 +164,9 @@ describe('Contact Module', () => {
         await expect(contactsController.add(noNameContact)).rejects.toThrow(
           BadRequestException
         )
-        expect(mockedHashStr).toHaveBeenCalledTimes(0)
-        expect(mockedVerify).toHaveBeenCalledTimes(0)
-        expect(addSpy).toHaveBeenCalledTimes(0)
+        expect(mockedHashStr).not.toHaveBeenCalled()
+        expect(mockedVerify).not.toHaveBeenCalled()
+        expect(addSpy).not.toHaveBeenCalled()
       })
       it('calls contactService.add on valid Contact with Did', async () => {
         const addSpy = jest.spyOn(contactsService, 'add')
@@ -191,7 +198,7 @@ describe('Contact Module', () => {
       it('returns all registered Contacts', async () => {
         const serviceListSpy = jest
           .spyOn(contactsService, 'list')
-          .mockResolvedValue(Promise.resolve<Contact[]>([testContact]))
+          .mockResolvedValue([testContact])
         await expect(contactsController.list()).resolves.toEqual([testContact])
         expect(serviceListSpy).toHaveBeenCalledTimes(1)
         expect(serviceListSpy).toHaveBeenCalledWith()
@@ -202,7 +209,7 @@ describe('Contact Module', () => {
       it('gets the Contact for the given address', async () => {
         const findByAddressSpy = jest
           .spyOn(contactsService, 'findByAddress')
-          .mockResolvedValue(Promise.resolve(Optional.ofNullable(testContact)))
+          .mockResolvedValue(Optional.ofNullable(testContact))
         expect(
           await contactsController.findByKey(testContact.publicIdentity.address)
         ).toEqual(testContact)
@@ -223,14 +230,12 @@ describe('Contact Module', () => {
       it('gets the contact for the given address and returns the did', async () => {
         const findByAddressSpy = jest
           .spyOn(contactsService, 'findByAddress')
-          .mockReturnValue(Promise.resolve(Optional.ofNullable(contactWithDid)))
+          .mockResolvedValue(Optional.ofNullable(contactWithDid))
         expect(await contactsController.getDidDocument(address)).toEqual(
           contactWithDid.did
         )
         expect(findByAddressSpy).toHaveBeenCalledWith(address)
-        findByAddressSpy.mockReturnValue(
-          Promise.resolve(Optional.ofNullable(testContact))
-        )
+        findByAddressSpy.mockResolvedValue(Optional.ofNullable(testContact))
         await expect(
           contactsController.getDidDocument(address)
         ).rejects.toThrow(NotFoundException)
@@ -243,17 +248,19 @@ describe('Contact Module', () => {
   class ContactModel {
     public static find = jest
       .fn()
-      .mockReturnValue({ exec: () => [] as ContactDB[] })
+      .mockReturnValue({ exec: async (): Promise<ContactDB[]> => [] })
     public static findOne = jest
       .fn()
-      .mockReturnValue({ exec: () => Promise.resolve<ContactDB>(null) })
+      .mockReturnValue({ exec: async (): Promise<ContactDB> => null })
     public static deleteMany = jest.fn().mockReturnValue({
-      exec: () => Promise.resolve<void>(undefined),
+      exec: async () => {
+        return
+      },
     })
-    public static save = jest
+    public static save = jest.fn().mockImplementation(async object => object)
+    public save = jest
       .fn()
-      .mockImplementation(object => Promise.resolve(object))
-    public save = jest.fn().mockReturnValue(ContactModel.save(this))
+      .mockImplementation(async () => ContactModel.save(this))
 
     constructor(data: Contact) {
       return Object.assign(this, data as ContactDB)
@@ -310,7 +317,7 @@ describe('Contact Module', () => {
       it('queries database and converts match', async () => {
         const findOneSpy = jest
           .spyOn(contactsService['contactModel'], 'findOne')
-          .mockReturnValue({ exec: () => Promise.resolve<ContactDB>(null) })
+          .mockReturnValue({ exec: async (): Promise<ContactDB> => null })
         expect(await contactsService.findByAddress(address)).toEqual(
           Optional.ofNullable<Contact>(null)
         )
@@ -318,8 +325,8 @@ describe('Contact Module', () => {
           'publicIdentity.address': address,
         })
         findOneSpy.mockReturnValue({
-          exec: () => {
-            return Promise.resolve<ContactDB>(testContact as ContactDB)
+          exec: async (): Promise<ContactDB> => {
+            return testContact as ContactDB
           },
         })
         expect(await contactsService.findByAddress(address)).toEqual(
@@ -337,15 +344,15 @@ describe('Contact Module', () => {
         const findSpy = jest
           .spyOn(contactsService['contactModel'], 'find')
           .mockReturnValue({
-            exec: () => {
-              return Promise.resolve<ContactDB[]>([testContact as ContactDB])
+            exec: async (): Promise<ContactDB[]> => {
+              return [testContact as ContactDB]
             },
           })
         expect(await contactsService.list()).toEqual([testContact])
         expect(findSpy).toHaveBeenCalledWith()
         findSpy.mockReturnValue({
-          exec: () => {
-            return Promise.resolve<ContactDB[]>([])
+          exec: async (): Promise<ContactDB[]> => {
+            return []
           },
         })
         expect(await contactsService.list()).toEqual([])

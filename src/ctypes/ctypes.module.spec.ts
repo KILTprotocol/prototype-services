@@ -13,7 +13,7 @@ import { MongoDbCTypesService } from './mongodb-ctypes.service'
 
 jest.mock('@kiltprotocol/sdk-js/build/ctype/CType.chain', () => {
   return {
-    getOwner: jest.fn(() => Promise.resolve<string | null>(null)),
+    getOwner: jest.fn(async (): Promise<string | null> => null),
   }
 })
 
@@ -84,14 +84,13 @@ describe('CType Module', () => {
 
     const fakeCTypeService: CTypeService = {
       findByHash: jest.fn(
-        async (): Promise<Optional<CType>> =>
-          Promise.resolve(Optional.ofNullable<CType>(null))
+        async (): Promise<Optional<CType>> => Optional.ofNullable<CType>(null)
       ),
-      findAll: jest.fn(async (): Promise<CType[]> => Promise.resolve([])),
-      register: jest.fn(async (): Promise<boolean> => Promise.resolve(true)),
+      findAll: jest.fn(async (): Promise<CType[]> => []),
+      register: jest.fn(async (): Promise<boolean> => true),
       removeAll: jest.fn(
         async (): Promise<void> => {
-          Promise.resolve()
+          return
         }
       ),
     }
@@ -231,11 +230,13 @@ describe('CType Module', () => {
       .fn()
       .mockReturnValue({ exec: async () => Optional.ofNullable(null) })
     public static deleteMany = jest.fn().mockReturnValue({
-      exec: () => Promise.resolve<void>(undefined),
+      exec: async (): Promise<void> => {
+        return
+      },
     })
     public static save = jest
       .fn()
-      .mockImplementation(object => Promise.resolve(object))
+      .mockImplementation(async (object): Promise<CTypeDB> => object)
     public save = jest.fn().mockReturnValue(CTypeModel.save(this))
 
     constructor(data: CTypeDB) {
@@ -274,8 +275,8 @@ describe('CType Module', () => {
           .spyOn(ctypesService['cTypeDBModel'], 'deleteMany')
           .mockImplementation(() => {
             return {
-              exec: () => {
-                return Promise.resolve<void>(undefined)
+              exec: async (): Promise<void> => {
+                return
               },
             }
           })
@@ -298,9 +299,7 @@ describe('CType Module', () => {
           .spyOn(ctypesService['cTypeDBModel'], 'findOne')
           .mockImplementation(() => {
             return {
-              exec: () => {
-                return Promise.resolve<CTypeDB>(DBCTypeA)
-              },
+              exec: async (): Promise<CTypeDB> => DBCTypeA,
             }
           })
         await expect(
@@ -316,9 +315,7 @@ describe('CType Module', () => {
           .spyOn(ctypesService['cTypeDBModel'], 'findOne')
           .mockImplementation(() => {
             return {
-              exec: () => {
-                return Promise.resolve<CTypeDB>(null)
-              },
+              exec: async (): Promise<CTypeDB> => null,
             }
           })
 
@@ -349,9 +346,7 @@ describe('CType Module', () => {
           .spyOn(ctypesService['cTypeDBModel'], 'find')
           .mockImplementation(() => {
             return {
-              exec: () => {
-                return Promise.resolve<CTypeDB[]>([DBCTypeA, DBCTypeB])
-              },
+              exec: async (): Promise<CTypeDB[]> => [DBCTypeA, DBCTypeB],
             }
           })
         await expect(ctypesService.findAll()).resolves.toEqual([
@@ -361,9 +356,7 @@ describe('CType Module', () => {
         expect(findSpy).toHaveBeenCalledWith()
         findSpy.mockImplementation(() => {
           return {
-            exec: () => {
-              return Promise.resolve<CTypeDB[]>([])
-            },
+            exec: async (): Promise<CTypeDB[]> => [],
           }
         })
         await expect(ctypesService.findAll()).resolves.toEqual([])
@@ -382,9 +375,8 @@ describe('CType Module', () => {
         const saveSpy = jest.spyOn(ctypesService['cTypeDBModel'], 'save')
         const findByHashSpy = jest
           .spyOn(ctypesService, 'findByHash')
-          .mockImplementation(() =>
-            Promise.resolve(Optional.ofNullable<CType>(null))
-          )
+          .mockImplementation(async () => Optional.ofNullable<CType>(null))
+
         expect(await ctypesService.register(testCTypeA)).toEqual(true)
         expect(findByHashSpy).toHaveBeenCalledTimes(1)
         expect(findByHashSpy).toHaveBeenCalledWith(testCTypeA.cType.hash)
@@ -398,12 +390,12 @@ describe('CType Module', () => {
         const testCTypeA: CType = { cType: SDKtestCTypeA, metaData: metaDataA }
         const findByHashSpy = jest
           .spyOn(ctypesService, 'findByHash')
-          .mockImplementation(() =>
-            Promise.resolve(Optional.ofNullable<CType>(testCTypeA))
+          .mockImplementation(async () =>
+            Optional.ofNullable<CType>(testCTypeA)
           )
         const saveSpy = jest.spyOn(ctypesService['cTypeDBModel'], 'save')
         expect(await ctypesService.register(testCTypeA)).toBeFalsy()
-        expect(saveSpy).toHaveBeenCalledTimes(0)
+        expect(saveSpy).not.toHaveBeenCalled()
         expect(findByHashSpy).toHaveBeenCalledWith(testCTypeA.cType.hash)
         findByHashSpy.mockRestore()
         saveSpy.mockRestore()
