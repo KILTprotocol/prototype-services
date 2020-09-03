@@ -64,6 +64,11 @@ describe('Faucet Module', () => {
           return
         }
       ),
+      reset: jest.fn(
+        async (): Promise<void> => {
+          return
+        }
+      ),
     }
     beforeAll(async () => {
       faucetIdentity = await Identity.buildFromSeed(hexToU8a(FAUCET_SEED))

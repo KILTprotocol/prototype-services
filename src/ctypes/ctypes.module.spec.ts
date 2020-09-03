@@ -17,10 +17,6 @@ jest.mock('@kiltprotocol/sdk-js/build/ctype/CType.chain', () => {
   }
 })
 
-jest.mock(
-  '@kiltprotocol/sdk-js/build/blockchainApiConnection/BlockchainApiConnection'
-)
-
 describe('CType Module', () => {
   const SDKCTypeA: SDK.CType = SDK.CType.fromSchema({
     $schema: 'http://kilt-protocol.org/draft-01/ctype#',
@@ -77,7 +73,6 @@ describe('CType Module', () => {
     let aliceAddress: string
 
     const blockchainApi = require('@kiltprotocol/sdk-js/build/blockchainApiConnection/BlockchainApiConnection')
-      .__mocked_api
 
     const mockedGetOwner = require('@kiltprotocol/sdk-js/build/ctype/CType.chain')
       .getOwner

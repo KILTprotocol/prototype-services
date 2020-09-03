@@ -181,17 +181,19 @@ describe('Contact Module', () => {
           contactWithDid.signature,
           contactWithDid.publicIdentity.address
         )
+      })
+      it('rejects contact with did if signature is missing or invalid', async () => {
+        const addSpy = jest.spyOn(contactsService, 'add')
         mockedVerify.mockReturnValue(false)
         await expect(contactsController.add(noSigContact)).rejects.toThrow(
           BadRequestException
         )
-        expect(addSpy).toHaveBeenCalledTimes(1)
         await expect(contactsController.add(badSigContact)).rejects.toThrow(
           BadRequestException
         )
-        expect(addSpy).toHaveBeenCalledTimes(1)
-        expect(mockedHashStr).toHaveBeenCalledTimes(2)
-        expect(mockedVerify).toHaveBeenCalledTimes(2)
+        expect(addSpy).not.toHaveBeenCalled()
+        expect(mockedHashStr).toHaveBeenCalledTimes(1)
+        expect(mockedVerify).toHaveBeenCalledTimes(1)
       })
     })
     describe('list', () => {
@@ -270,14 +272,14 @@ describe('Contact Module', () => {
     let contactsService: ContactsService
 
     beforeEach(async () => {
-      const messageServiceProvider = {
+      const contactServiceProvider = {
         provide: 'ContactService',
         useClass: MongoDbMContactsService,
       }
 
       const moduleRef = await Test.createTestingModule({
         providers: [
-          messageServiceProvider,
+          contactServiceProvider,
           { provide: getModelToken('Contact'), useValue: ContactModel },
         ],
       }).compile()
