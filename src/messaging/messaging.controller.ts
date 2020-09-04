@@ -4,11 +4,13 @@ import {
   Get,
   Inject,
   Param,
+  Headers,
   Post,
   Delete,
   BadRequestException,
   UseGuards,
   ForbiddenException,
+  Header,
 } from '@nestjs/common'
 import { MessagingService } from './interfaces/messaging.interfaces'
 import { IEncryptedMessage } from '@kiltprotocol/sdk-js'
@@ -34,8 +36,9 @@ export class MessagingController {
   @Delete(':id')
   public async removeMessage(
     @Param('id') id,
-    @Body() signature: string
+    @Headers('signature') signature
   ): Promise<void> {
+    console.log(signature)
     if (!signature) {
       throw new BadRequestException('No signature provided')
     }
@@ -55,7 +58,7 @@ export class MessagingController {
   @Get('sent/:senderAddress')
   public async listSent(
     @Param('senderAddress') senderAddress,
-    @Body() signature: string
+    @Headers('signature') signature
   ): Promise<IEncryptedMessage[]> {
     if (!signature) {
       throw new BadRequestException('No signature provided')
@@ -68,7 +71,7 @@ export class MessagingController {
   @Get('inbox/:receiverAddress')
   public async listInbox(
     @Param('receiverAddress') receiverAddress,
-    @Body() signature: string
+    @Headers('signature') signature
   ): Promise<IEncryptedMessage[]> {
     if (!signature) {
       throw new BadRequestException('No signature provided')
