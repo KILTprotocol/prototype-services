@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { MessageDB, MessagingService } from './interfaces/messaging.interfaces'
-import { IEncryptedMessage } from '@kiltprotocol/sdk-js'
+import { IEncryptedMessage, Crypto } from '@kiltprotocol/sdk-js'
 
 @Injectable()
 export class MongoDbMessagingService implements MessagingService {
@@ -18,7 +18,7 @@ export class MongoDbMessagingService implements MessagingService {
   }
 
   public async findBySenderAddress(
-    senderAddress: IEncryptedMessage['senderAddress']
+    senderAddress: IEncryptedMessage['senderAddress'],
   ): Promise<IEncryptedMessage[]> {
     return (await this.messageModel.find({ senderAddress }).exec()).map(
       (singleDBMessage: MessageDB) =>
@@ -27,7 +27,7 @@ export class MongoDbMessagingService implements MessagingService {
   }
 
   public async findByReceiverAddress(
-    receiverAddress: IEncryptedMessage['receiverAddress']
+    receiverAddress: IEncryptedMessage['receiverAddress'],
   ): Promise<IEncryptedMessage[]> {
     return (await this.messageModel.find({ receiverAddress }).exec()).map(
       (singleDBMessage: MessageDB) =>
@@ -36,9 +36,18 @@ export class MongoDbMessagingService implements MessagingService {
   }
 
   public async remove(
-    messageId: IEncryptedMessage['messageId']
-  ): Promise<void> {
-    this.messageModel.deleteOne({ messageId }).exec()
+    messageId: IEncryptedMessage['messageId'],
+    signature: string
+  ): Promise<boolean> {
+    const receiverAddress = (await this.messageModel
+      .findOne({ messageId })
+      .exec()).receiverAddress
+    if (!Crypto.verify(messageId, signature, receiverAddress)) {
+      return false
+    } else {
+      this.messageModel.deleteOne({ messageId }).exec()
+      return true
+    }
   }
 
   public async removeAll(): Promise<void> {

@@ -15,7 +15,7 @@ export declare interface MessagingService {
     receiverAddress: Contact['publicIdentity']['address']
   ): Promise<IEncryptedMessage[]>
 
-  remove(messageId: string): Promise<void>
+  remove(messageId: string, signature: string): Promise<boolean>
 
   removeAll(): Promise<void>
 }

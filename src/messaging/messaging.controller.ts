@@ -8,10 +8,13 @@ import {
   Delete,
   BadRequestException,
   UseGuards,
+  ForbiddenException,
 } from '@nestjs/common'
 import { MessagingService } from './interfaces/messaging.interfaces'
 import { IEncryptedMessage } from '@kiltprotocol/sdk-js'
 import { AuthGuard } from '../auth/auth.guard'
+import { verify } from '@kiltprotocol/sdk-js/build/crypto'
+import { ForbiddenMessageAccessException } from './exceptions/message-forbidden.exception'
 
 export const uuidv4 = () => {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
@@ -29,9 +32,17 @@ export class MessagingController {
   ) {}
 
   @Delete(':id')
-  public async removeMessage(@Param('id') id): Promise<void> {
-    console.log(`Remove message for id ${id}`)
-    await this.messagingService.remove(id)
+  public async removeMessage(
+    @Param('id') id,
+    @Body() signature: string
+  ): Promise<void> {
+    if (!signature) {
+      throw new BadRequestException('No signature provided')
+    }
+    console.log(`Remove message for id ${id} with signature ${signature}`)
+    if (!(await this.messagingService.remove(id, signature))) {
+      throw new ForbiddenMessageAccessException()
+    }
   }
 
   @UseGuards(AuthGuard)
@@ -43,15 +54,27 @@ export class MessagingController {
 
   @Get('sent/:senderAddress')
   public async listSent(
-    @Param('senderAddress') senderAddress
+    @Param('senderAddress') senderAddress,
+    @Body() signature: string
   ): Promise<IEncryptedMessage[]> {
+    if (!signature) {
+      throw new BadRequestException('No signature provided')
+    } else if (!verify(senderAddress, signature, senderAddress)) {
+      throw new ForbiddenMessageAccessException()
+    }
     return this.messagingService.findBySenderAddress(senderAddress)
   }
 
   @Get('inbox/:receiverAddress')
   public async listInbox(
-    @Param('receiverAddress') receiverAddress
+    @Param('receiverAddress') receiverAddress,
+    @Body() signature: string
   ): Promise<IEncryptedMessage[]> {
+    if (!signature) {
+      throw new BadRequestException('No signature provided')
+    } else if (!verify(receiverAddress, signature, receiverAddress)) {
+      throw new ForbiddenMessageAccessException()
+    }
     return this.messagingService.findByReceiverAddress(receiverAddress)
   }
 
