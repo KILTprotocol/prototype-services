@@ -31,7 +31,7 @@ export class FaucetController {
   @Post('drop')
   public async drop(@Body('address') address: string, @Req() request: Request) {
     if (!address) {
-      throw new BadRequestException('no address key')
+      throw new BadRequestException('no target address')
     }
     console.log(`Faucet drop requested for ${address} from ${request.ip}`)
     if (!checkAddress(address, 42)[0]) {
