@@ -26,23 +26,22 @@ export class MongoDbFaucetService implements FaucetService {
   ) {}
 
   public async drop(
-    email: string,
-    publickey: string,
+    address: string,
     ip: string,
     amount: number
   ): Promise<FaucetDrop> {
     let error: number = NO_ERROR
     const dropsPerIdentity: number = await this.faucetDropDBModel
       .countDocuments({
-        publickey,
-        error: 0,
+        address,
+        error: NO_ERROR,
       })
       .exec()
     if (dropsPerIdentity >= MAX_REQUESTS_PER_ID) {
       error = ERROR_MAX_REQUESTS_PER_ID
     } else {
       const dropsPerIP: number = await this.faucetDropDBModel
-        .countDocuments({ requestip: ip, error: 0 })
+        .countDocuments({ requestip: ip, error: NO_ERROR })
         .exec()
       if (dropsPerIP >= MAX_IDENTITIES_PER_IP) {
         error = ERROR_MAX_REQUESTS_PER_IP
@@ -50,7 +49,7 @@ export class MongoDbFaucetService implements FaucetService {
         const dropsPerDay: number = await this.faucetDropDBModel
           .countDocuments({
             created: { $gt: Date.now() - ONE_DAY },
-            error: 0,
+            error: NO_ERROR,
           })
           .exec()
         if (dropsPerDay >= MAX_REQUESTS_PER_DAY) {
@@ -61,8 +60,7 @@ export class MongoDbFaucetService implements FaucetService {
 
     const result: FaucetDrop = {
       amount,
-      email,
-      publickey,
+      address,
       requestip: ip,
       dropped: error === NO_ERROR,
       error,
@@ -71,7 +69,7 @@ export class MongoDbFaucetService implements FaucetService {
 
     const createdFaucetDrop = new this.faucetDropDBModel(result)
     await createdFaucetDrop.save()
-    return Promise.resolve(createdFaucetDrop)
+    return createdFaucetDrop as FaucetDrop
   }
 
   public async updateOnTransactionFailure(drop: FaucetDrop): Promise<void> {

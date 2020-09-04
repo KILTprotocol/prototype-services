@@ -46,33 +46,37 @@ export class CTypesController {
 
   @Post()
   public async register(@Body() cTypeInput: CType) {
-    return this.verifyCType(cTypeInput).then(async verified => {
-      if (verified) {
-        console.log(
-          `All valid => registering cType ` +
-            JSON.stringify({ ...cTypeInput.cType, owner: verified }, null, 4)
-        )
-
-        const result = await this.cTypesService.register({
-          ...cTypeInput,
-          cType: { ...cTypeInput.cType, owner: verified },
-        })
-
-        if (!result) {
+    return this.verifyCTypeAndReturnChainOwner(cTypeInput).then(
+      async verified => {
+        if (verified) {
           console.log(
-            `The CType with hash: ${
-              cTypeInput.cType.hash
-            } already exists in this DB!`
+            `All valid => registering cType ` +
+              JSON.stringify({ ...cTypeInput.cType, owner: verified }, null, 4)
           )
-          throw new AlreadyRegisteredException()
+
+          const result = await this.cTypesService.register({
+            ...cTypeInput,
+            cType: { ...cTypeInput.cType, owner: verified },
+          })
+
+          if (!result) {
+            console.log(
+              `The CType with hash: ${
+                cTypeInput.cType.hash
+              } already exists in this DB!`
+            )
+            throw new AlreadyRegisteredException()
+          }
+        } else {
+          throw new CTypeNotOnChainException()
         }
-      } else {
-        throw new CTypeNotOnChainException()
       }
-    })
+    )
   }
 
-  private async verifyCType(cTypeInput: CType): Promise<string | null> {
+  private async verifyCTypeAndReturnChainOwner(
+    cTypeInput: CType
+  ): Promise<string | null> {
     try {
       const cType = new SDKCtype(cTypeInput.cType)
 

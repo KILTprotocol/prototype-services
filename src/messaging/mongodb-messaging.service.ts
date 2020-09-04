@@ -21,42 +21,18 @@ export class MongoDbMessagingService implements MessagingService {
     senderAddress: IEncryptedMessage['senderAddress']
   ): Promise<IEncryptedMessage[]> {
     return (await this.messageModel.find({ senderAddress }).exec()).map(
-      (singleDBMessage: MessageDB) => {
-        return {
-          message: singleDBMessage.message,
-          nonce: singleDBMessage.nonce,
-          createdAt: singleDBMessage.createdAt,
-          hash: singleDBMessage.hash,
-          signature: singleDBMessage.signature,
-          receiverAddress: singleDBMessage.receiverAddress,
-          senderAddress: singleDBMessage.senderAddress,
-          senderBoxPublicKey: singleDBMessage.senderBoxPublicKey,
-          messageId: singleDBMessage.messageId,
-          receivedAt: singleDBMessage.receivedAt,
-        } as IEncryptedMessage
-      }
-    ) as IEncryptedMessage[]
+      (singleDBMessage: MessageDB) =>
+        this.convertToEncryptedMessage(singleDBMessage)
+    )
   }
 
   public async findByReceiverAddress(
     receiverAddress: IEncryptedMessage['receiverAddress']
   ): Promise<IEncryptedMessage[]> {
     return (await this.messageModel.find({ receiverAddress }).exec()).map(
-      (singleDBMessage: MessageDB) => {
-        return {
-          message: singleDBMessage.message,
-          nonce: singleDBMessage.nonce,
-          createdAt: singleDBMessage.createdAt,
-          hash: singleDBMessage.hash,
-          signature: singleDBMessage.signature,
-          receiverAddress: singleDBMessage.receiverAddress,
-          senderAddress: singleDBMessage.senderAddress,
-          senderBoxPublicKey: singleDBMessage.senderBoxPublicKey,
-          messageId: singleDBMessage.messageId,
-          receivedAt: singleDBMessage.receivedAt,
-        } as IEncryptedMessage
-      }
-    ) as IEncryptedMessage[]
+      (singleDBMessage: MessageDB) =>
+        this.convertToEncryptedMessage(singleDBMessage)
+    )
   }
 
   public async remove(
@@ -67,5 +43,21 @@ export class MongoDbMessagingService implements MessagingService {
 
   public async removeAll(): Promise<void> {
     await this.messageModel.deleteMany({}).exec()
+  }
+  private convertToEncryptedMessage(
+    singleDBMessage: MessageDB
+  ): IEncryptedMessage {
+    return {
+      message: singleDBMessage.message,
+      nonce: singleDBMessage.nonce,
+      createdAt: singleDBMessage.createdAt,
+      hash: singleDBMessage.hash,
+      signature: singleDBMessage.signature,
+      receiverAddress: singleDBMessage.receiverAddress,
+      senderAddress: singleDBMessage.senderAddress,
+      senderBoxPublicKey: singleDBMessage.senderBoxPublicKey,
+      messageId: singleDBMessage.messageId,
+      receivedAt: singleDBMessage.receivedAt,
+    } as IEncryptedMessage
   }
 }

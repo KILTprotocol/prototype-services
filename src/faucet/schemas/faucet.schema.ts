@@ -1,8 +1,7 @@
 import * as mongoose from 'mongoose'
 
 export const FaucetDropSchema = new mongoose.Schema({
-  email: String,
-  publickey: String,
+  address: String,
   requestip: String,
   amount: Number,
   dropped: Boolean,

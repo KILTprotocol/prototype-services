@@ -10,7 +10,7 @@ import {
 import { Request } from 'express'
 import BN from 'bn.js'
 import { hexToU8a } from '@polkadot/util'
-import { decodeAddress } from '@polkadot/keyring'
+import { checkAddress } from '@polkadot/util-crypto'
 
 import { FaucetService } from './interfaces/faucet.interfaces'
 import {
@@ -29,30 +29,22 @@ export class FaucetController {
   ) {}
 
   @Post('drop')
-  public async drop(
-    @Body('email') email: string,
-    @Body('pubkey') pubKey: string,
-    @Req() request: Request
-  ) {
-    if (!pubKey) {
-      throw new BadRequestException('no public key')
+  public async drop(@Body('address') address: string, @Req() request: Request) {
+    if (!address) {
+      throw new BadRequestException('no target address')
     }
-    console.log(`Faucet drop requested for ${pubKey} from ${request.ip}`)
-
-    try {
-      decodeAddress(pubKey)
-    } catch {
+    console.log(`Faucet drop requested for ${address} from ${request.ip}`)
+    if (!checkAddress(address, 42)[0]) {
       throw new FaucetDropInvalidAddressException()
     }
 
     const result = await this.faucetService.drop(
-      email,
-      pubKey,
+      address,
       request.ip,
       DEFAULT_TOKEN_AMOUNT
     )
     if (result.dropped) {
-      const transferSucceeded = await this.transferTokens(result.publickey)
+      const transferSucceeded = await this.transferTokens(result.address)
       if (!transferSucceeded) {
         await this.faucetService.updateOnTransactionFailure(result)
         throw new FaucetDropFailedTransferException()
