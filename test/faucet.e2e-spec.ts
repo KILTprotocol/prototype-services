@@ -42,7 +42,7 @@ describe('faucet endpoint (e2e)', () => {
   it('rejects malformed requests', async () => {
     return request(app.getHttpServer())
       .post(`/faucet/drop`)
-      .send(idAlice.getBoxPublicKey())
+      .send(idAlice.address)
       .expect(400)
   })
 
@@ -53,7 +53,7 @@ describe('faucet endpoint (e2e)', () => {
     )
     await request(app.getHttpServer())
       .post(`/faucet/drop`)
-      .send('pubkey=0x1234')
+      .send('address=0x1234')
       .expect(400)
   })
 
@@ -61,12 +61,12 @@ describe('faucet endpoint (e2e)', () => {
     const spy = jest.spyOn(Balance, 'makeTransfer')
     await request(app.getHttpServer())
       .post(`/faucet/drop`)
-      .send(`pubkey=${idAlice.getBoxPublicKey()}`)
+      .send(`address=${idAlice.address}`)
       .expect(201)
 
     expect(spy).toHaveBeenCalledWith(
       expect.objectContaining({ seedAsHex: FAUCET_SEED }),
-      idAlice.getBoxPublicKey(),
+      idAlice.address,
       expect.any(BN)
     )
   })
@@ -74,12 +74,12 @@ describe('faucet endpoint (e2e)', () => {
   it('rejects second valid request', async () => {
     await request(app.getHttpServer())
       .post(`/faucet/drop`)
-      .send(`pubkey=${idAlice.getBoxPublicKey()}`)
+      .send(`address=${idAlice.address}`)
       .expect(201)
 
     await request(app.getHttpServer())
       .post(`/faucet/drop`)
-      .send(`pubkey=${idAlice.getBoxPublicKey()}`)
+      .send(`address=${idAlice.address}`)
       .expect(400)
   })
 
