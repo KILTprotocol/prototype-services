@@ -31,7 +31,7 @@ export class FaucetController {
   @Post('drop')
   public async drop(@Body('address') address: string, @Req() request: Request) {
     if (!address) {
-      throw new BadRequestException('no public key')
+      throw new BadRequestException('no address key')
     }
     console.log(`Faucet drop requested for ${address} from ${request.ip}`)
     if (!checkAddress(address, 42)[0]) {
@@ -44,7 +44,7 @@ export class FaucetController {
       DEFAULT_TOKEN_AMOUNT
     )
     if (result.dropped) {
-      const transferSucceeded = await this.transferTokens(result.publickey)
+      const transferSucceeded = await this.transferTokens(result.address)
       if (!transferSucceeded) {
         await this.faucetService.updateOnTransactionFailure(result)
         throw new FaucetDropFailedTransferException()

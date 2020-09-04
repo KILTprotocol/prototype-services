@@ -26,14 +26,14 @@ export class MongoDbFaucetService implements FaucetService {
   ) {}
 
   public async drop(
-    publickey: string,
+    address: string,
     ip: string,
     amount: number
   ): Promise<FaucetDrop> {
     let error: number = NO_ERROR
     const dropsPerIdentity: number = await this.faucetDropDBModel
       .countDocuments({
-        publickey,
+        address,
         error: NO_ERROR,
       })
       .exec()
@@ -60,7 +60,7 @@ export class MongoDbFaucetService implements FaucetService {
 
     const result: FaucetDrop = {
       amount,
-      publickey,
+      address,
       requestip: ip,
       dropped: error === NO_ERROR,
       error,

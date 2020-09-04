@@ -31,11 +31,11 @@ jest.mock('@kiltprotocol/sdk-js/build/balance/Balance.chain', () => {
 })
 
 describe('Faucet Module', () => {
-  const address = '5Ded9KnRSDY9zc3QafT7dyueTqgZdqYK43cc5TcSwqACM1dL'
-  const invalidAddress = address.replace('5', '7')
+  const claimerAddress = '5Ded9KnRSDY9zc3QafT7dyueTqgZdqYK43cc5TcSwqACM1dL'
+  const invalidAddress = claimerAddress.replace('5', '7')
   const testFaucetDrop: FaucetDrop = {
     amount: 500,
-    publickey: address,
+    address: claimerAddress,
     requestip: '::ffff:127.0.0.1',
     dropped: true,
     error: 0,
@@ -95,17 +95,17 @@ describe('Faucet Module', () => {
         const buildSpy = jest
           .spyOn(Identity, 'buildFromSeed')
           .mockResolvedValue(faucetIdentity)
-        expect(await faucetController.drop(address, faucetRequest)).toEqual(
+        expect(await faucetController.drop(claimerAddress, faucetRequest)).toEqual(
           undefined
         )
         expect(dropSpy).toHaveBeenCalledWith(
-          address,
+          claimerAddress,
           testFaucetDrop.requestip,
           DEFAULT_TOKEN_AMOUNT
         )
         expect(mockedMakeTransfer).toHaveBeenCalledWith(
           faucetIdentity,
-          address,
+          claimerAddress,
           new BN(KILT_FEMTO_COIN).muln(DEFAULT_TOKEN_AMOUNT)
         )
       })
@@ -122,21 +122,21 @@ describe('Faucet Module', () => {
         )
         const dropSpy = jest.spyOn(fakeFaucetService, 'drop')
         await expect(
-          faucetController.drop(address, faucetRequest)
+          faucetController.drop(claimerAddress, faucetRequest)
         ).rejects.toThrow(new FaucetDropFailedTransferException())
         expect(dropSpy).toHaveBeenCalledWith(
-          address,
+          claimerAddress,
           testFaucetDrop.requestip,
           DEFAULT_TOKEN_AMOUNT
         )
         expect(mockedMakeTransfer).toHaveBeenCalledWith(
           faucetIdentity,
-          address,
+          claimerAddress,
           new BN(KILT_FEMTO_COIN).muln(DEFAULT_TOKEN_AMOUNT)
         )
         expect(updateSpy).toHaveBeenCalledWith(testFaucetDrop)
       })
-      it('throws Exception on empty pubKey', async () => {
+      it('throws Exception on empty address', async () => {
         const dropSpy = jest.spyOn(fakeFaucetService, 'drop')
         await expect(
           faucetController.drop('', {
@@ -146,7 +146,7 @@ describe('Faucet Module', () => {
         expect(dropSpy).not.toHaveBeenCalled()
         expect(mockedMakeTransfer).not.toHaveBeenCalled()
       })
-      it('throws Exception on invalid pubKey', async () => {
+      it('throws Exception on invalid address', async () => {
         const dropSpy = jest.spyOn(fakeFaucetService, 'drop')
         await expect(
           faucetController.drop(invalidAddress, faucetRequest)
@@ -164,10 +164,10 @@ describe('Faucet Module', () => {
           .mockResolvedValue(falseTestFaucetDrop)
 
         await expect(
-          faucetController.drop(address, faucetRequest)
+          faucetController.drop(claimerAddress, faucetRequest)
         ).rejects.toThrow(new FaucetDropThrottledException())
         expect(dropSpy).toHaveBeenCalledWith(
-          address,
+          claimerAddress,
           testFaucetDrop.requestip,
           DEFAULT_TOKEN_AMOUNT
         )
@@ -183,13 +183,13 @@ describe('Faucet Module', () => {
             isFinalized: true,
           } as SubmittableResult
         })
-        expect(await faucetController['transferTokens'](address)).toEqual(true)
+        expect(await faucetController['transferTokens'](claimerAddress)).toEqual(true)
         expect(buildSpy).toHaveBeenCalledWith(
           hexToU8a(process.env.FAUCET_ACCOUNT)
         )
         expect(mockedMakeTransfer).toHaveBeenCalledWith(
           faucetIdentity,
-          address,
+          claimerAddress,
           new BN(KILT_FEMTO_COIN).muln(DEFAULT_TOKEN_AMOUNT)
         )
       })
@@ -200,7 +200,7 @@ describe('Faucet Module', () => {
             throw new Error('buildFromSeed failed')
           })
 
-        expect(await faucetController['transferTokens'](address)).toEqual(false)
+        expect(await faucetController['transferTokens'](claimerAddress)).toEqual(false)
         expect(buildSpy).toHaveBeenCalledWith(
           hexToU8a(process.env.FAUCET_ACCOUNT)
         )
@@ -209,13 +209,13 @@ describe('Faucet Module', () => {
         mockedMakeTransfer.mockImplementation(() => {
           throw new Error('makeTransfer failed')
         })
-        expect(await faucetController['transferTokens'](address)).toEqual(false)
+        expect(await faucetController['transferTokens'](claimerAddress)).toEqual(false)
         expect(buildSpy).toHaveBeenCalledWith(
           hexToU8a(process.env.FAUCET_ACCOUNT)
         )
         expect(mockedMakeTransfer).toHaveBeenCalledWith(
           faucetIdentity,
-          address,
+          claimerAddress,
           new BN(KILT_FEMTO_COIN).muln(DEFAULT_TOKEN_AMOUNT)
         )
         mockedMakeTransfer.mockImplementation(async () => {
@@ -223,13 +223,13 @@ describe('Faucet Module', () => {
             isFinalized: false,
           } as SubmittableResult
         })
-        expect(await faucetController['transferTokens'](address)).toEqual(false)
+        expect(await faucetController['transferTokens'](claimerAddress)).toEqual(false)
         expect(buildSpy).toHaveBeenCalledWith(
           hexToU8a(process.env.FAUCET_ACCOUNT)
         )
         expect(mockedMakeTransfer).toHaveBeenCalledWith(
           faucetIdentity,
-          address,
+          claimerAddress,
           new BN(KILT_FEMTO_COIN).muln(DEFAULT_TOKEN_AMOUNT)
         )
       })
@@ -299,19 +299,19 @@ describe('Faucet Module', () => {
               }
             } else if (query.created) {
               return { exec: async () => 9999 }
-            } else if (query.publickey) {
+            } else if (query.address) {
               return { exec: async () => 0 }
             }
           })
-        const { publickey, requestip, amount, dropped, error, created } = {
+        const { address, requestip, amount, dropped, error, created } = {
           ...(await faucetService.drop(
-            testFaucetDrop.publickey,
+            testFaucetDrop.address,
             testFaucetDrop.requestip,
             DEFAULT_TOKEN_AMOUNT
           )),
         }
         const dropResult: FaucetDrop = {
-          publickey,
+          address,
           requestip,
           amount,
           dropped,
@@ -329,7 +329,7 @@ describe('Faucet Module', () => {
         const countSpy = jest
           .spyOn(faucetService['faucetDropDBModel'], 'countDocuments')
           .mockImplementation((query: any) => {
-            if (query.publickey) {
+            if (query.address) {
               return { exec: async () => 1 }
             } else if (query.requestip) {
               return {
@@ -339,15 +339,15 @@ describe('Faucet Module', () => {
               return { exec: async () => 9999 }
             }
           })
-        let { publickey, requestip, amount, dropped, error, created } = {
+        let { address, requestip, amount, dropped, error, created } = {
           ...(await faucetService.drop(
-            testFaucetDrop.publickey,
+            testFaucetDrop.address,
             testFaucetDrop.requestip,
             DEFAULT_TOKEN_AMOUNT
           )),
         }
         let dropResult: FaucetDrop = {
-          publickey,
+          address,
           requestip,
           amount,
           dropped,
@@ -362,7 +362,7 @@ describe('Faucet Module', () => {
         expect(saveSpy).toHaveBeenCalledWith(new FaucetDropModel(dropResult))
 
         countSpy.mockImplementation((query: any) => {
-          if (query.publickey) {
+          if (query.address) {
             return { exec: async () => 0 }
           } else if (query.requestip) {
             return {
@@ -372,15 +372,15 @@ describe('Faucet Module', () => {
             return { exec: async () => 9999 }
           }
         })
-        ;({ publickey, requestip, amount, dropped, error, created } = {
+        ;({ address, requestip, amount, dropped, error, created } = {
           ...(await faucetService.drop(
-            testFaucetDrop.publickey,
+            testFaucetDrop.address,
             testFaucetDrop.requestip,
             DEFAULT_TOKEN_AMOUNT
           )),
         })
         dropResult = {
-          publickey,
+          address,
           requestip,
           amount,
           dropped,
@@ -394,7 +394,7 @@ describe('Faucet Module', () => {
         } as FaucetDrop)
         expect(saveSpy).toHaveBeenCalledWith(new FaucetDropModel(dropResult))
         countSpy.mockImplementation((query: any) => {
-          if (query.publickey) {
+          if (query.address) {
             return { exec: async () => 0 }
           } else if (query.requestip) {
             return {
@@ -404,15 +404,15 @@ describe('Faucet Module', () => {
             return { exec: async () => 10000 }
           }
         })
-        ;({ publickey, requestip, amount, dropped, error, created } = {
+        ;({ address, requestip, amount, dropped, error, created } = {
           ...(await faucetService.drop(
-            testFaucetDrop.publickey,
+            testFaucetDrop.address,
             testFaucetDrop.requestip,
             DEFAULT_TOKEN_AMOUNT
           )),
         })
         dropResult = {
-          publickey,
+          address,
           requestip,
           amount,
           dropped,
