@@ -118,6 +118,7 @@ describe('CType Module', () => {
       ctypesController = moduleRef.get(CTypesController)
       ctypesService = moduleRef.get('CTypeService')
     })
+    afterEach(() => jest.clearAllMocks())
 
     describe('verifyCTypeAndReturnChainOwner', () => {
       it('valid CType', async () => {
@@ -263,6 +264,7 @@ describe('CType Module', () => {
 
       ctypesService = moduleRef.get('CTypeService')
     })
+    afterEach(() => jest.clearAllMocks())
 
     describe('removeAll', () => {
       it('calls cTypeDBModel.deleteMany with inclusive condition', async () => {

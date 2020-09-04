@@ -68,6 +68,8 @@ describe('Messaging Module', () => {
       messagesController = moduleRef.get(MessagingController)
       messagesService = moduleRef.get('MessagingService')
     })
+    afterEach(() => jest.clearAllMocks())
+
     describe('removeMessage', () => {
       it('removes a message for an id from the service', async () => {
         const removeSpy = jest.spyOn(messagesService, 'remove')
@@ -222,6 +224,7 @@ describe('Messaging Module', () => {
 
       messagingService = moduleRef.get('MessagingService')
     })
+    afterEach(() => jest.clearAllMocks())
 
     describe('add', () => {
       it('creates and saves new MessageDB object', async () => {

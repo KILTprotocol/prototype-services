@@ -124,12 +124,19 @@ describe('Contact Module', () => {
       contactsController = moduleRef.get(ContactsController)
       contactsService = moduleRef.get('ContactsService')
     })
-    afterEach(() => {
-      jest.clearAllMocks()
-    })
+
+    afterEach(() => jest.clearAllMocks())
 
     describe('add', () => {
       it('calls contactService.add on valid Contact without Did', async () => {
+        const addSpy = jest.spyOn(contactsService, 'add')
+        expect(await contactsController.add(testContact)).toEqual(undefined)
+        expect(mockedHashStr).not.toHaveBeenCalled()
+        expect(mockedVerify).not.toHaveBeenCalled()
+        expect(addSpy).toHaveBeenCalledTimes(1)
+        expect(addSpy).toHaveBeenCalledWith(testContact)
+      })
+      it('calls throws Exception on invalid Contact', async () => {
         const addSpy = jest.spyOn(contactsService, 'add')
         const noAddressContact: Contact = {
           ...testContact,
@@ -149,12 +156,6 @@ describe('Contact Module', () => {
             name: '',
           },
         }
-        expect(await contactsController.add(testContact)).toEqual(undefined)
-        expect(mockedHashStr).not.toHaveBeenCalled()
-        expect(mockedVerify).not.toHaveBeenCalled()
-        expect(addSpy).toHaveBeenCalledTimes(1)
-        expect(addSpy).toHaveBeenCalledWith(testContact)
-        addSpy.mockClear()
         await expect(contactsController.add(noAddressContact)).rejects.toThrow(
           BadRequestException
         )
@@ -168,6 +169,7 @@ describe('Contact Module', () => {
         expect(mockedVerify).not.toHaveBeenCalled()
         expect(addSpy).not.toHaveBeenCalled()
       })
+
       it('calls contactService.add on valid Contact with Did', async () => {
         const addSpy = jest.spyOn(contactsService, 'add')
         expect(await contactsController.add(contactWithDid)).toEqual(undefined)
@@ -286,9 +288,8 @@ describe('Contact Module', () => {
 
       contactsService = moduleRef.get('ContactService')
     })
-    afterEach(() => {
-      jest.clearAllMocks()
-    })
+    afterEach(() => jest.clearAllMocks())
+
     describe('add', () => {
       it('creates a Contact and saves it', async () => {
         const saveSpy = jest.spyOn(contactsService['contactModel'], 'save')

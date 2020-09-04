@@ -29,18 +29,17 @@ export class FaucetController {
   ) {}
 
   @Post('drop')
-  public async drop(@Body('pubkey') pubKey: string, @Req() request: Request) {
-    if (!pubKey) {
+  public async drop(@Body('address') address: string, @Req() request: Request) {
+    if (!address) {
       throw new BadRequestException('no public key')
     }
-    console.log(`Faucet drop requested for ${pubKey} from ${request.ip}`)
-
-    if (!checkAddress(pubKey, 42)[0]) {
+    console.log(`Faucet drop requested for ${address} from ${request.ip}`)
+    if (!checkAddress(address, 42)[0]) {
       throw new FaucetDropInvalidAddressException()
     }
 
     const result = await this.faucetService.drop(
-      pubKey,
+      address,
       request.ip,
       DEFAULT_TOKEN_AMOUNT
     )
