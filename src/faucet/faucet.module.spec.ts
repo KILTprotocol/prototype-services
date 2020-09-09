@@ -17,6 +17,7 @@ import { Request } from 'express'
 import { BadRequestException } from '@nestjs/common'
 import { MongoDbFaucetService } from './mongodb-faucet.service'
 import { getModelToken } from '@nestjs/mongoose'
+import { AuthGuard } from '../auth/auth.guard'
 
 jest.mock('@kiltprotocol/sdk-js/build/balance/Balance.chain', () => {
   return {
@@ -83,7 +84,10 @@ describe('Faucet Module', () => {
             useValue: fakeFaucetService,
           },
         ],
-      }).compile()
+      })
+        .overrideGuard(AuthGuard)
+        .useValue({ canActivate: () => true })
+        .compile()
 
       faucetController = moduleRef.get(FaucetController)
       faucetService = moduleRef.get('FaucetService')
@@ -95,9 +99,9 @@ describe('Faucet Module', () => {
         const buildSpy = jest
           .spyOn(Identity, 'buildFromSeed')
           .mockResolvedValue(faucetIdentity)
-        expect(await faucetController.drop(claimerAddress, faucetRequest)).toEqual(
-          undefined
-        )
+        expect(
+          await faucetController.drop(claimerAddress, faucetRequest)
+        ).toEqual(undefined)
         expect(dropSpy).toHaveBeenCalledWith(
           claimerAddress,
           testFaucetDrop.requestip,
@@ -183,7 +187,9 @@ describe('Faucet Module', () => {
             isFinalized: true,
           } as SubmittableResult
         })
-        expect(await faucetController['transferTokens'](claimerAddress)).toEqual(true)
+        expect(
+          await faucetController['transferTokens'](claimerAddress)
+        ).toEqual(true)
         expect(buildSpy).toHaveBeenCalledWith(
           hexToU8a(process.env.FAUCET_ACCOUNT)
         )
@@ -200,7 +206,9 @@ describe('Faucet Module', () => {
             throw new Error('buildFromSeed failed')
           })
 
-        expect(await faucetController['transferTokens'](claimerAddress)).toEqual(false)
+        expect(
+          await faucetController['transferTokens'](claimerAddress)
+        ).toEqual(false)
         expect(buildSpy).toHaveBeenCalledWith(
           hexToU8a(process.env.FAUCET_ACCOUNT)
         )
@@ -209,7 +217,9 @@ describe('Faucet Module', () => {
         mockedMakeTransfer.mockImplementation(() => {
           throw new Error('makeTransfer failed')
         })
-        expect(await faucetController['transferTokens'](claimerAddress)).toEqual(false)
+        expect(
+          await faucetController['transferTokens'](claimerAddress)
+        ).toEqual(false)
         expect(buildSpy).toHaveBeenCalledWith(
           hexToU8a(process.env.FAUCET_ACCOUNT)
         )
@@ -223,7 +233,9 @@ describe('Faucet Module', () => {
             isFinalized: false,
           } as SubmittableResult
         })
-        expect(await faucetController['transferTokens'](claimerAddress)).toEqual(false)
+        expect(
+          await faucetController['transferTokens'](claimerAddress)
+        ).toEqual(false)
         expect(buildSpy).toHaveBeenCalledWith(
           hexToU8a(process.env.FAUCET_ACCOUNT)
         )

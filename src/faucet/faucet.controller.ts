@@ -6,6 +6,8 @@ import {
   Req,
   Body,
   BadRequestException,
+  Delete,
+  UseGuards,
 } from '@nestjs/common'
 import { Request } from 'express'
 import BN from 'bn.js'
@@ -18,6 +20,7 @@ import {
   FaucetDropFailedTransferException,
   FaucetDropInvalidAddressException,
 } from './exceptions'
+import { AuthGuard } from '../auth/auth.guard'
 
 const KILT_FEMTO_COIN = '1000000000000000'
 const DEFAULT_TOKEN_AMOUNT = 500
@@ -52,6 +55,13 @@ export class FaucetController {
     } else {
       throw new FaucetDropThrottledException()
     }
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete()
+  public async reset() {
+    console.log('Purging faucet drop registry')
+    this.faucetService.reset()
   }
 
   private async transferTokens(address: string): Promise<boolean> {
