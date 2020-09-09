@@ -59,9 +59,9 @@ export class FaucetController {
 
   @UseGuards(AuthGuard)
   @Delete()
-  public async removeAll() {
+  public async reset() {
     console.log('Purging faucet drop registry')
-    this.faucetService.removeAll()
+    this.faucetService.reset()
   }
 
   private async transferTokens(address: string): Promise<boolean> {

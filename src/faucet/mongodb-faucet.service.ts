@@ -71,9 +71,6 @@ export class MongoDbFaucetService implements FaucetService {
     await createdFaucetDrop.save()
     return createdFaucetDrop as FaucetDrop
   }
-  public async removeAll(): Promise<void> {
-    this.faucetDropDBModel.deleteMany({}).exec()
-  }
 
   public async updateOnTransactionFailure(drop: FaucetDrop): Promise<void> {
     drop.error = ERROR_TRANSACTION_FAILED
