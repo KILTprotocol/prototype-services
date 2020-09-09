@@ -15,10 +15,11 @@ function assertErrorMessageIs(
   message: string,
   response: supertest.Response
 ): void {
-  if (response.body['message'] !== message)
+  if (response.body['message'] !== message) {
     throw new Error(
       `Expected error message '${message}', got '${response.body['message']}'`
     )
+  }
 }
 
 let app: INestApplication
@@ -228,18 +229,36 @@ describe('messaging (e2e)', () => {
       await expect(
         messagingService.findByReceiverAddress(recipient.address)
       ).resolves.toHaveLength(2)
-      await request.delete('/messaging/id1').expect(200)
+      await request
+        .delete('/messaging/id1')
+        .set({ signature: recipient.signStr('id1') })
+        .expect(200)
       inbox = await messagingService.findByReceiverAddress(recipient.address)
       expect(inbox).toHaveLength(1)
       expect(inbox[0]).toMatchObject(message2)
-      await request.delete('/messaging/id2').expect(200)
+      await request
+        .delete('/messaging/id2')
+        .set({ signature: recipient.signStr('id2') })
+        .expect(200)
       inbox = await messagingService.findByReceiverAddress(recipient.address)
       expect(inbox).toHaveLength(0)
     })
-
-    // TODO, see KILTprotocol/ticket#685
-    xit('rejects delete requests for unknown id', async () => {
-      await request.delete('/messaging/idx').expect(400)
+    it('rejects delete unauthorized requests', async () => {
+      await request
+        .delete('/messaging/id1')
+        .set({ signature: recipient.signStr('id2') })
+        .expect(403)
+      await request
+        .delete('/messaging/id1')
+        .set({ signature: '' })
+        .expect(400)
+    })
+    // should this give 400 or 403, or rather do we want to provide information if the id is unregistered?
+    it('rejects delete requests for unknown id', async () => {
+      await request
+        .delete('/messaging/idx')
+        .set({ signature: recipient.signStr('idx') })
+        .expect(403)
     })
 
     it('rejects unauthorized delete-all requests', async () => {
@@ -371,7 +390,10 @@ describe('messaging (e2e)', () => {
     })
     const decrypted = Message.decrypt(encrypted, recipient)
     expect(decrypted).toMatchObject(message)
-    await request.delete(`/messaging/${messageId}`).expect(200)
+    await request
+      .delete(`/messaging/${messageId}`)
+      .set({ signature: recipient.signStr(messageId) })
+      .expect(200)
     await request.get(`/messaging/inbox/${recipient.address}`).expect(200, [])
   })
 })

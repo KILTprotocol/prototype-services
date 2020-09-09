@@ -9,8 +9,6 @@ import {
   Delete,
   BadRequestException,
   UseGuards,
-  ForbiddenException,
-  Header,
 } from '@nestjs/common'
 import { MessagingService } from './interfaces/messaging.interfaces'
 import { IEncryptedMessage } from '@kiltprotocol/sdk-js'
@@ -38,14 +36,19 @@ export class MessagingController {
     @Param('id') id,
     @Headers('signature') signature
   ): Promise<void> {
-    console.log(signature)
+    const receiverAddress = (await this.messagingService.findById(
+      id
+    )).orElseThrow(() => {
+      throw new ForbiddenMessageAccessException()
+    }).receiverAddress
+
     if (!signature) {
       throw new BadRequestException('No signature provided')
-    }
-    console.log(`Remove message for id ${id} with signature ${signature}`)
-    if (!(await this.messagingService.remove(id, signature))) {
+    } else if (!verify(id, signature, receiverAddress)) {
       throw new ForbiddenMessageAccessException()
     }
+    console.log(`Remove message for id ${id} with signature ${signature}`)
+    await this.messagingService.remove(id)
   }
 
   @UseGuards(AuthGuard)
@@ -57,27 +60,15 @@ export class MessagingController {
 
   @Get('sent/:senderAddress')
   public async listSent(
-    @Param('senderAddress') senderAddress,
-    @Headers('signature') signature
+    @Param('senderAddress') senderAddress
   ): Promise<IEncryptedMessage[]> {
-    if (!signature) {
-      throw new BadRequestException('No signature provided')
-    } else if (!verify(senderAddress, signature, senderAddress)) {
-      throw new ForbiddenMessageAccessException()
-    }
     return this.messagingService.findBySenderAddress(senderAddress)
   }
 
   @Get('inbox/:receiverAddress')
   public async listInbox(
-    @Param('receiverAddress') receiverAddress,
-    @Headers('signature') signature
+    @Param('receiverAddress') receiverAddress
   ): Promise<IEncryptedMessage[]> {
-    if (!signature) {
-      throw new BadRequestException('No signature provided')
-    } else if (!verify(receiverAddress, signature, receiverAddress)) {
-      throw new ForbiddenMessageAccessException()
-    }
     return this.messagingService.findByReceiverAddress(receiverAddress)
   }
 
