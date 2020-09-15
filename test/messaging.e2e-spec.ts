@@ -258,7 +258,7 @@ describe('messaging (e2e)', () => {
       await request
         .delete('/messaging/idx')
         .set({ signature: recipient.signStr('idx') })
-        .expect(403)
+        .expect(404)
     })
 
     it('rejects unauthorized delete-all requests', async () => {

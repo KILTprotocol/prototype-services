@@ -9,7 +9,7 @@ import * as Controller from './messaging.controller'
 import { MongoDbMessagingService } from './mongodb-messaging.service'
 import Optional from 'typescript-optional'
 import { ForbiddenMessageAccessException } from './exceptions/message-forbidden.exception'
-import { async } from 'rxjs/internal/scheduler/async'
+import { MessageNotFoundException } from './exceptions/message-not-found.exception'
 
 describe('Messaging Module', () => {
   const encryptedMessage: IEncryptedMessage = {
@@ -131,7 +131,7 @@ describe('Messaging Module', () => {
             encryptedMessage.messageId,
             receiverSignature
           )
-        ).rejects.toThrow(ForbiddenMessageAccessException)
+        ).rejects.toThrow(MessageNotFoundException)
         expect(findByIdSpy).toHaveBeenCalledTimes(1)
         expect(findByIdSpy).toHaveBeenCalledWith(encryptedMessage.messageId)
 
