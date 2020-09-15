@@ -13,14 +13,19 @@ import {
 } from './interfaces/contacts.interfaces'
 import { MongoDbMContactsService } from './mongodb-contacts.service'
 import Optional from 'typescript-optional'
+import {
+  IDidDocumentSigned,
+  IDENTIFIER_PREFIX,
+} from '@kiltprotocol/sdk-js/build/did/Did'
 
-jest.mock('@kiltprotocol/sdk-js/build/crypto/Crypto', () => {
+jest.mock('@kiltprotocol/sdk-js/build/did/Did', () => {
   return {
-    hashStr: jest.fn((): string => '0x1'),
-    verify: jest.fn((): boolean => true),
+    verifyDidDocumentSignature: jest.fn((): boolean => true),
+    getIdentifierFromAddress: jest.fn(
+      (address: string): string => IDENTIFIER_PREFIX + address
+    ),
   }
 })
-
 describe('Contact Module', () => {
   const testContact: Contact = {
     metaData: {
@@ -33,8 +38,12 @@ describe('Contact Module', () => {
       serviceAddress: 'https://services.devnet.kilt.io:443/messaging',
     },
   }
-  const testDID: object = {
+  const signature =
+    '0x00aad52336444c0263a22c22f2b99bbcdfc3a6912b5d085c11df01de2bb13dae7c9adf89ecb58f9a32dd021c1c0c1ff0ed39ba361a85f350714b58f15cbd617607'
+
+  const signedTestDID: IDidDocumentSigned = {
     id: 'did:kilt:5CKq9ovoHUFb5Qg2q7YmQ2waNhgQm4C22qwb1Wgehnn2eBcb',
+    signature,
     '@context': 'https://w3id.org/did/v1',
     authentication: [
       {
@@ -67,29 +76,23 @@ describe('Contact Module', () => {
       },
     ],
   }
-  const signature =
-    '0x00aad52336444c0263a22c22f2b99bbcdfc3a6912b5d085c11df01de2bb13dae7c9adf89ecb58f9a32dd021c1c0c1ff0ed39ba361a85f350714b58f15cbd617607'
+
   const contactWithDid: Contact = {
     ...testContact,
-    did: testDID,
-    signature,
+    did: signedTestDID,
   }
-  const noSigContact: Contact = {
+  const badSigContact: Contact = {
     ...testContact,
-    did: testDID,
+    did: { ...signedTestDID, signature: signature.replace('d', 'f') },
   }
-  const badSigContact: Contact = { ...contactWithDid, signature: '0x1' }
 
   const address = testContact.publicIdentity.address
   describe('Controller', () => {
     let contactsController: ContactsController
     let contactsService: ContactsService
 
-    const mockedHashStr = require('@kiltprotocol/sdk-js/build/crypto/Crypto')
-      .hashStr
-    const mockedVerify = require('@kiltprotocol/sdk-js/build/crypto/Crypto')
-      .verify
-
+    const mockedVerifyDidDocumentSignature = require('@kiltprotocol/sdk-js/build/did/Did')
+      .verifyDidDocumentSignature
     const fakeContactService: ContactsService = {
       add: jest.fn(
         async (): Promise<void> => {
@@ -131,8 +134,7 @@ describe('Contact Module', () => {
       it('calls contactService.add on valid Contact without Did', async () => {
         const addSpy = jest.spyOn(contactsService, 'add')
         expect(await contactsController.add(testContact)).toEqual(undefined)
-        expect(mockedHashStr).not.toHaveBeenCalled()
-        expect(mockedVerify).not.toHaveBeenCalled()
+        expect(mockedVerifyDidDocumentSignature).not.toHaveBeenCalled()
         expect(addSpy).toHaveBeenCalledTimes(1)
         expect(addSpy).toHaveBeenCalledWith(testContact)
       })
@@ -165,37 +167,27 @@ describe('Contact Module', () => {
         await expect(contactsController.add(noNameContact)).rejects.toThrow(
           BadRequestException
         )
-        expect(mockedHashStr).not.toHaveBeenCalled()
-        expect(mockedVerify).not.toHaveBeenCalled()
         expect(addSpy).not.toHaveBeenCalled()
       })
 
       it('calls contactService.add on valid Contact with Did', async () => {
         const addSpy = jest.spyOn(contactsService, 'add')
-        expect(await contactsController.add(contactWithDid)).toEqual(undefined)
+
+        await contactsController.add(contactWithDid)
+        expect(mockedVerifyDidDocumentSignature).toHaveBeenCalledWith(
+          signedTestDID,
+          IDENTIFIER_PREFIX + contactWithDid.publicIdentity.address
+        )
         expect(addSpy).toHaveBeenCalledTimes(1)
         expect(addSpy).toHaveBeenCalledWith(contactWithDid)
-        expect(mockedHashStr).toHaveBeenCalledTimes(1)
-        expect(mockedVerify).toHaveBeenCalledTimes(1)
-        expect(mockedHashStr).toHaveBeenCalledWith(JSON.stringify(testDID))
-        expect(mockedVerify).toHaveBeenCalledWith(
-          '0x1',
-          contactWithDid.signature,
-          contactWithDid.publicIdentity.address
-        )
       })
       it('rejects contact with did if signature is missing or invalid', async () => {
         const addSpy = jest.spyOn(contactsService, 'add')
-        mockedVerify.mockReturnValue(false)
-        await expect(contactsController.add(noSigContact)).rejects.toThrow(
-          BadRequestException
-        )
+        mockedVerifyDidDocumentSignature.mockReturnValue(false)
         await expect(contactsController.add(badSigContact)).rejects.toThrow(
           BadRequestException
         )
         expect(addSpy).not.toHaveBeenCalled()
-        expect(mockedHashStr).toHaveBeenCalledTimes(1)
-        expect(mockedVerify).toHaveBeenCalledTimes(1)
       })
     })
     describe('list', () => {

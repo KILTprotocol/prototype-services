@@ -5,7 +5,6 @@ export const ContactSchema = new mongoose.Schema({
     name: String,
   },
   did: Object,
-  signature: String,
   publicIdentity: {
     address: String,
     boxPublicKeyAsHex: String,

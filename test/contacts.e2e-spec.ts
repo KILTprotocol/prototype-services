@@ -8,7 +8,7 @@ import {
   Contact,
 } from '../src/contacts/interfaces/contacts.interfaces'
 import { ContactsModule } from '../src/contacts/contacts.module'
-import { IDidDocument } from '@kiltprotocol/sdk-js/build/did/Did'
+import { IDidDocumentSigned } from '@kiltprotocol/sdk-js/build/did/Did'
 
 describe('contacts endpoint (e2e)', () => {
   let app: INestApplication
@@ -91,10 +91,10 @@ describe('contacts endpoint (e2e)', () => {
       })
 
       it('gets did by contact address', async () => {
-        const didAlice = sdk.Did.fromIdentity(
+        const didAlice = sdk.Did.signDidDocument(
+          sdk.Did.fromIdentity(idAlice).createDefaultDidDocument(),
           idAlice
-        ).createDefaultDidDocument()
-
+        )
         await contactsService.add({ ...contactA, did: didAlice })
         await request(app.getHttpServer())
           .get(`/contacts/did/${contactA.publicIdentity.address}`)
@@ -195,15 +195,12 @@ describe('contacts endpoint (e2e)', () => {
     })
 
     describe('with did', () => {
-      let didAlice: IDidDocument
-      let signature: string
+      let didAlice: IDidDocumentSigned
 
       beforeAll(() => {
-        didAlice = sdk.Did.fromIdentity(idAlice).createDefaultDidDocument()
-        // TODO (KILTprotocol/ticket#687): I would expect this to work, but it doesn't:
-        // signature = sdk.Did.signDidDocument(didAlice, idAlice).signature
-        signature = idAlice.signStr(
-          sdk.Crypto.hashStr(JSON.stringify(didAlice))
+        didAlice = sdk.Did.signDidDocument(
+          sdk.Did.fromIdentity(idAlice).createDefaultDidDocument(),
+          idAlice
         )
       })
 
@@ -215,7 +212,6 @@ describe('contacts endpoint (e2e)', () => {
             publicIdentity: idAlice.getPublicIdentity(),
             metaData: { name: 'Alice' },
             did: didAlice,
-            signature,
           } as Contact)
           .expect(201)
 
@@ -246,7 +242,6 @@ describe('contacts endpoint (e2e)', () => {
             publicIdentity: idAlice.getPublicIdentity(),
             metaData: { name: 'Alice' },
             did: didAlice,
-            signature,
           } as Contact)
           .expect(201)
 
@@ -266,7 +261,7 @@ describe('contacts endpoint (e2e)', () => {
           .send({
             publicIdentity: idAlice.getPublicIdentity(),
             metaData: { name: 'Alice' },
-            did: didAlice,
+            did: { ...didAlice, signature: '' },
           } as Contact)
           .expect(400)
 
@@ -279,10 +274,10 @@ describe('contacts endpoint (e2e)', () => {
           .send({
             publicIdentity: idAlice.getPublicIdentity(),
             metaData: { name: 'Alice' },
-            did: didAlice,
-            signature: idAlice.signStr(
-              JSON.stringify({ ...didAlice, service: 'www.happy-phishing.com' })
-            ),
+            did: {
+              ...didAlice,
+              signature: didAlice.signature.replace('d', 'f'),
+            },
           } as Contact)
           .expect(400)
 
