@@ -4,7 +4,7 @@ import { HttpStatus } from '@nestjs/common'
 export class ForbiddenMessageAccessException extends HttpException {
   constructor() {
     super(
-      'Signature could not be verified with the message owner',
+      'Message owner signature could not be verified!',
       HttpStatus.FORBIDDEN
     )
   }
