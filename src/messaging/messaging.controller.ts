@@ -15,6 +15,7 @@ import { IEncryptedMessage } from '@kiltprotocol/sdk-js'
 import { AuthGuard } from '../auth/auth.guard'
 import { verify } from '@kiltprotocol/sdk-js/build/crypto'
 import { ForbiddenMessageAccessException } from './exceptions/message-forbidden.exception'
+import { MessageNotFoundException } from './exceptions/message-not-found.exception'
 
 export const uuidv4 = () => {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
@@ -36,11 +37,11 @@ export class MessagingController {
     @Param('id') id,
     @Headers('signature') signature
   ): Promise<void> {
-    const receiverAddress = (await this.messagingService.findById(
+    const { receiverAddress } = (await this.messagingService.findById(
       id
     )).orElseThrow(() => {
-      throw new ForbiddenMessageAccessException()
-    }).receiverAddress
+      throw new MessageNotFoundException()
+    })
 
     if (!signature) {
       throw new BadRequestException('No signature provided')
