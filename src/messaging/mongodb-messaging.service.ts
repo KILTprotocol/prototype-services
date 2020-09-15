@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { MessageDB, MessagingService } from './interfaces/messaging.interfaces'
-import { IEncryptedMessage } from '@kiltprotocol/sdk-js'
+import { IEncryptedMessage, Crypto } from '@kiltprotocol/sdk-js'
+import Optional from 'typescript-optional'
 
 @Injectable()
 export class MongoDbMessagingService implements MessagingService {
@@ -15,6 +16,14 @@ export class MongoDbMessagingService implements MessagingService {
       message as MessageDB
     )
     await createdMessage.save()
+  }
+
+  public async findById(
+    messageId: IEncryptedMessage['messageId']
+  ): Promise<Optional<IEncryptedMessage>> {
+    return Optional.ofNullable<MessageDB>(
+      await this.messageModel.findOne({ messageId }).exec()
+    ).map((messageDB: MessageDB) => this.convertToEncryptedMessage(messageDB))
   }
 
   public async findBySenderAddress(

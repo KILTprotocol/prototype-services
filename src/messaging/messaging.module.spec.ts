@@ -4,9 +4,12 @@ import { BadRequestException } from '@nestjs/common/exceptions'
 import { getModelToken } from '@nestjs/mongoose'
 import { MessagingController } from './messaging.controller'
 import { MessagingService, MessageDB } from './interfaces/messaging.interfaces'
-import { IEncryptedMessage } from '@kiltprotocol/sdk-js'
+import { IEncryptedMessage, Identity } from '@kiltprotocol/sdk-js'
 import * as Controller from './messaging.controller'
 import { MongoDbMessagingService } from './mongodb-messaging.service'
+import Optional from 'typescript-optional'
+import { ForbiddenMessageAccessException } from './exceptions/message-forbidden.exception'
+import { MessageNotFoundException } from './exceptions/message-not-found.exception'
 
 describe('Messaging Module', () => {
   const encryptedMessage: IEncryptedMessage = {
@@ -16,23 +19,27 @@ describe('Messaging Module', () => {
     hash: '0xa46441cfbeb4ebd517c810fe78718eb43e891e1603e1db5665f751a1ef632991',
     signature:
       '0x00f0a10b39879d6bc9ee7fe54260e6becc4becd4d5e2ca2cfdaf5c8b079fdda852368e56dc776020086f481694374cfcef3b5b9469d1916714db81541b77f7f10d',
-    receiverAddress: '5D5D5fSDUFVvn6RroC85zgaKL93oFv7R332RGwdCdBvAQzUn',
+    receiverAddress: '5HYCKhYheTbkB5tPwKWXvs9qimDV4g6TrRuYyXBdFqED2w9J',
     senderAddress: '5CKq9ovoHUFb5Qg2q7YmQ2waNhgQm4C22qwb1Wgehnn2eBcb',
     senderBoxPublicKey:
       '0x5640c86ce5a99b1caf37882197b17572fa8ac33db8387861ef24dd2b497edd43',
     messageId: 'e545724a-00ad-495c-b314-c66750ae14e4',
     receivedAt: 1598438707577,
   }
-
   describe('Controller', () => {
     let messagesController: MessagingController
     let messagesService: MessagingService
+    let receiverIdentity: Identity
+    let receiverSignature: string
 
     const fakeMessagingService: MessagingService = {
       add: jest.fn(
         async (): Promise<void> => {
           return
         }
+      ),
+      findById: jest.fn(async () =>
+        Optional.ofNullable<IEncryptedMessage>(null)
       ),
       findBySenderAddress: jest.fn(
         async (): Promise<IEncryptedMessage[]> => []
@@ -69,14 +76,68 @@ describe('Messaging Module', () => {
       messagesService = moduleRef.get('MessagingService')
     })
     afterEach(() => jest.clearAllMocks())
-
+    beforeAll(async () => {
+      receiverIdentity = await Identity.buildFromMnemonic(
+        'layer donor village public cruel caution learn bronze fish come embrace hurt'
+      )
+      receiverSignature = receiverIdentity.signStr(encryptedMessage.messageId)
+    })
     describe('removeMessage', () => {
       it('removes a message for an id from the service', async () => {
         const removeSpy = jest.spyOn(messagesService, 'remove')
-        messagesController.removeMessage(encryptedMessage.messageId)
+        const findByIdSpy = jest
+          .spyOn(messagesService, 'findById')
+          .mockResolvedValue(Optional.ofNullable(encryptedMessage))
+        await messagesController.removeMessage(
+          encryptedMessage.messageId,
+          receiverSignature
+        )
+        expect(findByIdSpy).toHaveBeenCalledTimes(1)
+        expect(findByIdSpy).toHaveBeenCalledWith(encryptedMessage.messageId)
         expect(removeSpy).toHaveBeenCalledTimes(1)
         expect(removeSpy).toHaveBeenCalledWith(encryptedMessage.messageId)
-        removeSpy.mockRestore()
+      })
+      it('rejects removal request when requirements are not met', async () => {
+        const removeSpy = jest.spyOn(messagesService, 'remove')
+        const findByIdSpy = jest
+          .spyOn(messagesService, 'findById')
+          .mockResolvedValue(Optional.ofNullable(encryptedMessage))
+        await expect(
+          messagesController.removeMessage(
+            encryptedMessage.messageId,
+            receiverSignature.replace('d', 'a')
+          )
+        ).rejects.toThrow(ForbiddenMessageAccessException)
+        expect(findByIdSpy).toHaveBeenCalledTimes(1)
+        expect(findByIdSpy).toHaveBeenCalledWith(encryptedMessage.messageId)
+
+        expect(removeSpy).not.toHaveBeenCalled()
+        removeSpy.mockClear()
+        findByIdSpy.mockClear()
+        await expect(
+          messagesController.removeMessage(encryptedMessage.messageId, '')
+        ).rejects.toThrow(BadRequestException)
+        expect(findByIdSpy).toHaveBeenCalledTimes(1)
+        expect(findByIdSpy).toHaveBeenCalledWith(encryptedMessage.messageId)
+
+        expect(removeSpy).not.toHaveBeenCalled()
+        removeSpy.mockClear()
+        findByIdSpy.mockClear()
+        findByIdSpy.mockResolvedValue(
+          Optional.ofNullable<IEncryptedMessage>(null)
+        )
+        await expect(
+          messagesController.removeMessage(
+            encryptedMessage.messageId,
+            receiverSignature
+          )
+        ).rejects.toThrow(MessageNotFoundException)
+        expect(findByIdSpy).toHaveBeenCalledTimes(1)
+        expect(findByIdSpy).toHaveBeenCalledWith(encryptedMessage.messageId)
+
+        expect(removeSpy).not.toHaveBeenCalled()
+        removeSpy.mockClear()
+        findByIdSpy.mockClear()
       })
     })
     describe('removeAll', () => {
@@ -184,6 +245,11 @@ describe('Messaging Module', () => {
   })
 
   class MessageModel {
+    public static findOne = jest.fn().mockReturnValue({
+      exec: async (): Promise<MessageDB> => {
+        return null
+      },
+    })
     public static find = jest
       .fn()
       .mockReturnValue({ exec: async (): Promise<MessageDB[]> => [] })
@@ -234,6 +300,40 @@ describe('Messaging Module', () => {
         await messagingService.add(encryptedMessage)
         expect(saveSpy).toHaveBeenCalledTimes(1)
         saveSpy.mockRestore()
+      })
+    })
+    describe('findById', () => {
+      it('returns Optional for Id and converts to EncryptedMessage', async () => {
+        const findOneSpy = jest
+          .spyOn(messagingService['messageModel'], 'findOne')
+          .mockReturnValue({
+            exec: async (): Promise<MessageDB> => {
+              return encryptedMessage as MessageDB
+            },
+          })
+        expect(
+          await messagingService.findById(encryptedMessage.messageId)
+        ).toEqual(Optional.ofNullable(encryptedMessage))
+        expect(findOneSpy).toHaveBeenCalledTimes(1)
+        expect(findOneSpy).toHaveBeenLastCalledWith({
+          messageId: encryptedMessage.messageId,
+        })
+      })
+      it('returns nulled Optional for Id and converts to EncryptedMessage', async () => {
+        const findOneSpy = jest
+          .spyOn(messagingService['messageModel'], 'findOne')
+          .mockReturnValue({
+            exec: async (): Promise<MessageDB> => {
+              return null
+            },
+          })
+        expect(
+          await messagingService.findById(encryptedMessage.messageId)
+        ).toEqual(Optional.ofNullable<IEncryptedMessage>(null))
+        expect(findOneSpy).toHaveBeenCalledTimes(1)
+        expect(findOneSpy).toHaveBeenLastCalledWith({
+          messageId: encryptedMessage.messageId,
+        })
       })
     })
     describe('findBySenderAddress', () => {

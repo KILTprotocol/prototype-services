@@ -4,6 +4,7 @@ import {
   Get,
   Inject,
   Param,
+  Headers,
   Post,
   Delete,
   BadRequestException,
@@ -12,6 +13,9 @@ import {
 import { MessagingService } from './interfaces/messaging.interfaces'
 import { IEncryptedMessage } from '@kiltprotocol/sdk-js'
 import { AuthGuard } from '../auth/auth.guard'
+import { verify } from '@kiltprotocol/sdk-js/build/crypto'
+import { ForbiddenMessageAccessException } from './exceptions/message-forbidden.exception'
+import { MessageNotFoundException } from './exceptions/message-not-found.exception'
 
 export const uuidv4 = () => {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
@@ -29,8 +33,22 @@ export class MessagingController {
   ) {}
 
   @Delete(':id')
-  public async removeMessage(@Param('id') id): Promise<void> {
-    console.log(`Remove message for id ${id}`)
+  public async removeMessage(
+    @Param('id') id,
+    @Headers('signature') signature
+  ): Promise<void> {
+    const { receiverAddress } = (await this.messagingService.findById(
+      id
+    )).orElseThrow(() => {
+      throw new MessageNotFoundException()
+    })
+
+    if (!signature) {
+      throw new BadRequestException('No signature provided')
+    } else if (!verify(id, signature, receiverAddress)) {
+      throw new ForbiddenMessageAccessException()
+    }
+    console.log(`Remove message for id ${id} with signature ${signature}`)
     await this.messagingService.remove(id)
   }
 
