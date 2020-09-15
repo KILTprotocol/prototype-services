@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { MessageDB, MessagingService } from './interfaces/messaging.interfaces'
-import { IEncryptedMessage, Crypto } from '@kiltprotocol/sdk-js'
+import { IEncryptedMessage } from '@kiltprotocol/sdk-js'
 import Optional from 'typescript-optional'
 
 @Injectable()
@@ -47,7 +47,7 @@ export class MongoDbMessagingService implements MessagingService {
   public async remove(
     messageId: IEncryptedMessage['messageId']
   ): Promise<void> {
-    this.messageModel.deleteOne({ messageId }).exec()
+    await this.messageModel.deleteOne({ messageId }).exec()
   }
 
   public async removeAll(): Promise<void> {
