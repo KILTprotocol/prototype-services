@@ -11,9 +11,10 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { Contact, ContactsService } from './interfaces/contacts.interfaces'
-import { Crypto } from '@kiltprotocol/sdk-js'
+import { Did } from '@kiltprotocol/sdk-js'
 import Optional from 'typescript-optional'
 import { AuthGuard } from '../auth/auth.guard'
+import { IDidDocumentSigned } from '@kiltprotocol/sdk-js/build/did/Did'
 
 @Controller('contacts')
 export class ContactsController {
@@ -31,15 +32,18 @@ export class ContactsController {
       throw new BadRequestException('no name')
     }
     if (contact.did) {
-      if (!contact.signature) {
-        throw new BadRequestException('no signature')
-      }
-
-      const hash = Crypto.hashStr(JSON.stringify(contact.did))
-      if (
-        !Crypto.verify(hash, contact.signature, contact.publicIdentity.address)
-      ) {
-        throw new BadRequestException('bad signature for hash')
+      try {
+        if (
+          !Did.verifyDidDocumentSignature(
+            contact.did,
+            Did.getIdentifierFromAddress(contact.publicIdentity.address)
+          )
+        ) {
+          throw new BadRequestException('Did signature not verifiable')
+        }
+      } catch (e) {
+        console.log(e)
+        throw new BadRequestException('Did signature not verifiable')
       }
     }
     await this.contactService.add(contact)
@@ -64,7 +68,9 @@ export class ContactsController {
   }
 
   @Get('did/:address')
-  public async getDidDocument(@Param('address') address): Promise<object> {
+  public async getDidDocument(
+    @Param('address') address
+  ): Promise<IDidDocumentSigned> {
     const result: Optional<Contact> = await this.contactService.findByAddress(
       address
     )
