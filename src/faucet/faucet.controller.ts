@@ -73,7 +73,8 @@ export class FaucetController {
       const status: SubmittableResult = await Balance.makeTransfer(
         faucetAccount,
         address,
-        new BN(KILT_FEMTO_COIN).muln(DEFAULT_TOKEN_AMOUNT)
+        new BN(DEFAULT_TOKEN_AMOUNT),
+        0
       )
       return Promise.resolve(status.isFinalized)
     } catch (e) {
