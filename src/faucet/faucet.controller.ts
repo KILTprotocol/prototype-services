@@ -22,7 +22,6 @@ import {
 } from './exceptions'
 import { AuthGuard } from '../auth/auth.guard'
 
-const KILT_FEMTO_COIN = '1000000000000000'
 const DEFAULT_TOKEN_AMOUNT = 500
 
 @Controller('faucet')
