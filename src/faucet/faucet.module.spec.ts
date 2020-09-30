@@ -110,7 +110,8 @@ describe('Faucet Module', () => {
         expect(mockedMakeTransfer).toHaveBeenCalledWith(
           faucetIdentity,
           claimerAddress,
-          new BN(KILT_FEMTO_COIN).muln(DEFAULT_TOKEN_AMOUNT)
+          new BN(DEFAULT_TOKEN_AMOUNT),
+          0
         )
       })
       it('updates the database on unsuccessful transfer and throws exception', async () => {
@@ -136,7 +137,8 @@ describe('Faucet Module', () => {
         expect(mockedMakeTransfer).toHaveBeenCalledWith(
           faucetIdentity,
           claimerAddress,
-          new BN(KILT_FEMTO_COIN).muln(DEFAULT_TOKEN_AMOUNT)
+          new BN(DEFAULT_TOKEN_AMOUNT),
+          0
         )
         expect(updateSpy).toHaveBeenCalledWith(testFaucetDrop)
       })
@@ -196,7 +198,8 @@ describe('Faucet Module', () => {
         expect(mockedMakeTransfer).toHaveBeenCalledWith(
           faucetIdentity,
           claimerAddress,
-          new BN(KILT_FEMTO_COIN).muln(DEFAULT_TOKEN_AMOUNT)
+          new BN(DEFAULT_TOKEN_AMOUNT),
+          0
         )
       })
       it(`returns false on thrown error or if the transfer failed`, async () => {
@@ -226,7 +229,8 @@ describe('Faucet Module', () => {
         expect(mockedMakeTransfer).toHaveBeenCalledWith(
           faucetIdentity,
           claimerAddress,
-          new BN(KILT_FEMTO_COIN).muln(DEFAULT_TOKEN_AMOUNT)
+          new BN(DEFAULT_TOKEN_AMOUNT),
+          0
         )
         mockedMakeTransfer.mockImplementation(async () => {
           return {
@@ -242,7 +246,8 @@ describe('Faucet Module', () => {
         expect(mockedMakeTransfer).toHaveBeenCalledWith(
           faucetIdentity,
           claimerAddress,
-          new BN(KILT_FEMTO_COIN).muln(DEFAULT_TOKEN_AMOUNT)
+          new BN(DEFAULT_TOKEN_AMOUNT),
+          0
         )
       })
     })

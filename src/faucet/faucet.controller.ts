@@ -22,7 +22,6 @@ import {
 } from './exceptions'
 import { AuthGuard } from '../auth/auth.guard'
 
-const KILT_FEMTO_COIN = '1000000000000000'
 const DEFAULT_TOKEN_AMOUNT = 500
 
 @Controller('faucet')
@@ -73,7 +72,8 @@ export class FaucetController {
       const status: SubmittableResult = await Balance.makeTransfer(
         faucetAccount,
         address,
-        new BN(KILT_FEMTO_COIN).muln(DEFAULT_TOKEN_AMOUNT)
+        new BN(DEFAULT_TOKEN_AMOUNT),
+        0
       )
       return Promise.resolve(status.isFinalized)
     } catch (e) {

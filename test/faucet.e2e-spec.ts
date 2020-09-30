@@ -69,7 +69,8 @@ describe('faucet endpoint (e2e)', () => {
     expect(spy).toHaveBeenCalledWith(
       expect.objectContaining({ seedAsHex: FAUCET_SEED }),
       idAlice.address,
-      expect.any(BN)
+      expect.any(BN),
+      0
     )
   })
 
