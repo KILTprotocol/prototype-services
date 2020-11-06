@@ -3,7 +3,11 @@ import {
   FaucetDropDB,
   FaucetDrop,
 } from './interfaces/faucet.interfaces'
-import { Identity, SubmittableResult } from '@kiltprotocol/sdk-js'
+import {
+  Identity,
+  SubmittableExtrinsic,
+  SubmittableResult,
+} from '@kiltprotocol/sdk-js'
 import { Test } from '@nestjs/testing'
 import { FaucetController } from './faucet.controller'
 import {
@@ -22,12 +26,23 @@ import { AuthGuard } from '../auth/auth.guard'
 jest.mock('@kiltprotocol/sdk-js/build/balance/Balance.chain', () => {
   return {
     makeTransfer: jest.fn(
-      async (): Promise<SubmittableResult> => {
-        return {
-          isFinalized: true,
-        } as SubmittableResult
+      async (): Promise<SubmittableExtrinsic> => {
+        return {} as SubmittableExtrinsic
       }
     ),
+  }
+})
+
+jest.mock('@kiltprotocol/sdk-js/build/blockchain/Blockchain', () => {
+  return {
+    __esModule: true,
+    default: {
+      submitSignedTx: jest.fn(
+        async (): Promise<SubmittableResult> => {
+          return { isFinalized: true } as SubmittableResult
+        }
+      ),
+    },
   }
 })
 
@@ -57,6 +72,9 @@ describe('Faucet Module', () => {
 
     const mockedMakeTransfer = require('@kiltprotocol/sdk-js/build/balance/Balance.chain')
       .makeTransfer
+
+    const mockedsubmitSignedTx = require('@kiltprotocol/sdk-js/build/blockchain/Blockchain')
+      .default.submitSignedTx
 
     const fakeFaucetService: FaucetService = {
       drop: jest.fn(async (): Promise<FaucetDrop> => testFaucetDrop),
@@ -118,7 +136,7 @@ describe('Faucet Module', () => {
         const buildSpy = jest
           .spyOn(Identity, 'buildFromSeed')
           .mockResolvedValue(faucetIdentity)
-        mockedMakeTransfer.mockResolvedValue({
+        mockedsubmitSignedTx.mockResolvedValue({
           isFinalized: false,
         } as SubmittableResult)
         const updateSpy = jest.spyOn(
@@ -184,11 +202,9 @@ describe('Faucet Module', () => {
         const buildSpy = jest
           .spyOn(Identity, 'buildFromSeed')
           .mockResolvedValue(faucetIdentity)
-        mockedMakeTransfer.mockImplementation(async () => {
-          return {
+          mockedsubmitSignedTx.mockResolvedValue({
             isFinalized: true,
-          } as SubmittableResult
-        })
+          } as SubmittableResult)
         expect(
           await faucetController['transferTokens'](claimerAddress)
         ).toEqual(true)
@@ -232,11 +248,9 @@ describe('Faucet Module', () => {
           new BN(DEFAULT_TOKEN_AMOUNT),
           0
         )
-        mockedMakeTransfer.mockImplementation(async () => {
-          return {
-            isFinalized: false,
-          } as SubmittableResult
-        })
+        mockedsubmitSignedTx.mockResolvedValue({
+          isFinalized: false,
+        } as SubmittableResult)
         expect(
           await faucetController['transferTokens'](claimerAddress)
         ).toEqual(false)
