@@ -49,6 +49,9 @@ describe('faucet endpoint (e2e)', () => {
     require('@kiltprotocol/sdk-js/build/blockchain/Blockchain').default.submitSignedTx.mockResolvedValue(
       { isFinalized: true }
     )
+    require('@kiltprotocol/sdk-js/build/balance/Balance.chain').makeTransfer.mockResolvedValue(
+      { }
+    )
   })
 
   it('rejects malformed requests', async () => {
