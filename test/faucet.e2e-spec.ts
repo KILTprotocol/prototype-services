@@ -9,7 +9,16 @@ import { FaucetModule } from '../src/faucet/faucet.module'
 
 jest.mock('@kiltprotocol/sdk-js/build/balance/Balance.chain', () => {
   return {
-    makeTransfer: jest.fn(() => Promise.resolve({ isFinalized: true })),
+    makeTransfer: jest.fn(() => Promise.resolve({})),
+  }
+})
+
+jest.mock('@kiltprotocol/sdk-js/build/blockchain/Blockchain', () => {
+  return {
+    __esModules: true,
+    default: {
+      submitSignedTx: jest.fn(() => Promise.resolve({ isFinalized: true })),
+    }
   }
 })
 
@@ -37,8 +46,11 @@ describe('faucet endpoint (e2e)', () => {
 
   beforeEach(async () => {
     await faucetService.reset()
-    require('@kiltprotocol/sdk-js/build/balance/Balance.chain').makeTransfer.mockResolvedValue(
+    require('@kiltprotocol/sdk-js/build/blockchain/Blockchain').default.submitSignedTx.mockResolvedValue(
       { isFinalized: true }
+    )
+    require('@kiltprotocol/sdk-js/build/balance/Balance.chain').makeTransfer.mockResolvedValue(
+      { }
     )
   })
 
