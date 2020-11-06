@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - develop
-      - tw-792-kubernetes
 
 env:
   ECR_REPOSITORY: kilt/prototype-services
