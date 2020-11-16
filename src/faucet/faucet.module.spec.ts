@@ -39,7 +39,7 @@ jest.mock('@kiltprotocol/sdk-js/build/blockchain/Blockchain', () => {
     default: {
       submitSignedTx: jest.fn(
         async (): Promise<SubmittableResult> => {
-          return { isFinalized: true } as SubmittableResult
+          return { isInBlock: true } as SubmittableResult
         }
       ),
     },
@@ -137,7 +137,7 @@ describe('Faucet Module', () => {
           .spyOn(Identity, 'buildFromSeed')
           .mockResolvedValue(faucetIdentity)
         mockedsubmitSignedTx.mockResolvedValue({
-          isFinalized: false,
+          isInBlock: false,
         } as SubmittableResult)
         const updateSpy = jest.spyOn(
           fakeFaucetService,
@@ -203,7 +203,7 @@ describe('Faucet Module', () => {
           .spyOn(Identity, 'buildFromSeed')
           .mockResolvedValue(faucetIdentity)
           mockedsubmitSignedTx.mockResolvedValue({
-            isFinalized: true,
+            isInBlock: true,
           } as SubmittableResult)
         expect(
           await faucetController['transferTokens'](claimerAddress)
@@ -249,7 +249,7 @@ describe('Faucet Module', () => {
           0
         )
         mockedsubmitSignedTx.mockResolvedValue({
-          isFinalized: false,
+          isInBlock: false,
         } as SubmittableResult)
         expect(
           await faucetController['transferTokens'](claimerAddress)

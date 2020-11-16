@@ -17,7 +17,7 @@ jest.mock('@kiltprotocol/sdk-js/build/blockchain/Blockchain', () => {
   return {
     __esModules: true,
     default: {
-      submitSignedTx: jest.fn(() => Promise.resolve({ isFinalized: true })),
+      submitSignedTx: jest.fn(() => Promise.resolve({ isInBlock: true })),
     }
   }
 })
@@ -47,7 +47,7 @@ describe('faucet endpoint (e2e)', () => {
   beforeEach(async () => {
     await faucetService.reset()
     require('@kiltprotocol/sdk-js/build/blockchain/Blockchain').default.submitSignedTx.mockResolvedValue(
-      { isFinalized: true }
+      { isInBlock: true }
     )
     require('@kiltprotocol/sdk-js/build/balance/Balance.chain').makeTransfer.mockResolvedValue(
       { }
