@@ -75,7 +75,7 @@ export class FaucetController {
         new BN(DEFAULT_TOKEN_AMOUNT),
         0
       )
-      const status = await Blockchain.submitSignedTx(tx)
+      const status = await Blockchain.submitSignedTx(tx, IS_IN_BLOCK)
       return Promise.resolve(status.isInBlock)
     } catch (e) {
       console.error(e)
