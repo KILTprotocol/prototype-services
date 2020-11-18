@@ -17,22 +17,20 @@ export class MongoDbMContactsService implements ContactsService {
   ) {}
 
   public async add(contact: Contact): Promise<void> {
-    const modifiedContact: Optional<ContactDB> = Optional.ofNullable<ContactDB>(
+    const registeredContact: Optional<ContactDB> = Optional.ofNullable<
+      ContactDB
+    >(
       await this.contactModel
         .findOne({ 'publicIdentity.address': contact.publicIdentity.address })
         .exec()
     )
-    if (modifiedContact.isPresent) {
+    if (registeredContact.isPresent) {
       await this.contactModel
         .deleteOne({
           'publicIdentity.address': contact.publicIdentity.address,
         })
         .exec()
-      const updatedContact = modifiedContact.get().toObject()
-      updatedContact.did = contact.did
-      updatedContact.metaData.name = contact.metaData.name
-      delete updatedContact.signature
-      await new this.contactModel(updatedContact as ContactDB).save()
+      await new this.contactModel(contact as ContactDB).save()
     } else {
       await new this.contactModel(contact as ContactDB).save()
     }

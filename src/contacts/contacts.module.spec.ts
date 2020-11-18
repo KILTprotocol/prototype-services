@@ -40,10 +40,8 @@ describe('Contact Module', () => {
   }
   const signature =
     '0x00aad52336444c0263a22c22f2b99bbcdfc3a6912b5d085c11df01de2bb13dae7c9adf89ecb58f9a32dd021c1c0c1ff0ed39ba361a85f350714b58f15cbd617607'
-
-  const signedTestDID: IDidDocumentSigned = {
+  const unsignedTestDID: IDidDocumentSigned = {
     id: 'did:kilt:5CKq9ovoHUFb5Qg2q7YmQ2waNhgQm4C22qwb1Wgehnn2eBcb',
-    signature,
     '@context': 'https://w3id.org/did/v1',
     authentication: [
       {
@@ -75,8 +73,12 @@ describe('Contact Module', () => {
         serviceEndpoint: 'https://services.devnet.kilt.io:443/messaging',
       },
     ],
-  }
+  } as any
 
+  const signedTestDID: IDidDocumentSigned = {
+    ...unsignedTestDID,
+    signature,
+  }
   const contactWithDid: Contact = {
     ...testContact,
     did: signedTestDID,
@@ -85,7 +87,11 @@ describe('Contact Module', () => {
     ...testContact,
     did: { ...signedTestDID, signature: signature.replace('d', 'f') },
   }
-
+  const deprecatedDIDFormat: Contact = {
+    ...testContact,
+    signature,
+    did: {},
+  } as any
   const address = testContact.publicIdentity.address
   describe('Controller', () => {
     let contactsController: ContactsController
@@ -248,6 +254,9 @@ describe('Contact Module', () => {
     public static findOne = jest
       .fn()
       .mockReturnValue({ exec: async (): Promise<ContactDB> => null })
+    public static deleteOne = jest
+      .fn()
+      .mockReturnValue({ exec: async (): Promise<void> => {} })
     public static deleteMany = jest.fn().mockReturnValue({
       exec: async () => {
         return
@@ -297,15 +306,25 @@ describe('Contact Module', () => {
       })
       it('updates a Contact and saves it', async () => {
         const saveSpy = jest.spyOn(contactsService['contactModel'], 'save')
-        const findOneSpy = jest.spyOn(
+        const findOneSpy = jest
+          .spyOn(contactsService['contactModel'], 'findOne')
+          .mockReturnValueOnce({
+            exec: async (): Promise<ContactDB> =>
+              (({
+                ...deprecatedDIDFormat,
+                toObject: () => deprecatedDIDFormat,
+              } as any) as ContactDB),
+          })
+        const deleteOneSpy = jest.spyOn(
           contactsService['contactModel'],
-          'findOne'
+          'deleteOne'
         )
         await contactsService.add(contactWithDid)
         expect(findOneSpy).toHaveBeenCalledWith({
           'publicIdentity.address': testContact.publicIdentity.address,
         })
         expect(saveSpy).toHaveBeenCalledTimes(1)
+        expect(deleteOneSpy).toHaveBeenCalledTimes(1)
       })
     })
     describe('findByAddress', () => {
@@ -320,9 +339,11 @@ describe('Contact Module', () => {
           'publicIdentity.address': address,
         })
         findOneSpy.mockReturnValue({
-          exec: async (): Promise<ContactDB> => {
-            return testContact as ContactDB
-          },
+          exec: async (): Promise<ContactDB> =>
+            (({
+              ...testContact,
+              toObject: () => testContact,
+            } as any) as ContactDB),
         })
         expect(await contactsService.findByAddress(address)).toEqual(
           Optional.ofNullable<Contact>(testContact)
@@ -340,7 +361,12 @@ describe('Contact Module', () => {
           .spyOn(contactsService['contactModel'], 'find')
           .mockReturnValue({
             exec: async (): Promise<ContactDB[]> => {
-              return [testContact as ContactDB]
+              return [
+                ({
+                  ...testContact,
+                  toObject: () => testContact,
+                } as any) as ContactDB,
+              ]
             },
           })
         expect(await contactsService.list()).toEqual([testContact])
