@@ -33,6 +33,10 @@ export class MongoDbMContactsService implements ContactsService {
       await new this.contactModel({
         ...contact,
         publicIdentity: registeredContact.get().publicIdentity,
+        metaData: {
+          ...registeredContact.get().metaData,
+          name: contact.metaData.name,
+        },
       } as ContactDB).save()
     } else {
       await new this.contactModel(contact as ContactDB).save()
