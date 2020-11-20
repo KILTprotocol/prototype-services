@@ -354,13 +354,6 @@ describe('Contact Module', () => {
         findOneSpy.mockReturnValue({
           exec: async (): Promise<ContactDB> =>
             (({
-              ...testContact,
-              toObject: () => testContact,
-            } as any) as ContactDB),
-        })
-        findOneSpy.mockReturnValue({
-          exec: async (): Promise<ContactDB> =>
-            (({
               ...deprecatedDIDFormat,
               toObject: () => deprecatedDIDFormat,
             } as any) as ContactDB),
