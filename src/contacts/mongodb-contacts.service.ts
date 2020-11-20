@@ -30,7 +30,10 @@ export class MongoDbMContactsService implements ContactsService {
           'publicIdentity.address': contact.publicIdentity.address,
         })
         .exec()
-      await new this.contactModel(contact as ContactDB).save()
+      await new this.contactModel({
+        ...contact,
+        publicIdentity: registeredContact.get().publicIdentity,
+      } as ContactDB).save()
     } else {
       await new this.contactModel(contact as ContactDB).save()
     }
