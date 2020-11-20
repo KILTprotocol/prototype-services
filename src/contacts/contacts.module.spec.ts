@@ -90,7 +90,7 @@ describe('Contact Module', () => {
   const deprecatedDIDFormat: Contact = {
     ...testContact,
     signature,
-    did: {},
+    did: unsignedTestDID,
   } as any
   const address = testContact.publicIdentity.address
   describe('Controller', () => {
@@ -351,7 +351,24 @@ describe('Contact Module', () => {
         expect(findOneSpy).toHaveBeenCalledWith({
           'publicIdentity.address': address,
         })
-        expect(findOneSpy).toHaveBeenCalledTimes(2)
+        findOneSpy.mockReturnValue({
+          exec: async (): Promise<ContactDB> =>
+            (({
+              ...testContact,
+              toObject: () => testContact,
+            } as any) as ContactDB),
+        })
+        findOneSpy.mockReturnValue({
+          exec: async (): Promise<ContactDB> =>
+            (({
+              ...deprecatedDIDFormat,
+              toObject: () => deprecatedDIDFormat,
+            } as any) as ContactDB),
+        })
+        expect(await contactsService.findByAddress(address)).toEqual(
+          Optional.ofNullable<Contact>(contactWithDid)
+        )
+        expect(findOneSpy).toHaveBeenCalledTimes(3)
         findOneSpy.mockRestore()
       })
     })
