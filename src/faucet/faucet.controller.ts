@@ -1,4 +1,4 @@
-import { Balance, Blockchain, Identity } from '@kiltprotocol/sdk-js'
+import { Balance, Identity } from '@kiltprotocol/sdk-js'
 import {
   Controller,
   Inject,
@@ -79,9 +79,11 @@ export class FaucetController {
         new BN(DEFAULT_TOKEN_AMOUNT),
         0
       )
-      const status = await Blockchain.submitTxWithReSign(tx, faucetAccount, {
+      const status = await submitSignedTx(tx, {
         resolveOn: IS_IN_BLOCK,
       })
+      console.log(`Status: ${status.isInBlock}`)
+
       return Promise.resolve(status.isInBlock)
     } catch (e) {
       console.error(e)
