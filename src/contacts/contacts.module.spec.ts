@@ -87,7 +87,7 @@ describe('Contact Module', () => {
     ...testContact,
     did: { ...signedTestDID, signature: signature.replace('d', 'f') },
   }
-  const deprecatedDIDFormat: Contact = {
+  const deprecatedDIDFormat: ContactDB & { signature?: string } = {
     ...testContact,
     signature,
     did: unsignedTestDID,
@@ -144,6 +144,7 @@ describe('Contact Module', () => {
         expect(addSpy).toHaveBeenCalledTimes(1)
         expect(addSpy).toHaveBeenCalledWith(testContact)
       })
+
       it('calls throws Exception on invalid Contact', async () => {
         const addSpy = jest.spyOn(contactsService, 'add')
         const noAddressContact: Contact = {
@@ -187,6 +188,7 @@ describe('Contact Module', () => {
         expect(addSpy).toHaveBeenCalledTimes(1)
         expect(addSpy).toHaveBeenCalledWith(contactWithDid)
       })
+
       it('rejects contact with did if signature is missing or invalid', async () => {
         const addSpy = jest.spyOn(contactsService, 'add')
         mockedVerifyDidDocumentSignature.mockReturnValue(false)
@@ -254,7 +256,7 @@ describe('Contact Module', () => {
     public static findOne = jest
       .fn()
       .mockReturnValue({ exec: async (): Promise<ContactDB> => null })
-    public static deleteOne = jest
+    public static replaceOne = jest
       .fn()
       .mockReturnValue({ exec: async (): Promise<void> => {} })
     public static deleteMany = jest.fn().mockReturnValue({
@@ -304,27 +306,42 @@ describe('Contact Module', () => {
         })
         expect(saveSpy).toHaveBeenCalledTimes(1)
       })
+
       it('updates a Contact and saves it', async () => {
-        const saveSpy = jest.spyOn(contactsService['contactModel'], 'save')
         const findOneSpy = jest
           .spyOn(contactsService['contactModel'], 'findOne')
           .mockReturnValueOnce({
             exec: async (): Promise<ContactDB> =>
               (({
                 ...deprecatedDIDFormat,
+                _id: 0,
                 toObject: () => deprecatedDIDFormat,
               } as any) as ContactDB),
           })
-        const deleteOneSpy = jest.spyOn(
+        const replaceOne = jest.spyOn(
           contactsService['contactModel'],
-          'deleteOne'
+          'replaceOne'
         )
         await contactsService.add(contactWithDid)
         expect(findOneSpy).toHaveBeenCalledWith({
           'publicIdentity.address': testContact.publicIdentity.address,
         })
-        expect(saveSpy).toHaveBeenCalledTimes(1)
-        expect(deleteOneSpy).toHaveBeenCalledTimes(1)
+        expect(replaceOne).toHaveBeenCalledTimes(1)
+        expect(replaceOne).toHaveBeenCalledWith(
+          { _id: 0 },
+          {
+            did: deprecatedDIDFormat.signature && {
+              ...deprecatedDIDFormat.did,
+              signature: deprecatedDIDFormat.signature,
+            },
+            ...contactWithDid,
+            publicIdentity: deprecatedDIDFormat.publicIdentity,
+            metaData: {
+              ...deprecatedDIDFormat.metaData,
+              name: contactWithDid.metaData.name,
+            },
+          }
+        )
       })
     })
     describe('findByAddress', () => {

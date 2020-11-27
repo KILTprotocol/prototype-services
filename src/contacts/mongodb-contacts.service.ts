@@ -17,27 +17,24 @@ export class MongoDbMContactsService implements ContactsService {
   ) {}
 
   public async add(contact: Contact): Promise<void> {
-    const registeredContact: Optional<ContactDB> = Optional.ofNullable<
-      ContactDB
-    >(
+    const registeredContact: Optional<
+      ContactDB & { signature?: string }
+    > = Optional.ofNullable<ContactDB & { signature?: string }>(
       await this.contactModel
         .findOne({ 'publicIdentity.address': contact.publicIdentity.address })
         .exec()
     )
     if (registeredContact.isPresent) {
-      await this.contactModel
-        .deleteOne({
-          'publicIdentity.address': contact.publicIdentity.address,
-        })
-        .exec()
-      await new this.contactModel({
+      const registered = registeredContact.get()
+      await this.contactModel.replaceOne({ _id: registered._id }, {
+        did: registered.signature && { ...registered.did, signature: registered.signature },
         ...contact,
-        publicIdentity: registeredContact.get().publicIdentity,
+        publicIdentity: registered.publicIdentity,
         metaData: {
-          ...registeredContact.get().metaData,
+          ...registered.metaData,
           name: contact.metaData.name,
         },
-      } as ContactDB).save()
+      } as ContactDB)
     } else {
       await new this.contactModel(contact as ContactDB).save()
     }
@@ -65,17 +62,15 @@ export class MongoDbMContactsService implements ContactsService {
   public async removeAll(): Promise<void> {
     await this.contactModel.deleteMany({}).exec()
   }
-  private convertToContact(contactDB: ContactDB): Contact {
-    const { metaData, did, publicIdentity } = contactDB
-    let actualDid: IDidDocumentSigned
-    if (contactDB.toObject().signature && contactDB.toObject().did) {
-      actualDid = { ...did, signature: contactDB.toObject().signature }
-    } else {
-      actualDid = did
-    }
+
+  private convertToContact(
+    contactDB: ContactDB & { signature?: string }
+  ): Contact {
+    //The Old Format had the signature as property in ContactDB, so we check if we have to move it.
+    const { metaData, did, publicIdentity, signature } = contactDB
     return {
       metaData,
-      did: actualDid,
+      did: signature && did ? { ...did, signature } : did,
       publicIdentity,
     }
   }
