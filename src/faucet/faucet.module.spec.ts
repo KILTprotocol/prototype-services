@@ -36,13 +36,11 @@ jest.mock('@kiltprotocol/sdk-js/build/balance/Balance.chain', () => {
 jest.mock('@kiltprotocol/sdk-js/build/blockchain/Blockchain', () => {
   return {
     __esModule: true,
-    default: {
-      submitSignedTx: jest.fn(
-        async (): Promise<SubmittableResult> => {
-          return { isInBlock: true } as SubmittableResult
-        }
-      ),
-    },
+    submitSignedTx: jest.fn().mockImplementation(
+      async (): Promise<SubmittableResult> => {
+        return { isInBlock: true } as SubmittableResult
+      }
+    ),
   }
 })
 
@@ -74,7 +72,7 @@ describe('Faucet Module', () => {
       .makeTransfer
 
     const mockedsubmitSignedTx = require('@kiltprotocol/sdk-js/build/blockchain/Blockchain')
-      .default.submitSignedTx
+      .submitSignedTx
 
     const fakeFaucetService: FaucetService = {
       drop: jest.fn(async (): Promise<FaucetDrop> => testFaucetDrop),
@@ -202,9 +200,9 @@ describe('Faucet Module', () => {
         const buildSpy = jest
           .spyOn(Identity, 'buildFromSeed')
           .mockResolvedValue(faucetIdentity)
-          mockedsubmitSignedTx.mockResolvedValue({
-            isInBlock: true,
-          } as SubmittableResult)
+        mockedsubmitSignedTx.mockResolvedValue({
+          isInBlock: true,
+        } as SubmittableResult)
         expect(
           await faucetController['transferTokens'](claimerAddress)
         ).toEqual(true)

@@ -1,4 +1,5 @@
 import { PublicIdentity } from '@kiltprotocol/sdk-js'
+import { IDidDocumentSigned } from '@kiltprotocol/sdk-js/build/did/Did'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
@@ -16,14 +17,31 @@ export class MongoDbMContactsService implements ContactsService {
   ) {}
 
   public async add(contact: Contact): Promise<void> {
-    const modifiedContact: ContactDB = Optional.ofNullable<ContactDB>(
+    const registeredContact: Optional<
+      ContactDB & { signature?: string }
+    > = Optional.ofNullable<ContactDB & { signature?: string }>(
       await this.contactModel
         .findOne({ 'publicIdentity.address': contact.publicIdentity.address })
         .exec()
-    ).orElse(new this.contactModel(contact as ContactDB))
-    modifiedContact.metaData.name = contact.metaData.name
-    modifiedContact.did = contact.did
-    await modifiedContact.save()
+    )
+    if (registeredContact.isPresent) {
+      const registered = registeredContact.get()
+      // If the contact was already registered we want to replace the document, as it could exist in outdated format! Signature is still valid.
+      await this.contactModel.replaceOne({ _id: registered._id }, {
+        did: registered.signature && {
+          ...registered.did,
+          signature: registered.signature,
+        },
+        ...contact,
+        publicIdentity: registered.publicIdentity,
+        metaData: {
+          ...registered.metaData,
+          name: contact.metaData.name,
+        },
+      } as ContactDB)
+    } else {
+      await new this.contactModel(contact as ContactDB).save()
+    }
   }
 
   public async findByAddress(
@@ -48,11 +66,15 @@ export class MongoDbMContactsService implements ContactsService {
   public async removeAll(): Promise<void> {
     await this.contactModel.deleteMany({}).exec()
   }
-  private convertToContact(contactDB: ContactDB): Contact {
-    const { metaData, did, publicIdentity } = contactDB
+
+  private convertToContact(
+    contactDB: ContactDB & { signature?: string }
+  ): Contact {
+    // The Old Format had the signature as property in ContactDB, so we check if we have to move it. Signature is still valid.
+    const { metaData, did, publicIdentity, signature } = contactDB
     return {
       metaData,
-      did,
+      did: signature && did ? { ...did, signature } : did,
       publicIdentity,
     }
   }
