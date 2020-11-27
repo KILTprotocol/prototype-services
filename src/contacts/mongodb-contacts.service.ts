@@ -26,7 +26,7 @@ export class MongoDbMContactsService implements ContactsService {
     )
     if (registeredContact.isPresent) {
       const registered = registeredContact.get()
-      //If the contact was already registered we want to replace the document, as it could exist in outdated format!
+      // If the contact was already registered we want to replace the document, as it could exist in outdated format!
       await this.contactModel.replaceOne({ _id: registered._id }, {
         did: registered.signature && {
           ...registered.did,
@@ -70,7 +70,7 @@ export class MongoDbMContactsService implements ContactsService {
   private convertToContact(
     contactDB: ContactDB & { signature?: string }
   ): Contact {
-    //The Old Format had the signature as property in ContactDB, so we check if we have to move it.
+    // The Old Format had the signature as property in ContactDB, so we check if we have to move it.
     const { metaData, did, publicIdentity, signature } = contactDB
     return {
       metaData,
