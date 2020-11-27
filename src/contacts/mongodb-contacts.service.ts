@@ -26,6 +26,7 @@ export class MongoDbMContactsService implements ContactsService {
     )
     if (registeredContact.isPresent) {
       const registered = registeredContact.get()
+      //If the contact was already registered we want to replace the document, as it could exist in outdated format!
       await this.contactModel.replaceOne({ _id: registered._id }, {
         did: registered.signature && { ...registered.did, signature: registered.signature },
         ...contact,
