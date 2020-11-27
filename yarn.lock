@@ -519,7 +519,7 @@
     "@polkadot/util" "^3.5.1"
     "@polkadot/util-crypto" "^3.5.1"
 
-"@kiltprotocol/sdk-js@^0.19.1-affad9.0":
+"@kiltprotocol/sdk-js@^0.19.1-affad9d.0":
   version "0.19.1-affad9d.0"
   resolved "https://npm.pkg.github.com/download/@kiltprotocol/sdk-js/0.19.1-affad9d.0/200b384ed5e5bb5d35e21b3da717463e4aa5f9ca5753bb228c1f761dc41e4fab#8d3cfcfedca9f41fd1ff9080cfed29d79af1d2a1"
   integrity sha512-iyY3g1FRNSIleQPLtP9COo/6meu150Z0wTWNMVTFVi9TFRg54V3Tx+/8rc7FI0Qyd0/uAjX8uEBUZ87SDDCIfQ==
