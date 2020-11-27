@@ -21,7 +21,10 @@ import {
   FaucetDropInvalidAddressException,
 } from './exceptions'
 import { AuthGuard } from '../auth/auth.guard'
-import { IS_IN_BLOCK, submitSignedTx } from '@kiltprotocol/sdk-js/build/blockchain/Blockchain'
+import {
+  IS_IN_BLOCK,
+  submitSignedTx,
+} from '@kiltprotocol/sdk-js/build/blockchain/Blockchain'
 
 const DEFAULT_TOKEN_AMOUNT = 500
 
@@ -76,7 +79,7 @@ export class FaucetController {
         new BN(DEFAULT_TOKEN_AMOUNT),
         0
       )
-      const status = await submitSignedTx(tx, {
+      const status = await Blockchain.submitTxWithReSign(tx, faucetAccount, {
         resolveOn: IS_IN_BLOCK,
       })
       return Promise.resolve(status.isInBlock)
