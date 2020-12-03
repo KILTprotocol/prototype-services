@@ -1,11 +1,11 @@
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
-import * as sdk from '@kiltprotocol/sdk-js'
 import { MockMongooseModule, mongodbInstance } from './MockMongooseModule'
 import { CTypesModule } from '../src/ctypes/ctypes.module'
 import { CType, CTypeService } from '../src/ctypes/interfaces/ctype.interfaces'
 import { BlockchainModule } from '../src/blockchain/blockchain.module'
+import { CType as SDKCType, Identity } from '@kiltprotocol/sdk-js'
 
 jest.mock('@kiltprotocol/sdk-js/build/ctype/CType.chain', () => {
   return {
@@ -18,10 +18,10 @@ jest.mock(
 
 describe('ctypes endpoint (e2e)', () => {
   let app: INestApplication
-  let idAlice: sdk.Identity
+  let idAlice: Identity
   let ctypeService: CTypeService
 
-  const kiltCTypeA = sdk.CType.fromSchema({
+  const kiltCTypeA = SDKCType.fromSchema({
     $schema: 'http://kilt-protocol.org/draft-01/ctype#',
     properties: {
       name: {
@@ -48,7 +48,7 @@ describe('ctypes endpoint (e2e)', () => {
     },
   }
 
-  const kiltCTypeB = sdk.CType.fromSchema({
+  const kiltCTypeB = SDKCType.fromSchema({
     $schema: 'http://kilt-protocol.org/draft-01/ctype#',
     properties: {
       name: {
@@ -84,7 +84,7 @@ describe('ctypes endpoint (e2e)', () => {
     await app.init()
 
     ctypeService = app.get('CTypeService')
-    idAlice = await sdk.Identity.buildFromURI('//Alice')
+    idAlice = await Identity.buildFromURI('//Alice')
   }, 30000)
 
   beforeEach(async () => {
@@ -161,7 +161,7 @@ describe('ctypes endpoint (e2e)', () => {
       mockedGetOwner.mockResolvedValue('new-owner')
       const cTypeRecordWithOwner = {
         ...cTypeRecordA,
-        cType: sdk.CType.fromSchema(kiltCTypeA.schema, idAlice.address),
+        cType: SDKCType.fromSchema(kiltCTypeA.schema, idAlice.address),
       }
       await request(app.getHttpServer())
         .post(`/ctype`)

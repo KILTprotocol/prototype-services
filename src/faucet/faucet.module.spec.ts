@@ -33,7 +33,7 @@ jest.mock('@kiltprotocol/sdk-js/build/balance/Balance.chain', () => {
   }
 })
 
-jest.mock('@kiltprotocol/sdk-js/build/blockchain/Blockchain', () => {
+jest.mock('@kiltprotocol/sdk-js/build/blockchain/Blockchain.utils', () => {
   return {
     __esModule: true,
     submitSignedTx: jest.fn().mockImplementation(
@@ -71,7 +71,7 @@ describe('Faucet Module', () => {
     const mockedMakeTransfer = require('@kiltprotocol/sdk-js/build/balance/Balance.chain')
       .makeTransfer
 
-    const mockedsubmitSignedTx = require('@kiltprotocol/sdk-js/build/blockchain/Blockchain')
+    const mockedsubmitSignedTx = require('@kiltprotocol/sdk-js/build/blockchain/Blockchain.utils')
       .submitSignedTx
 
     const fakeFaucetService: FaucetService = {

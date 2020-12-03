@@ -1,19 +1,19 @@
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
-import * as sdk from '@kiltprotocol/sdk-js'
 import { MockMongooseModule, mongodbInstance } from './MockMongooseModule'
 import {
   ContactsService,
   Contact,
 } from '../src/contacts/interfaces/contacts.interfaces'
 import { ContactsModule } from '../src/contacts/contacts.module'
-import { IDidDocumentSigned } from '@kiltprotocol/sdk-js/build/did/Did'
+import Did, { IDidDocumentSigned } from '@kiltprotocol/sdk-js/build/did/Did'
+import { Identity } from '@kiltprotocol/sdk-js'
 
 describe('contacts endpoint (e2e)', () => {
   let app: INestApplication
-  let idAlice: sdk.Identity
-  let idBob: sdk.Identity
+  let idAlice: Identity
+  let idBob: Identity
   let contactsService: ContactsService
   let contactA: Contact
   let contactB: Contact
@@ -27,8 +27,8 @@ describe('contacts endpoint (e2e)', () => {
     await app.init()
 
     contactsService = app.get('ContactsService')
-    idAlice = await sdk.Identity.buildFromURI('//Alice')
-    idBob = await sdk.Identity.buildFromURI('//Bob')
+    idAlice = await Identity.buildFromURI('//Alice')
+    idBob = await Identity.buildFromURI('//Bob')
 
     contactA = {
       publicIdentity: idAlice.getPublicIdentity(),
@@ -91,8 +91,8 @@ describe('contacts endpoint (e2e)', () => {
       })
 
       it('gets did by contact address', async () => {
-        const didAlice = sdk.Did.signDidDocument(
-          sdk.Did.fromIdentity(idAlice).createDefaultDidDocument(),
+        const didAlice = Did.signDidDocument(
+          Did.fromIdentity(idAlice).createDefaultDidDocument(),
           idAlice
         )
         await contactsService.add({ ...contactA, did: didAlice })
@@ -198,8 +198,8 @@ describe('contacts endpoint (e2e)', () => {
       let didAlice: IDidDocumentSigned
 
       beforeAll(() => {
-        didAlice = sdk.Did.signDidDocument(
-          sdk.Did.fromIdentity(idAlice).createDefaultDidDocument(),
+        didAlice = Did.signDidDocument(
+          Did.fromIdentity(idAlice).createDefaultDidDocument(),
           idAlice
         )
       })
