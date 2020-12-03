@@ -509,7 +509,7 @@
 
 "@kiltprotocol/portablegabi@^0.4.0":
   version "0.4.0"
-  resolved "https://npm.pkg.github.com/download/@kiltprotocol/portablegabi/0.4.0/c21e5a1a3706c483b98524cc0020643b6196ce75d28365d66df4e49f3a6eac4d#b6a337834c1d832c24443bb29bc9df09f72bb5f7"
+  resolved "https://registry.yarnpkg.com/@kiltprotocol/portablegabi/-/portablegabi-0.4.0.tgz#b6a337834c1d832c24443bb29bc9df09f72bb5f7"
   integrity sha512-fyxBnLrPpyCGmfBBlzKjhT/X9IQjpmoCmMOQmk/DnUlWa8Areo2SiGhCP1G/DPxUK6fsZOlPk2X6xrtR1FJ6ow==
   dependencies:
     "@polkadot/api" "^2.0.1"
