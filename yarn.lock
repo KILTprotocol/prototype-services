@@ -509,7 +509,7 @@
 
 "@kiltprotocol/portablegabi@^0.4.0":
   version "0.4.0"
-  resolved "https://npm.pkg.github.com/download/@kiltprotocol/portablegabi/0.4.0/c21e5a1a3706c483b98524cc0020643b6196ce75d28365d66df4e49f3a6eac4d#b6a337834c1d832c24443bb29bc9df09f72bb5f7"
+  resolved "https://registry.yarnpkg.com/@kiltprotocol/portablegabi/-/portablegabi-0.4.0.tgz#b6a337834c1d832c24443bb29bc9df09f72bb5f7"
   integrity sha512-fyxBnLrPpyCGmfBBlzKjhT/X9IQjpmoCmMOQmk/DnUlWa8Areo2SiGhCP1G/DPxUK6fsZOlPk2X6xrtR1FJ6ow==
   dependencies:
     "@polkadot/api" "^2.0.1"
@@ -519,10 +519,10 @@
     "@polkadot/util" "^3.5.1"
     "@polkadot/util-crypto" "^3.5.1"
 
-"@kiltprotocol/sdk-js@^0.19.1-affad9d.0":
-  version "0.19.1-affad9d.0"
-  resolved "https://npm.pkg.github.com/download/@kiltprotocol/sdk-js/0.19.1-affad9d.0/200b384ed5e5bb5d35e21b3da717463e4aa5f9ca5753bb228c1f761dc41e4fab#8d3cfcfedca9f41fd1ff9080cfed29d79af1d2a1"
-  integrity sha512-iyY3g1FRNSIleQPLtP9COo/6meu150Z0wTWNMVTFVi9TFRg54V3Tx+/8rc7FI0Qyd0/uAjX8uEBUZ87SDDCIfQ==
+"@kiltprotocol/sdk-js@^0.19.1-8":
+  version "0.19.1-8"
+  resolved "https://registry.yarnpkg.com/@kiltprotocol/sdk-js/-/sdk-js-0.19.1-8.tgz#7842283d79e587f3d9d48558093c796c83eabb97"
+  integrity sha512-EL8pWG3dgZByedxwPnEGnE//ENw7xaiJasq2x3Qust5qz59PBGUMvUnt4UPa8tBSJ/UTFG9BLXu2twtHoagFzQ==
   dependencies:
     "@kiltprotocol/portablegabi" "^0.4.0"
     "@polkadot/api" "^2.0.1"
@@ -533,6 +533,7 @@
     "@polkadot/util-crypto" "^3.5.1"
     ajv "^6.12.5"
     bn.js "^5.1.3"
+    tweetnacl "^1.0.3"
     typescript-logging "^0.6.4"
     uuid "^8.1.0"
 

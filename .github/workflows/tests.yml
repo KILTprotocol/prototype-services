@@ -28,17 +28,12 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-        registry-url: https://npm.pkg.github.com
-        scope: '@kiltprotocol'
     - name: yarn install, lint, test and build
       run: |
-        yarn upgrade --scope @kiltprotocol --latest
+        yarn install
         yarn lint
         yarn test
         yarn build
-      env:
-        CI: true
-        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   integration-tests:
 
@@ -50,12 +45,7 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: 10
-        registry-url: https://npm.pkg.github.com
-        scope: '@kiltprotocol'
     - name: yarn install, lint, test and build
       run: |
-        yarn upgrade --scope @kiltprotocol --latest
+        yarn install
         yarn test:e2e --forceExit
-      env:
-        CI: true
-        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
