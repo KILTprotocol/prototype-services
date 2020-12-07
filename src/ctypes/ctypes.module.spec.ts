@@ -1,6 +1,6 @@
 import { CType, CTypeService, CTypeDB } from './interfaces/ctype.interfaces'
 import Optional from 'typescript-optional'
-import * as SDK from '@kiltprotocol/sdk-js'
+import { Blockchain, CType as SDKCType, CTypeMetadata, Identity} from '@kiltprotocol/sdk-js'
 import { Test } from '@nestjs/testing'
 import { CTypesController } from './ctypes.controller'
 import { AuthGuard } from '../auth/auth.guard'
@@ -18,7 +18,7 @@ jest.mock('@kiltprotocol/sdk-js/build/ctype/CType.chain', () => {
 })
 
 describe('CType Module', () => {
-  const SDKCTypeA: SDK.CType = SDK.CType.fromSchema({
+  const SDKCTypeA: SDKCType = SDKCType.fromSchema({
     $schema: 'http://kilt-protocol.org/draft-01/ctype#',
     properties: {
       name: {
@@ -32,7 +32,7 @@ describe('CType Module', () => {
     title: 'test_ctype',
   })
 
-  const metaDataA: SDK.CTypeMetadata = {
+  const metaDataA: CTypeMetadata = {
     ctypeHash: SDKCTypeA.hash,
     metadata: {
       title: { default: 'Test Ctype' },
@@ -43,7 +43,7 @@ describe('CType Module', () => {
     },
   }
 
-  const SDKCTypeB = SDK.CType.fromSchema({
+  const SDKCTypeB = SDKCType.fromSchema({
     $schema: 'http://kilt-protocol.org/draft-01/ctype#',
     properties: {
       name: {
@@ -57,7 +57,7 @@ describe('CType Module', () => {
     title: 'another_ctype',
   })
 
-  const metaDataB: SDK.CTypeMetadata = {
+  const metaDataB: CTypeMetadata = {
     ctypeHash: SDKCTypeB.hash,
     metadata: {
       title: { default: 'Test Ctype' },
@@ -92,7 +92,7 @@ describe('CType Module', () => {
 
     beforeAll(
       async () =>
-        (aliceAddress = (await SDK.Identity.buildFromURI('//Alice')).address)
+        (aliceAddress = (await Identity.buildFromURI('//Alice')).address)
     )
 
     beforeEach(async () => {
@@ -106,7 +106,7 @@ describe('CType Module', () => {
           {
             provide: 'BlockchainService',
             useValue: {
-              connect: () => new SDK.Blockchain(blockchainApi.__mocked_api),
+              connect: () => new Blockchain(blockchainApi.__mocked_api),
             },
           },
         ],
@@ -246,7 +246,7 @@ describe('CType Module', () => {
 
     beforeAll(
       async () =>
-        (aliceAddress = (await SDK.Identity.buildFromURI('//Alice')).address)
+        (aliceAddress = (await Identity.buildFromURI('//Alice')).address)
     )
 
     beforeEach(async () => {
