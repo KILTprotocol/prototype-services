@@ -3,7 +3,7 @@ import { IDidDocumentSigned } from '@kiltprotocol/sdk-js/build/did/Did'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
-import Optional from 'typescript-optional'
+import { Optional } from 'typescript-optional'
 import {
   Contact,
   ContactDB,
