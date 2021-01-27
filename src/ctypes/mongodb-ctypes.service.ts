@@ -13,7 +13,7 @@ export class MongoDbCTypesService implements CTypeService {
 
   public async register(cType: CType): Promise<boolean> {
     const value = await this.findByHash(cType.cType.hash)
-    if (value.isPresent) {
+    if (value.isPresent()) {
       return false
     }
     const createdCType = new this.cTypeDBModel({

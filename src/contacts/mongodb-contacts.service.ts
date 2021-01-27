@@ -1,5 +1,4 @@
 import { PublicIdentity } from '@kiltprotocol/sdk-js'
-import { IDidDocumentSigned } from '@kiltprotocol/sdk-js/build/did/Did'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
@@ -24,7 +23,7 @@ export class MongoDbMContactsService implements ContactsService {
         .findOne({ 'publicIdentity.address': contact.publicIdentity.address })
         .exec()
     )
-    if (registeredContact.isPresent) {
+    if (registeredContact.isPresent()) {
       const registered = registeredContact.get()
       // If the contact was already registered we want to replace the document, as it could exist in outdated format! Signature is still valid.
       await this.contactModel.replaceOne({ _id: registered._id }, {
