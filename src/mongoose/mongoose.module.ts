@@ -12,11 +12,13 @@ export const MyMongooseModule = MongooseModule.forRootAsync({
     const host = configService.get('MONGODB_HOST')
     const user = configService.get('MONGODB_USER')
     const pass = configService.get('MONGODB_PASS')
+    const ssl = configService.get('MONGODB_SSL')
+
     return {
-      uri: `mongodb://${host}/devnet?ssl=true&replicaSet=rs0&readPreference=secondaryPreferred`,
+      uri: host,
       user,
       pass,
-      sslValidate: true,
+      sslValidate: ssl ? true : false,
       sslCA: ca,
       useNewUrlParser: true,
     }
