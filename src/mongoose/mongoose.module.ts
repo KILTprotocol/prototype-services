@@ -3,7 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose'
 import { ConfigModule } from '../config/config.module'
 import { ConfigService } from '../config/config.service'
 
-//Specify the Amazon DocumentDB cert
+// Specify the Amazon DocumentDB cert
 const ca = [fs.readFileSync(`${__dirname}/rds-combined-ca-bundle.pem`)]
 
 export const MyMongooseModule = MongooseModule.forRootAsync({
