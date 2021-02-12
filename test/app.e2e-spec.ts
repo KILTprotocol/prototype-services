@@ -4,6 +4,8 @@ import request from 'supertest'
 import { Identity } from '@kiltprotocol/sdk-js'
 import { MockMongooseModule, mongodbInstance } from './MockMongooseModule'
 import { AppModule } from '../src/app.module'
+import { HealthIndicatorResult } from '@nestjs/terminus'
+import { KiltChainConnectionIndicator } from '../src/health/bc.health'
 
 jest.mock(
   '@kiltprotocol/sdk-js/build/blockchainApiConnection/BlockchainApiConnection'
@@ -14,11 +16,17 @@ jest.mock('../src/mongoose/mongoose.module', () => ({
 
 describe('AppController availability (e2e)', () => {
   let app: INestApplication
+  let chainHealthService = {
+    isConnected: (): HealthIndicatorResult => ({ chain: { status: 'up' } }),
+  }
 
   beforeAll(async () => {
     const moduleFixture = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile()
+    })
+      .overrideProvider(KiltChainConnectionIndicator)
+      .useValue(chainHealthService)
+      .compile()
 
     app = moduleFixture.createNestApplication()
     await app.init()
@@ -66,7 +74,7 @@ describe('AppController availability (e2e)', () => {
   it('health enpoint available (GET)', () => {
     return request(app.getHttpServer())
       .get('/health')
-      .expect(200, { status: 'ok', info: {} })
+      .expect(200)
   })
 
   it('faucet endpoint available (POST)', async () => {
