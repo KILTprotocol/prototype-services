@@ -1,5 +1,5 @@
 import { CType, CTypeService, CTypeDB } from './interfaces/ctype.interfaces'
-import Optional from 'typescript-optional'
+import { Optional } from 'typescript-optional'
 import { Blockchain, CType as SDKCType, CTypeMetadata, Identity} from '@kiltprotocol/sdk-js'
 import { Test } from '@nestjs/testing'
 import { CTypesController } from './ctypes.controller'
