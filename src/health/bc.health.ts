@@ -12,30 +12,29 @@ export class KiltChainConnectionIndicator extends HealthIndicator {
     key: string,
     timeout: number
   ): Promise<HealthIndicatorResult> {
-    return new Promise((resolve, reject) => {
+    return new Promise<HealthIndicatorResult>(async (resolve, reject) => {
       setTimeout(
-        () =>
-          reject(
-            new HealthCheckError(
-              `no connection before timeout (${timeout} ms)`,
-              'timeout'
-            )
-          ),
-        timeout
-      )
-      BlockchainApiConnection.getCached()
-        .then(bc => bc.api.isReadyOrError)
-        .then(resolve)
-        .catch(e => reject(e))
-    })
-      .then(() => this.getStatus(key, true))
-      .catch(e =>
-        Promise.reject(
-          new HealthCheckError(
-            'Error with Kilt chain connection',
-            this.getStatus(key, false, e)
-          )
+        reject,
+        timeout,
+        new HealthCheckError(
+          `no response before timeout (${timeout} ms)`,
+          `no response before timeout (${timeout} ms)`
         )
       )
+      try {
+        const bc = await BlockchainApiConnection.getCached()
+        const stats = await bc.api.rpc.system.health()
+        resolve(this.getStatus(key, true, stats))
+      } catch (e) {
+        reject(e)
+      }
+    }).catch(e =>
+      Promise.reject(
+        new HealthCheckError(
+          'Error with Kilt chain connection',
+          this.getStatus(key, false, e)
+        )
+      )
+    )
   }
 }

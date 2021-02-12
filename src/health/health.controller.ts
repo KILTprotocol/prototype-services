@@ -22,7 +22,7 @@ export class HealthController {
     return this.health.check([
       () => this.dns.pingCheck('google', 'https://google.com'),
       async () => this.mongoose.pingCheck('mongoose'),
-      async () => this.kiltChain.isConnected('Kilt chain connection', 1000),
+      async () => this.kiltChain.isConnected('chain', 1000),
     ])
   }
 }
