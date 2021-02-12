@@ -1,6 +1,6 @@
 import { ICType, ICTypeMetadata } from '@kiltprotocol/sdk-js'
 import { Document } from 'mongoose'
-import Optional from 'typescript-optional'
+import { Optional } from 'typescript-optional'
 
 export interface CType {
   metaData: ICTypeMetadata

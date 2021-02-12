@@ -16,7 +16,6 @@ jest.mock('@kiltprotocol/sdk-js/build/balance/Balance.chain', () => {
 jest.mock('@kiltprotocol/sdk-js/build/blockchain/Blockchain.utils', () => {
   return {
     __esModules: true,
-
     submitSignedTx: jest.fn(() => Promise.resolve({ isInBlock: true })),
   }
 })

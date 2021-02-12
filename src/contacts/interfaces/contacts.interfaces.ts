@@ -1,7 +1,7 @@
 import { PublicIdentity } from '@kiltprotocol/sdk-js'
 import { IDidDocumentSigned } from '@kiltprotocol/sdk-js/build/did/Did'
 import { Document } from 'mongoose'
-import Optional from 'typescript-optional'
+import { Optional } from 'typescript-optional'
 
 export interface Contact {
   metaData: {

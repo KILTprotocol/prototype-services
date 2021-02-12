@@ -7,7 +7,7 @@ import { MessagingService, MessageDB } from './interfaces/messaging.interfaces'
 import { IEncryptedMessage, Identity } from '@kiltprotocol/sdk-js'
 import * as Controller from './messaging.controller'
 import { MongoDbMessagingService } from './mongodb-messaging.service'
-import Optional from 'typescript-optional'
+import { Optional } from 'typescript-optional'
 import { ForbiddenMessageAccessException } from './exceptions/message-forbidden.exception'
 import { MessageNotFoundException } from './exceptions/message-not-found.exception'
 

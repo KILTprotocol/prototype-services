@@ -12,7 +12,7 @@ import {
   Contact,
 } from './interfaces/contacts.interfaces'
 import { MongoDbMContactsService } from './mongodb-contacts.service'
-import Optional from 'typescript-optional'
+import { Optional } from 'typescript-optional'
 import {
   IDidDocumentSigned,
   IDENTIFIER_PREFIX,

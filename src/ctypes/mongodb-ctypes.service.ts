@@ -2,7 +2,7 @@ import { ICType } from '@kiltprotocol/sdk-js'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
-import Optional from 'typescript-optional'
+import { Optional } from 'typescript-optional'
 import { CType, CTypeDB, CTypeService } from './interfaces/ctype.interfaces'
 
 @Injectable()
@@ -13,7 +13,7 @@ export class MongoDbCTypesService implements CTypeService {
 
   public async register(cType: CType): Promise<boolean> {
     const value = await this.findByHash(cType.cType.hash)
-    if (value.isPresent) {
+    if (value.isPresent()) {
       return false
     }
     const createdCType = new this.cTypeDBModel({
