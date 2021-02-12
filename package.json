@@ -5,7 +5,7 @@
   "author": "botlabs",
   "license": "BSD-4-Clause",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && cp -r src/assets dist",
     "format": "prettier --write \"src/**/*.ts\"",
     "start": "export NODE_ENV=dev-local; export SECRET=s3cr3t; export FAUCET_ACCOUNT=0xcdfd6024d2b0eba27d54cc92a44cd9a627c69b2dbda15ed7e58085425119ae03; ts-node -r tsconfig-paths/register src/main.ts",
     "start:dev": "nodemon",
