@@ -4,7 +4,9 @@ import { ConfigModule } from '../config/config.module'
 import { ConfigService } from '../config/config.service'
 
 // Specify the Amazon DocumentDB cert
-const ca = [fs.readFileSync(`${__dirname}/../assets/rds-combined-ca-bundle.pem`)]
+const ca = [
+  fs.readFileSync(`${__dirname}/../assets/rds-combined-ca-bundle.pem`),
+]
 
 export const MyMongooseModule = MongooseModule.forRootAsync({
   imports: [ConfigModule],
