@@ -1,6 +1,5 @@
 import { Controller, Get } from '@nestjs/common'
 import {
-  DNSHealthIndicator,
   HealthCheck,
   HealthCheckService,
   MongooseHealthIndicator,
@@ -11,7 +10,6 @@ import { KiltChainConnectionIndicator } from './bc.health'
 export class HealthController {
   constructor(
     private health: HealthCheckService,
-    private dns: DNSHealthIndicator,
     private mongoose: MongooseHealthIndicator,
     private kiltChain: KiltChainConnectionIndicator
   ) {}
@@ -20,7 +18,6 @@ export class HealthController {
   @HealthCheck()
   public check() {
     return this.health.check([
-      () => this.dns.pingCheck('google', 'https://google.com'),
       async () => this.mongoose.pingCheck('mongoose'),
       async () => this.kiltChain.isConnected('chain', 1000),
     ])
