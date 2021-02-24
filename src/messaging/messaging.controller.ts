@@ -12,8 +12,8 @@ import {
 } from '@nestjs/common'
 import { MessagingService } from './interfaces/messaging.interfaces'
 import { IEncryptedMessage } from '@kiltprotocol/sdk-js'
+import { Crypto } from '@kiltprotocol/utils'
 import { AuthGuard } from '../auth/auth.guard'
-import { verify } from '@kiltprotocol/sdk-js/build/crypto'
 import { ForbiddenMessageAccessException } from './exceptions/message-forbidden.exception'
 import { MessageNotFoundException } from './exceptions/message-not-found.exception'
 
@@ -45,7 +45,7 @@ export class MessagingController {
 
     if (!signature) {
       throw new BadRequestException('No signature provided')
-    } else if (!verify(id, signature, receiverAddress)) {
+    } else if (!Crypto.verify(id, signature, receiverAddress)) {
       throw new ForbiddenMessageAccessException()
     }
     console.log(`Remove message for id ${id} with signature ${signature}`)
