@@ -7,7 +7,7 @@ import {
   Contact,
 } from '../src/contacts/interfaces/contacts.interfaces'
 import { ContactsModule } from '../src/contacts/contacts.module'
-import Did, { IDidDocumentSigned } from '@kiltprotocol/sdk-js/build/did/Did'
+import { IDidDocumentSigned, Did } from '@kiltprotocol/sdk-js'
 import { Identity } from '@kiltprotocol/sdk-js'
 
 describe('contacts endpoint (e2e)', () => {
