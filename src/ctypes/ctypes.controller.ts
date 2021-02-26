@@ -1,4 +1,4 @@
-import { CType as SDKCType, CTypeUtils } from '@kiltprotocol/sdk-js'
+import { CType as SDKCType } from '@kiltprotocol/sdk-js'
 import {
   Body,
   Controller,
@@ -73,10 +73,10 @@ export class CTypesController {
     }
   }
 
-  private verifyCType(cTypeInput: CType) {
+  private async verifyCType(cTypeInput: CType) {
     try {
-      new SDKCType(cTypeInput.cType)
-      return CTypeUtils.verifyStored(cTypeInput.cType)
+      const ctype = new SDKCType(cTypeInput.cType)
+      return ctype.verifyStored()
     } catch {
       throw new InvalidCtypeDefinitionException()
     }
