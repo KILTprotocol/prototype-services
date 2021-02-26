@@ -76,9 +76,9 @@ export class CTypesController {
   private verifyCType(cTypeInput: CType) {
     try {
       new SDKCType(cTypeInput.cType)
+      return CTypeUtils.verifyStored(cTypeInput.cType)
     } catch {
       throw new InvalidCtypeDefinitionException()
     }
-    return CTypeUtils.verifyStored(cTypeInput.cType)
   }
 }
