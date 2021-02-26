@@ -1,4 +1,5 @@
-import { Balance, Identity, BlockchainUtils } from '@kiltprotocol/sdk-js'
+import { Balance, Identity } from '@kiltprotocol/sdk-js'
+import { BlockchainUtils } from '@kiltprotocol/chain-helpers'
 import {
   Controller,
   Inject,

@@ -1,5 +1,4 @@
-import { PublicIdentity } from '@kiltprotocol/sdk-js'
-import { IDidDocumentSigned } from '@kiltprotocol/sdk-js/build/did/Did'
+import { PublicIdentity, IDidDocumentSigned } from '@kiltprotocol/sdk-js'
 import { Document } from 'mongoose'
 import { Optional } from 'typescript-optional'
 

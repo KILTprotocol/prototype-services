@@ -1,4 +1,6 @@
-import Kilt, { Blockchain } from '@kiltprotocol/sdk-js'
+import Kilt from '@kiltprotocol/sdk-js'
+import { Blockchain } from '@kiltprotocol/chain-helpers'
+
 import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common'
 import { ConfigService } from '../config/config.service'
 import { BlockchainService } from './interfaces/blockchain.interfaces'
@@ -16,7 +18,7 @@ export class UniversalBlockchainService
     Kilt.config({ address: bootNodeAddress })
     console.log(`Connecting to  ${bootNodeAddress}`)
     if (!UniversalBlockchainService.instance) {
-      UniversalBlockchainService.instance = Kilt.connect(bootNodeAddress)
+      UniversalBlockchainService.instance = Kilt.connect()
     }
     return Promise.resolve(UniversalBlockchainService.instance)
   }
