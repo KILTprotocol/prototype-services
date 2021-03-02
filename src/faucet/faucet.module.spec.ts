@@ -20,7 +20,7 @@ import { MongoDbFaucetService } from './mongodb-faucet.service'
 import { getModelToken } from '@nestjs/mongoose'
 import { AuthGuard } from '../auth/auth.guard'
 
-jest.mock('@kiltprotocol/core/build/balance/Balance.chain', () => {
+jest.mock('@kiltprotocol/core/lib/balance/Balance.chain', () => {
   return {
     makeTransfer: jest.fn(
       async (): Promise<SubmittableExtrinsic> => {
@@ -31,7 +31,7 @@ jest.mock('@kiltprotocol/core/build/balance/Balance.chain', () => {
 })
 
 jest.mock(
-  '@kiltprotocol/chain-helpers/build/blockchain/Blockchain.utils',
+  '@kiltprotocol/chain-helpers/lib/blockchain/Blockchain.utils',
   () => {
     return {
       __esModule: true,
@@ -68,10 +68,10 @@ describe('Faucet Module', () => {
     let faucetController: FaucetController
     let faucetService: FaucetService
 
-    const mockedMakeTransfer = require('@kiltprotocol/core/build/balance/Balance.chain')
+    const mockedMakeTransfer = require('@kiltprotocol/core/lib/balance/Balance.chain')
       .makeTransfer
 
-    const mockedsubmitSignedTx = require('@kiltprotocol/chain-helpers/build/blockchain/Blockchain.utils')
+    const mockedsubmitSignedTx = require('@kiltprotocol/chain-helpers/lib/blockchain/Blockchain.utils')
       .submitSignedTx
 
     const fakeFaucetService: FaucetService = {

@@ -16,7 +16,7 @@ import { Optional } from 'typescript-optional'
 import { IDidDocumentSigned } from '@kiltprotocol/core'
 const IDENTIFIER_PREFIX = 'did:kilt:'
 
-jest.mock('@kiltprotocol/core/build/did/Did/Mocks', () => {
+jest.mock('@kiltprotocol/core/lib/did/Did', () => {
   return {
     verifyDidDocumentSignature: jest.fn((): boolean => true),
     getIdentifierFromAddress: jest.fn(
@@ -95,7 +95,7 @@ describe('Contact Module', () => {
     let contactsController: ContactsController
     let contactsService: ContactsService
 
-    const mockedVerifyDidDocumentSignature = require('@kiltprotocol/core/build/did/Did')
+    const mockedVerifyDidDocumentSignature = require('@kiltprotocol/core/lib/did/Did')
       .verifyDidDocumentSignature
     const fakeContactService: ContactsService = {
       add: jest.fn(

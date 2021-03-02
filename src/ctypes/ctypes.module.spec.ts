@@ -1,10 +1,6 @@
 import { CType, CTypeService, CTypeDB } from './interfaces/ctype.interfaces'
 import { Optional } from 'typescript-optional'
-import {
-  CType as SDKCType,
-  CTypeMetadata,
-  Identity,
-} from '@kiltprotocol/core'
+import { CType as SDKCType, CTypeMetadata, Identity } from '@kiltprotocol/core'
 import { Blockchain } from '@kiltprotocol/chain-helpers'
 import { Test } from '@nestjs/testing'
 import { CTypesController } from './ctypes.controller'
@@ -16,7 +12,7 @@ import { NotFoundException } from '@nestjs/common/exceptions'
 import { getModelToken } from '@nestjs/mongoose'
 import { MongoDbCTypesService } from './mongodb-ctypes.service'
 
-jest.mock('@kiltprotocol/core/build/ctype/CType.chain', () => {
+jest.mock('@kiltprotocol/core/lib/ctype/CType.chain', () => {
   return {
     getOwner: jest.fn(async (): Promise<string | null> => null),
   }
@@ -77,9 +73,9 @@ describe('CType Module', () => {
     let ctypesService: CTypeService
     let aliceAddress: string
 
-    const blockchainApi = require('@kiltprotocol/chain-helpers/build/blockchainApiConnection/BlockchainApiConnection')
+    const blockchainApi = require('@kiltprotocol/chain-helpers/lib/blockchainApiConnection/BlockchainApiConnection')
 
-    const mockedGetOwner = require('@kiltprotocol/core/build/ctype/CType.chain')
+    const mockedGetOwner = require('@kiltprotocol/core/lib/ctype/CType.chain')
       .getOwner
 
     const fakeCTypeService: CTypeService = {
@@ -125,13 +121,13 @@ describe('CType Module', () => {
     })
     afterEach(() => jest.clearAllMocks())
 
-    describe('verifyCTypeAndReturnChainOwner', () => {
+    describe('verifyCType', () => {
       it('valid CType', async () => {
         mockedGetOwner.mockResolvedValue(aliceAddress)
         const testCType = { ...SDKCTypeA, owner: aliceAddress }
         const serviceCType: CType = { cType: testCType, metaData: metaDataA }
         await expect(
-          ctypesController['verifyCTypeAndReturnChainOwner'](serviceCType)
+          ctypesController['verifyAndReturnChainOwner'](serviceCType)
         ).resolves.toEqual(aliceAddress)
       })
       it('invalid CType', async () => {
@@ -140,7 +136,7 @@ describe('CType Module', () => {
         const serviceCType: CType = { cType: testCType, metaData: metaDataA }
 
         await expect(
-          ctypesController['verifyCTypeAndReturnChainOwner'](serviceCType)
+          ctypesController['verifyCType'](serviceCType)
         ).rejects.toThrow(new InvalidCtypeDefinitionException())
       })
       it('offChain CType', async () => {
