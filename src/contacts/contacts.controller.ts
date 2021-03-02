@@ -11,7 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { Contact, ContactsService } from './interfaces/contacts.interfaces'
-import { Did, IDidDocumentSigned } from '@kiltprotocol/sdk-js'
+import { Did, IDidDocumentSigned } from '@kiltprotocol/core'
 import { Optional } from 'typescript-optional'
 import { AuthGuard } from '../auth/auth.guard'
 

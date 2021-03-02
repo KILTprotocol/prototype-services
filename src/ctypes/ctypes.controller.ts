@@ -1,4 +1,4 @@
-import { CType as SDKCType } from '@kiltprotocol/sdk-js'
+import { CType as SDKCType } from '@kiltprotocol/core'
 import {
   Body,
   Controller,

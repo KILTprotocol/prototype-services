@@ -13,12 +13,10 @@ import {
 } from './interfaces/contacts.interfaces'
 import { MongoDbMContactsService } from './mongodb-contacts.service'
 import { Optional } from 'typescript-optional'
-import {
-  IDidDocumentSigned,
-  IDENTIFIER_PREFIX,
-} from '@kiltprotocol/sdk-js/build/did/Did'
+import { IDidDocumentSigned } from '@kiltprotocol/core'
+const IDENTIFIER_PREFIX = 'did:kilt:'
 
-jest.mock('@kiltprotocol/sdk-js/build/did/Did', () => {
+jest.mock('@kiltprotocol/core/build/did/Did/Mocks', () => {
   return {
     verifyDidDocumentSignature: jest.fn((): boolean => true),
     getIdentifierFromAddress: jest.fn(
@@ -97,7 +95,7 @@ describe('Contact Module', () => {
     let contactsController: ContactsController
     let contactsService: ContactsService
 
-    const mockedVerifyDidDocumentSignature = require('@kiltprotocol/sdk-js/build/did/Did')
+    const mockedVerifyDidDocumentSignature = require('@kiltprotocol/core/build/did/Did')
       .verifyDidDocumentSignature
     const fakeContactService: ContactsService = {
       add: jest.fn(

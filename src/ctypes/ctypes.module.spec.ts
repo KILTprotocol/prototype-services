@@ -1,6 +1,11 @@
 import { CType, CTypeService, CTypeDB } from './interfaces/ctype.interfaces'
 import { Optional } from 'typescript-optional'
-import { Blockchain, CType as SDKCType, CTypeMetadata, Identity} from '@kiltprotocol/sdk-js'
+import {
+  CType as SDKCType,
+  CTypeMetadata,
+  Identity,
+} from '@kiltprotocol/core'
+import { Blockchain } from '@kiltprotocol/chain-helpers'
 import { Test } from '@nestjs/testing'
 import { CTypesController } from './ctypes.controller'
 import { AuthGuard } from '../auth/auth.guard'
@@ -11,7 +16,7 @@ import { NotFoundException } from '@nestjs/common/exceptions'
 import { getModelToken } from '@nestjs/mongoose'
 import { MongoDbCTypesService } from './mongodb-ctypes.service'
 
-jest.mock('@kiltprotocol/sdk-js/build/ctype/CType.chain', () => {
+jest.mock('@kiltprotocol/core/build/ctype/CType.chain', () => {
   return {
     getOwner: jest.fn(async (): Promise<string | null> => null),
   }
@@ -72,9 +77,9 @@ describe('CType Module', () => {
     let ctypesService: CTypeService
     let aliceAddress: string
 
-    const blockchainApi = require('@kiltprotocol/sdk-js/build/blockchainApiConnection/BlockchainApiConnection')
+    const blockchainApi = require('@kiltprotocol/chain-helpers/build/blockchainApiConnection/BlockchainApiConnection')
 
-    const mockedGetOwner = require('@kiltprotocol/sdk-js/build/ctype/CType.chain')
+    const mockedGetOwner = require('@kiltprotocol/core/build/ctype/CType.chain')
       .getOwner
 
     const fakeCTypeService: CTypeService = {

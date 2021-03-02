@@ -11,7 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { MessagingService } from './interfaces/messaging.interfaces'
-import { IEncryptedMessage } from '@kiltprotocol/sdk-js'
+import { IEncryptedMessage } from '@kiltprotocol/types'
 import { Crypto } from '@kiltprotocol/utils'
 import { AuthGuard } from '../auth/auth.guard'
 import { ForbiddenMessageAccessException } from './exceptions/message-forbidden.exception'
