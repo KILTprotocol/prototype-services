@@ -1,14 +1,14 @@
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
-import { Identity } from '@kiltprotocol/sdk-js'
+import { Identity } from '@kiltprotocol/core'
 import { MockMongooseModule, mongodbInstance } from './MockMongooseModule'
 import { AppModule } from '../src/app.module'
 import { HealthIndicatorResult } from '@nestjs/terminus'
 import { KiltChainConnectionIndicator } from '../src/health/bc.health'
 
 jest.mock(
-  '@kiltprotocol/sdk-js/build/blockchainApiConnection/BlockchainApiConnection'
+  '@kiltprotocol/chain-helpers/build/blockchainApiConnection/BlockchainApiConnection'
 )
 jest.mock('../src/mongoose/mongoose.module', () => ({
   MyMongooseModule: MockMongooseModule,

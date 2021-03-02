@@ -5,15 +5,15 @@ import { MockMongooseModule, mongodbInstance } from './MockMongooseModule'
 import { CTypesModule } from '../src/ctypes/ctypes.module'
 import { CType, CTypeService } from '../src/ctypes/interfaces/ctype.interfaces'
 import { BlockchainModule } from '../src/blockchain/blockchain.module'
-import { CType as SDKCType, Identity } from '@kiltprotocol/sdk-js'
+import { CType as SDKCType, Identity } from '@kiltprotocol/core'
 
-jest.mock('@kiltprotocol/sdk-js/build/ctype/CType.chain', () => {
+jest.mock('@kiltprotocol/core/build/ctype/CType.chain', () => {
   return {
     getOwner: jest.fn(async () => null),
   }
 })
 jest.mock(
-  '@kiltprotocol/sdk-js/build/blockchainApiConnection/BlockchainApiConnection'
+  '@kiltprotocol/chain-helpers/build/blockchainApiConnection/BlockchainApiConnection'
 )
 
 describe('ctypes endpoint (e2e)', () => {
@@ -131,7 +131,7 @@ describe('ctypes endpoint (e2e)', () => {
   })
 
   describe('add', () => {
-    const mockedGetOwner = require('@kiltprotocol/sdk-js/build/ctype/CType.chain')
+    const mockedGetOwner = require('@kiltprotocol/core/build/ctype/CType.chain')
       .getOwner
 
     beforeEach(() => {
@@ -251,7 +251,7 @@ describe('ctypes endpoint (e2e)', () => {
   })
 
   it('register -> get -> reset', async () => {
-    require('@kiltprotocol/sdk-js/build/ctype/CType.chain').getOwner.mockResolvedValue(
+    require('@kiltprotocol/core/build/ctype/CType.chain').getOwner.mockResolvedValue(
       idAlice.address
     )
 

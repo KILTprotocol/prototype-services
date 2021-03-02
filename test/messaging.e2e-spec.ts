@@ -1,10 +1,7 @@
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
-import {
-  Identity,
-  MessageBodyType,
-  IEncryptedMessage,
-} from '@kiltprotocol/sdk-js'
+import { Identity } from '@kiltprotocol/core'
+import { MessageBodyType, IEncryptedMessage } from '@kiltprotocol/types'
 import Message from '@kiltprotocol/messaging'
 import supertest from 'supertest'
 import { MessagingService } from '../src/messaging/interfaces/messaging.interfaces'
