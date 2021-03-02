@@ -20,7 +20,12 @@
   },
   "dependencies": {
     "@godaddy/terminus": "^4.6.0",
-    "@kiltprotocol/sdk-js": "^0.19.1-33",
+    "@kiltprotocol/core": "^0.19.1-33",
+    "@kiltprotocol/utils": "^0.19.1-33",
+    "@kiltprotocol/config": "^0.19.1-33",
+    "@kiltprotocol/chain-helpers": "^0.19.1-33",
+    "@kiltprotocol/messaging": "^0.19.1-33",
+    "@kiltprotocol/types": "^0.19.1-33",
     "@nestjs/common": "^7.6.6",
     "@nestjs/core": "^7.6.6",
     "@nestjs/mongoose": "^5.2.2",
