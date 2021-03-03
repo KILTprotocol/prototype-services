@@ -1,4 +1,4 @@
-import { CType as SDKCType } from '@kiltprotocol/core'
+import { CType as SDKCType, CTypeUtils } from '@kiltprotocol/core'
 import {
   Body,
   Controller,
@@ -13,6 +13,7 @@ import {
 import { BlockchainService } from '../blockchain/interfaces/blockchain.interfaces'
 import { CTypeNotOnChainException } from './exceptions/ctype-not-on-chain.exception'
 import { InvalidCtypeDefinitionException } from './exceptions/invalid-ctype-definition.exception'
+import { CTypeOwnerNotCorrect } from './exceptions/ctype-owner-not-correct.exception'
 import { CType, CTypeService } from './interfaces/ctype.interfaces'
 import { AuthGuard } from '../auth/auth.guard'
 import { AlreadyRegisteredException } from './exceptions/already-registered.exception'
@@ -45,7 +46,7 @@ export class CTypesController {
 
   @Post()
   public async register(@Body() cTypeInput: CType) {
-    const verified = this.verifyCType(cTypeInput)
+    const verified = await this.verifyCType(cTypeInput)
     if (verified) {
       console.log(
         `All valid => registering cType ` +
@@ -77,8 +78,20 @@ export class CTypesController {
     try {
       const ctype = new SDKCType(cTypeInput.cType)
       return ctype.verifyStored()
-    } catch {
+    } catch (e) {
+      console.log('error: ' + e)
       throw new InvalidCtypeDefinitionException()
+    }
+  }
+
+  public async verifyAndReturnChainOwner(cTypeInput: CType) {
+    try {
+      const ctype = new SDKCType(cTypeInput.cType)
+      CTypeUtils.verifyOwner(ctype)
+      return ctype.owner
+    } catch (e) {
+      console.log('error: ' + e)
+      throw new CTypeOwnerNotCorrect()
     }
   }
 }
