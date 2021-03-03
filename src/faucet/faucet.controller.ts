@@ -37,7 +37,7 @@ export class FaucetController {
       throw new BadRequestException('no target address')
     }
     console.log(`Faucet drop requested for ${address} from ${request.ip}`)
-    if (!checkAddress(address, 42)[0]) {
+    if (!checkAddress(address, 38)[0]) {
       throw new FaucetDropInvalidAddressException()
     }
 

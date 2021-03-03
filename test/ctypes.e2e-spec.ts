@@ -153,29 +153,7 @@ describe('ctypes endpoint (e2e)', () => {
       // it overwrites ctype owner with actual owner
       expect(storedCtypes[0]).toMatchObject({
         ...cTypeRecordA,
-        cType: { ...kiltCTypeA, owner: idAlice.address },
-      })
-    })
-
-    it('overwrites owner with chain owner', async () => {
-      mockedGetOwner.mockResolvedValue('new-owner')
-      const cTypeRecordWithOwner = {
-        ...cTypeRecordA,
-        cType: SDKCType.fromSchema(kiltCTypeA.schema, idAlice.address),
-      }
-      await request(app.getHttpServer())
-        .post(`/ctype`)
-        .send(cTypeRecordWithOwner)
-        .expect(201)
-
-      expect(mockedGetOwner).toHaveBeenCalledWith(kiltCTypeA.hash)
-      const storedCtypes = await ctypeService.findAll()
-      expect(storedCtypes).toBeInstanceOf(Array)
-      expect(storedCtypes).toHaveLength(1)
-      // it overwrites ctype owner with actual owner
-      expect(storedCtypes[0]).toMatchObject({
-        ...cTypeRecordWithOwner,
-        cType: { ...kiltCTypeA, owner: 'new-owner' },
+        cType: { ...kiltCTypeA },
       })
     })
 
@@ -266,8 +244,7 @@ describe('ctypes endpoint (e2e)', () => {
       .expect(response => {
         expect(response.body).toMatchObject({
           ...cTypeRecordA,
-          // it overwrites ctype owner with actual owner
-          cType: { ...kiltCTypeA, owner: idAlice.address },
+          cType: { ...kiltCTypeA },
         })
       })
 

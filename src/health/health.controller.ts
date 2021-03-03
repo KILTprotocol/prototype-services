@@ -16,10 +16,11 @@ export class HealthController {
 
   @Get()
   @HealthCheck()
-  public check() {
+  public async check() {
     return this.health.check([
       async () => this.mongoose.pingCheck('mongoose'),
       async () => this.kiltChain.isConnected('chain', 1000),
     ])
+
   }
 }

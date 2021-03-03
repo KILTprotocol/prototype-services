@@ -58,14 +58,14 @@ describe('AppController availability (e2e)', () => {
   })
 
   it('message inbox endpoint available (GET)', async () => {
-    const idAlice = await Identity.buildFromURI('//Alice')
+    const idAlice = Identity.buildFromURI('//Alice')
     return request(app.getHttpServer())
       .get(`/messaging/inbox/${idAlice.address}`)
       .expect(200, [])
   })
 
   it('message outbox endpoint available (GET)', async () => {
-    const idAlice = await Identity.buildFromURI('//Alice')
+    const idAlice = Identity.buildFromURI('//Alice')
     return request(app.getHttpServer())
       .get(`/messaging/sent/${idAlice.address}`)
       .expect(200, [])

@@ -37,7 +37,7 @@ describe('faucet endpoint (e2e)', () => {
     await app.init()
 
     faucetService = app.get('FaucetService')
-    idAlice = await Identity.buildFromURI('//Alice')
+    idAlice = Identity.buildFromURI('//Alice')
 
     process.env['FAUCET_ACCOUNT'] = FAUCET_SEED
   }, 30000)
@@ -71,9 +71,10 @@ describe('faucet endpoint (e2e)', () => {
 
   it('accepts first valid request', async () => {
     const spy = jest.spyOn(Balance, 'makeTransfer')
+    const { address } = idAlice
     await request(app.getHttpServer())
       .post(`/faucet/drop`)
-      .send(`address=${idAlice.address}`)
+      .send({ address })
       .expect(201)
 
     expect(spy).toHaveBeenCalledWith(
