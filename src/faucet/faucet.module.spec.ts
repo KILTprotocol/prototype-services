@@ -114,7 +114,7 @@ describe('Faucet Module', () => {
         const dropSpy = jest.spyOn(fakeFaucetService, 'drop')
         const buildSpy = jest
           .spyOn(Identity, 'buildFromSeed')
-          .mockResolvedValue(faucetIdentity)
+          .mockReturnValue(faucetIdentity)
         expect(
           await faucetController.drop(claimerAddress, faucetRequest)
         ).toEqual(undefined)
@@ -133,7 +133,7 @@ describe('Faucet Module', () => {
       it('updates the database on unsuccessful transfer and throws exception', async () => {
         const buildSpy = jest
           .spyOn(Identity, 'buildFromSeed')
-          .mockResolvedValue(faucetIdentity)
+          .mockReturnValue(faucetIdentity)
         mockedsubmitSignedTx.mockResolvedValue({
           isInBlock: false,
         } as ISubmittableResult)
@@ -199,7 +199,7 @@ describe('Faucet Module', () => {
       it('builds faucet Id and tries to transfer default amount to the given address', async () => {
         const buildSpy = jest
           .spyOn(Identity, 'buildFromSeed')
-          .mockResolvedValue(faucetIdentity)
+          .mockReturnValue(faucetIdentity)
         mockedsubmitSignedTx.mockResolvedValue({
           isInBlock: true,
         } as ISubmittableResult)
@@ -230,7 +230,7 @@ describe('Faucet Module', () => {
           hexToU8a(process.env.FAUCET_ACCOUNT)
         )
         expect(mockedMakeTransfer).not.toHaveBeenCalled()
-        buildSpy.mockResolvedValue(faucetIdentity)
+        buildSpy.mockReturnValue(faucetIdentity)
         mockedMakeTransfer.mockImplementation(() => {
           throw new Error('makeTransfer failed')
         })

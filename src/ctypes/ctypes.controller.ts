@@ -45,7 +45,7 @@ export class CTypesController {
 
   @Post()
   public async register(@Body() cTypeInput: CType) {
-    const verified = this.verifyCType(cTypeInput)
+    const verified = await this.verifyCType(cTypeInput)
     if (verified) {
       console.log(
         `All valid => registering cType ` +
@@ -55,6 +55,8 @@ export class CTypesController {
             4
           )
       )
+    } else {
+      throw new CTypeNotOnChainException()
     }
 
     const result = await this.cTypesService.register({
@@ -68,8 +70,6 @@ export class CTypesController {
         } already exists in this DB!`
       )
       throw new AlreadyRegisteredException()
-    } else {
-      throw new CTypeNotOnChainException()
     }
   }
 

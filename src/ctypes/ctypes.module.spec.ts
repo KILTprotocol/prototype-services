@@ -127,8 +127,8 @@ describe('CType Module', () => {
         const testCType = { ...SDKCTypeA, owner: aliceAddress }
         const serviceCType: CType = { cType: testCType, metaData: metaDataA }
         await expect(
-          ctypesController['verifyAndReturnChainOwner'](serviceCType)
-        ).resolves.toEqual(aliceAddress)
+          ctypesController['verifyCType'](serviceCType)
+        ).resolves.toEqual(true)
       })
       it('invalid CType', async () => {
         mockedGetOwner.mockResolvedValue(aliceAddress)
@@ -144,8 +144,8 @@ describe('CType Module', () => {
         const testCType = { ...SDKCTypeA, owner: aliceAddress }
         const serviceCType: CType = { cType: testCType, metaData: metaDataA }
         await expect(
-          ctypesController['verifyCTypeAndReturnChainOwner'](serviceCType)
-        ).resolves.toBeNull()
+          ctypesController['verifyCType'](serviceCType)
+        ).resolves.toEqual(false)
       })
     })
     describe('register', () => {
