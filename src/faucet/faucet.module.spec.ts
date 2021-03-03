@@ -45,8 +45,8 @@ jest.mock(
 )
 
 describe('Faucet Module', () => {
-  const claimerAddress = '5Ded9KnRSDY9zc3QafT7dyueTqgZdqYK43cc5TcSwqACM1dL'
-  const invalidAddress = claimerAddress.replace('5', '7')
+  const claimerAddress = Identity.buildFromURI('//Bob').address
+  const invalidAddress = claimerAddress.replace('4', '7')
   const testFaucetDrop: FaucetDrop = {
     amount: 500,
     address: claimerAddress,
