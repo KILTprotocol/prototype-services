@@ -135,7 +135,9 @@ describe('ctypes endpoint (e2e)', () => {
       .getOwner
 
     beforeEach(() => {
-      mockedGetOwner.mockResolvedValue(null)
+      mockedGetOwner.mockResolvedValue(
+        '4r1WkS3t8rbCb11H8t3tJvGVCynwDXSUBiuGB6sLRHzCLCjs'
+      )
     })
 
     it('adds new ctype if hash on chain', async () => {
@@ -158,7 +160,9 @@ describe('ctypes endpoint (e2e)', () => {
     })
 
     it('overwrites owner with chain owner', async () => {
-      mockedGetOwner.mockResolvedValue('new-owner')
+      mockedGetOwner.mockResolvedValue(
+        '4r1WkS3t8rbCb11H8t3tJvGVCynwDXSUBiuGB6sLRHzCLCjs'
+      )
       const cTypeRecordWithOwner = {
         ...cTypeRecordA,
         cType: SDKCType.fromSchema(kiltCTypeA.schema, idAlice.address),
@@ -175,7 +179,10 @@ describe('ctypes endpoint (e2e)', () => {
       // it overwrites ctype owner with actual owner
       expect(storedCtypes[0]).toMatchObject({
         ...cTypeRecordWithOwner,
-        cType: { ...kiltCTypeA, owner: 'new-owner' },
+        cType: {
+          ...kiltCTypeA,
+          owner: '4r1WkS3t8rbCb11H8t3tJvGVCynwDXSUBiuGB6sLRHzCLCjs',
+        },
       })
     })
 
