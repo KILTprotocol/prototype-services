@@ -7,13 +7,13 @@ import { FaucetService } from '../src/faucet/interfaces/faucet.interfaces'
 import { MockMongooseModule, mongodbInstance } from './MockMongooseModule'
 import { FaucetModule } from '../src/faucet/faucet.module'
 
-jest.mock('@kiltprotocol/core/build/balance/Balance.chain', () => {
+jest.mock('@kiltprotocol/core/lib/balance/Balance.chain', () => {
   return {
     makeTransfer: jest.fn(() => Promise.resolve({})),
   }
 })
 
-jest.mock('@kiltprotocol/chain-helpers/build/blockchain/Blockchain.utils', () => {
+jest.mock('@kiltprotocol/chain-helpers/lib/blockchain/Blockchain.utils', () => {
   return {
     __esModules: true,
     submitSignedTx: jest.fn(() => Promise.resolve({ isInBlock: true })),
@@ -44,10 +44,10 @@ describe('faucet endpoint (e2e)', () => {
 
   beforeEach(async () => {
     await faucetService.reset()
-    require('@kiltprotocol/chain-helpers/build/blockchain/Blockchain.utils').submitSignedTx.mockResolvedValue(
+    require('@kiltprotocol/chain-helpers/lib/blockchain/Blockchain.utils').submitSignedTx.mockResolvedValue(
       { isInBlock: true }
     )
-    require('@kiltprotocol/core/build/balance/Balance.chain').makeTransfer.mockResolvedValue(
+    require('@kiltprotocol/core/lib/balance/Balance.chain').makeTransfer.mockResolvedValue(
       {}
     )
   })
@@ -60,7 +60,7 @@ describe('faucet endpoint (e2e)', () => {
   })
 
   it('handles invalid destination address / public key', async () => {
-    require('@kiltprotocol/core/build/balance/Balance.chain').makeTransfer.mockRejectedValue(
+    require('@kiltprotocol/core/lib/balance/Balance.chain').makeTransfer.mockRejectedValue(
       'transfer destination invalid'
     )
     await request(app.getHttpServer())

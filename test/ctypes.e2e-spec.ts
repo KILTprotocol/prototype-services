@@ -7,13 +7,13 @@ import { CType, CTypeService } from '../src/ctypes/interfaces/ctype.interfaces'
 import { BlockchainModule } from '../src/blockchain/blockchain.module'
 import { CType as SDKCType, Identity } from '@kiltprotocol/core'
 
-jest.mock('@kiltprotocol/core/build/ctype/CType.chain', () => {
+jest.mock('@kiltprotocol/core/lib/ctype/CType.chain', () => {
   return {
     getOwner: jest.fn(async () => null),
   }
 })
 jest.mock(
-  '@kiltprotocol/chain-helpers/build/blockchainApiConnection/BlockchainApiConnection'
+  '@kiltprotocol/chain-helpers/lib/blockchainApiConnection/BlockchainApiConnection'
 )
 
 describe('ctypes endpoint (e2e)', () => {
@@ -131,7 +131,7 @@ describe('ctypes endpoint (e2e)', () => {
   })
 
   describe('add', () => {
-    const mockedGetOwner = require('@kiltprotocol/core/build/ctype/CType.chain')
+    const mockedGetOwner = require('@kiltprotocol/core/lib/ctype/CType.chain')
       .getOwner
 
     beforeEach(() => {
@@ -251,7 +251,7 @@ describe('ctypes endpoint (e2e)', () => {
   })
 
   it('register -> get -> reset', async () => {
-    require('@kiltprotocol/core/build/ctype/CType.chain').getOwner.mockResolvedValue(
+    require('@kiltprotocol/core/lib/ctype/CType.chain').getOwner.mockResolvedValue(
       idAlice.address
     )
 

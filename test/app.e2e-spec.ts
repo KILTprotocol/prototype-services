@@ -8,7 +8,7 @@ import { HealthIndicatorResult } from '@nestjs/terminus'
 import { KiltChainConnectionIndicator } from '../src/health/bc.health'
 
 jest.mock(
-  '@kiltprotocol/chain-helpers/build/blockchainApiConnection/BlockchainApiConnection'
+  '@kiltprotocol/chain-helpers/lib/blockchainApiConnection/BlockchainApiConnection'
 )
 jest.mock('../src/mongoose/mongoose.module', () => ({
   MyMongooseModule: MockMongooseModule,
