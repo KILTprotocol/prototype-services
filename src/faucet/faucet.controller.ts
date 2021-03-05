@@ -67,7 +67,7 @@ export class FaucetController {
   private async transferTokens(address: string): Promise<boolean> {
     try {
       console.log(`Transfer tokens from faucet to ${address}`)
-      const faucetAccount: Identity = await Identity.buildFromSeed(
+      const faucetAccount: Identity = Identity.buildFromSeed(
         hexToU8a(process.env.FAUCET_ACCOUNT)
       )
       const tx = await Balance.makeTransfer(
