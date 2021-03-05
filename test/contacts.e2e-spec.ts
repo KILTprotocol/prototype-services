@@ -8,6 +8,7 @@ import {
 } from '../src/contacts/interfaces/contacts.interfaces'
 import { ContactsModule } from '../src/contacts/contacts.module'
 import { IDidDocumentSigned, Did, Identity } from '@kiltprotocol/core'
+import { cryptoWaitReady } from '@polkadot/util-crypto'
 
 describe('contacts endpoint (e2e)', () => {
   let app: INestApplication
@@ -18,6 +19,7 @@ describe('contacts endpoint (e2e)', () => {
   let contactB: Contact
 
   beforeAll(async () => {
+    await cryptoWaitReady()
     const moduleFixture = await Test.createTestingModule({
       imports: [ContactsModule, MockMongooseModule],
     }).compile()
@@ -26,8 +28,8 @@ describe('contacts endpoint (e2e)', () => {
     await app.init()
 
     contactsService = app.get('ContactsService')
-    idAlice = await Identity.buildFromURI('//Alice')
-    idBob = await Identity.buildFromURI('//Bob')
+    idAlice = Identity.buildFromURI('//Alice')
+    idBob = Identity.buildFromURI('//Bob')
 
     contactA = {
       publicIdentity: idAlice.getPublicIdentity(),

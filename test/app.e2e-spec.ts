@@ -6,6 +6,7 @@ import { MockMongooseModule, mongodbInstance } from './MockMongooseModule'
 import { AppModule } from '../src/app.module'
 import { HealthIndicatorResult } from '@nestjs/terminus'
 import { KiltChainConnectionIndicator } from '../src/health/bc.health'
+import { cryptoWaitReady } from '@polkadot/util-crypto'
 
 jest.mock(
   '@kiltprotocol/chain-helpers/lib/blockchainApiConnection/BlockchainApiConnection'
@@ -21,6 +22,7 @@ describe('AppController availability (e2e)', () => {
   }
 
   beforeAll(async () => {
+    await cryptoWaitReady()
     const moduleFixture = await Test.createTestingModule({
       imports: [AppModule],
     })
@@ -57,14 +59,14 @@ describe('AppController availability (e2e)', () => {
       .expect(400)
   })
 
-  it('message inbox endpoint available (GET)', async () => {
+  it('message inbox endpoint available (GET)', () => {
     const idAlice = Identity.buildFromURI('//Alice')
     return request(app.getHttpServer())
       .get(`/messaging/inbox/${idAlice.address}`)
       .expect(200, [])
   })
 
-  it('message outbox endpoint available (GET)', async () => {
+  it('message outbox endpoint available (GET)', () => {
     const idAlice = Identity.buildFromURI('//Alice')
     return request(app.getHttpServer())
       .get(`/messaging/sent/${idAlice.address}`)

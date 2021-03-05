@@ -6,6 +6,7 @@ import { CTypesModule } from '../src/ctypes/ctypes.module'
 import { CType, CTypeService } from '../src/ctypes/interfaces/ctype.interfaces'
 import { BlockchainModule } from '../src/blockchain/blockchain.module'
 import { CType as SDKCType, Identity } from '@kiltprotocol/core'
+import { cryptoWaitReady } from '@polkadot/util-crypto'
 
 jest.mock('@kiltprotocol/core/lib/ctype/CType.chain', () => {
   return {
@@ -76,6 +77,7 @@ describe('ctypes endpoint (e2e)', () => {
   }
 
   beforeAll(async () => {
+    await cryptoWaitReady()
     const moduleFixture = await Test.createTestingModule({
       imports: [CTypesModule, BlockchainModule, MockMongooseModule],
     }).compile()
@@ -84,7 +86,7 @@ describe('ctypes endpoint (e2e)', () => {
     await app.init()
 
     ctypeService = app.get('CTypeService')
-    idAlice = await Identity.buildFromURI('//Alice')
+    idAlice = Identity.buildFromURI('//Alice')
   }, 30000)
 
   beforeEach(async () => {
