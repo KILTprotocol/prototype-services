@@ -44,26 +44,34 @@ jest.mock('@kiltprotocol/chain-helpers/lib/blockchain/Blockchain.utils', () => {
   }
 })
 
-describe('Faucet Module', async () => {
-  await cryptoWaitReady()
-  const claimerAddress = Identity.buildFromURI('//Bob').address
-  const invalidAddress = claimerAddress.replace('4', '7')
-  const testFaucetDrop: FaucetDrop = {
-    amount: 500,
-    address: claimerAddress,
-    requestip: '::ffff:127.0.0.1',
-    dropped: true,
-    error: 0,
-    created: 1598628768759,
-  }
+describe('Faucet Module', () => {
+  let claimerAddress: string
+  let invalidAddress: string
+  let testFaucetDrop: FaucetDrop
   const FAUCET_SEED =
     '0xcdfd6024d2b0eba27d54cc92a44cd9a627c69b2dbda15ed7e58085425119ae03'
   let faucetIdentity: Identity
-  const faucetRequest = {
-    ip: testFaucetDrop.requestip,
-  } as Request
+  let faucetRequest: Request
+
   const KILT_FEMTO_COIN = '1000000000000000'
   const DEFAULT_TOKEN_AMOUNT = 500
+
+  beforeAll(async () => {
+    await cryptoWaitReady()
+    claimerAddress = Identity.buildFromURI('//Bob').address
+    invalidAddress = claimerAddress.replace('4', '7')
+    testFaucetDrop = {
+      amount: 500,
+      address: claimerAddress,
+      requestip: '::ffff:127.0.0.1',
+      dropped: true,
+      error: 0,
+      created: 1598628768759,
+    }
+    faucetRequest = {
+      ip: testFaucetDrop.requestip,
+    } as Request
+  })
 
   describe('Controller', () => {
     let faucetController: FaucetController
