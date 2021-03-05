@@ -1,4 +1,4 @@
-import { ICType, ICTypeMetadata } from '@kiltprotocol/sdk-js'
+import { ICType, ICTypeMetadata } from '@kiltprotocol/types'
 import { Document } from 'mongoose'
 import { Optional } from 'typescript-optional'
 

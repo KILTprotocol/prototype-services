@@ -4,12 +4,14 @@ import { BadRequestException } from '@nestjs/common/exceptions'
 import { getModelToken } from '@nestjs/mongoose'
 import { MessagingController } from './messaging.controller'
 import { MessagingService, MessageDB } from './interfaces/messaging.interfaces'
-import { IEncryptedMessage, Identity } from '@kiltprotocol/sdk-js'
+import { Identity } from '@kiltprotocol/core'
+import { IEncryptedMessage } from '@kiltprotocol/types'
 import * as Controller from './messaging.controller'
 import { MongoDbMessagingService } from './mongodb-messaging.service'
 import { Optional } from 'typescript-optional'
 import { ForbiddenMessageAccessException } from './exceptions/message-forbidden.exception'
 import { MessageNotFoundException } from './exceptions/message-not-found.exception'
+import { cryptoWaitReady } from '@polkadot/util-crypto'
 
 describe('Messaging Module', () => {
   const encryptedMessage: IEncryptedMessage = {
@@ -77,8 +79,10 @@ describe('Messaging Module', () => {
     })
     afterEach(() => jest.clearAllMocks())
     beforeAll(async () => {
-      receiverIdentity = await Identity.buildFromMnemonic(
-        'layer donor village public cruel caution learn bronze fish come embrace hurt'
+      await cryptoWaitReady()
+      receiverIdentity = Identity.buildFromMnemonic(
+        'layer donor village public cruel caution learn bronze fish come embrace hurt',
+        { signingKeyPairType: 'ed25519' }
       )
       receiverSignature = receiverIdentity.signStr(encryptedMessage.messageId)
     })

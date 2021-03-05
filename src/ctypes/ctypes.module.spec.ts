@@ -1,6 +1,7 @@
 import { CType, CTypeService, CTypeDB } from './interfaces/ctype.interfaces'
 import { Optional } from 'typescript-optional'
-import { Blockchain, CType as SDKCType, CTypeMetadata, Identity} from '@kiltprotocol/sdk-js'
+import { CType as SDKCType, CTypeMetadata, Identity } from '@kiltprotocol/core'
+import { Blockchain } from '@kiltprotocol/chain-helpers'
 import { Test } from '@nestjs/testing'
 import { CTypesController } from './ctypes.controller'
 import { AuthGuard } from '../auth/auth.guard'
@@ -10,8 +11,9 @@ import { AlreadyRegisteredException } from './exceptions/already-registered.exce
 import { NotFoundException } from '@nestjs/common/exceptions'
 import { getModelToken } from '@nestjs/mongoose'
 import { MongoDbCTypesService } from './mongodb-ctypes.service'
+import { cryptoWaitReady } from '@polkadot/util-crypto'
 
-jest.mock('@kiltprotocol/sdk-js/build/ctype/CType.chain', () => {
+jest.mock('@kiltprotocol/core/lib/ctype/CType.chain', () => {
   return {
     getOwner: jest.fn(async (): Promise<string | null> => null),
   }
@@ -72,9 +74,9 @@ describe('CType Module', () => {
     let ctypesService: CTypeService
     let aliceAddress: string
 
-    const blockchainApi = require('@kiltprotocol/sdk-js/build/blockchainApiConnection/BlockchainApiConnection')
+    const blockchainApi = require('@kiltprotocol/chain-helpers/lib/blockchainApiConnection/BlockchainApiConnection')
 
-    const mockedGetOwner = require('@kiltprotocol/sdk-js/build/ctype/CType.chain')
+    const mockedGetOwner = require('@kiltprotocol/core/lib/ctype/CType.chain')
       .getOwner
 
     const fakeCTypeService: CTypeService = {
@@ -91,8 +93,10 @@ describe('CType Module', () => {
     }
 
     beforeAll(
-      async () =>
-        (aliceAddress = (await Identity.buildFromURI('//Alice')).address)
+      async () => (
+        await cryptoWaitReady(),
+        (aliceAddress = Identity.buildFromURI('//Alice').address)
+      )
     )
 
     beforeEach(async () => {
@@ -120,14 +124,14 @@ describe('CType Module', () => {
     })
     afterEach(() => jest.clearAllMocks())
 
-    describe('verifyCTypeAndReturnChainOwner', () => {
+    describe('verifyCType', () => {
       it('valid CType', async () => {
         mockedGetOwner.mockResolvedValue(aliceAddress)
         const testCType = { ...SDKCTypeA, owner: aliceAddress }
         const serviceCType: CType = { cType: testCType, metaData: metaDataA }
         await expect(
-          ctypesController['verifyCTypeAndReturnChainOwner'](serviceCType)
-        ).resolves.toEqual(aliceAddress)
+          ctypesController['verifyCType'](serviceCType)
+        ).resolves.toEqual(true)
       })
       it('invalid CType', async () => {
         mockedGetOwner.mockResolvedValue(aliceAddress)
@@ -135,7 +139,7 @@ describe('CType Module', () => {
         const serviceCType: CType = { cType: testCType, metaData: metaDataA }
 
         await expect(
-          ctypesController['verifyCTypeAndReturnChainOwner'](serviceCType)
+          ctypesController['verifyCType'](serviceCType)
         ).rejects.toThrow(new InvalidCtypeDefinitionException())
       })
       it('offChain CType', async () => {
@@ -143,8 +147,8 @@ describe('CType Module', () => {
         const testCType = { ...SDKCTypeA, owner: aliceAddress }
         const serviceCType: CType = { cType: testCType, metaData: metaDataA }
         await expect(
-          ctypesController['verifyCTypeAndReturnChainOwner'](serviceCType)
-        ).resolves.toBeNull()
+          ctypesController['verifyCType'](serviceCType)
+        ).resolves.toEqual(false)
       })
     })
     describe('register', () => {
@@ -245,8 +249,10 @@ describe('CType Module', () => {
     let aliceAddress: string
 
     beforeAll(
-      async () =>
-        (aliceAddress = (await Identity.buildFromURI('//Alice')).address)
+      async () => (
+        await cryptoWaitReady(),
+        (aliceAddress = Identity.buildFromURI('//Alice').address)
+      )
     )
 
     beforeEach(async () => {

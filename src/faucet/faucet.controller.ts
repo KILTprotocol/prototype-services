@@ -1,4 +1,5 @@
-import { Balance, Identity, BlockchainUtils } from '@kiltprotocol/sdk-js'
+import { Balance, Identity } from '@kiltprotocol/core'
+import { BlockchainUtils } from '@kiltprotocol/chain-helpers'
 import {
   Controller,
   Inject,
@@ -36,7 +37,7 @@ export class FaucetController {
       throw new BadRequestException('no target address')
     }
     console.log(`Faucet drop requested for ${address} from ${request.ip}`)
-    if (!checkAddress(address, 42)[0]) {
+    if (!checkAddress(address, 38)[0]) {
       throw new FaucetDropInvalidAddressException()
     }
 
@@ -66,7 +67,7 @@ export class FaucetController {
   private async transferTokens(address: string): Promise<boolean> {
     try {
       console.log(`Transfer tokens from faucet to ${address}`)
-      const faucetAccount: Identity = await Identity.buildFromSeed(
+      const faucetAccount: Identity = Identity.buildFromSeed(
         hexToU8a(process.env.FAUCET_ACCOUNT)
       )
       const tx = await Balance.makeTransfer(

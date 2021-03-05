@@ -5,15 +5,16 @@ import { MockMongooseModule, mongodbInstance } from './MockMongooseModule'
 import { CTypesModule } from '../src/ctypes/ctypes.module'
 import { CType, CTypeService } from '../src/ctypes/interfaces/ctype.interfaces'
 import { BlockchainModule } from '../src/blockchain/blockchain.module'
-import { CType as SDKCType, Identity } from '@kiltprotocol/sdk-js'
+import { CType as SDKCType, Identity } from '@kiltprotocol/core'
+import { cryptoWaitReady } from '@polkadot/util-crypto'
 
-jest.mock('@kiltprotocol/sdk-js/build/ctype/CType.chain', () => {
+jest.mock('@kiltprotocol/core/lib/ctype/CType.chain', () => {
   return {
     getOwner: jest.fn(async () => null),
   }
 })
 jest.mock(
-  '@kiltprotocol/sdk-js/build/blockchainApiConnection/BlockchainApiConnection'
+  '@kiltprotocol/chain-helpers/lib/blockchainApiConnection/BlockchainApiConnection'
 )
 
 describe('ctypes endpoint (e2e)', () => {
@@ -76,6 +77,7 @@ describe('ctypes endpoint (e2e)', () => {
   }
 
   beforeAll(async () => {
+    await cryptoWaitReady()
     const moduleFixture = await Test.createTestingModule({
       imports: [CTypesModule, BlockchainModule, MockMongooseModule],
     }).compile()
@@ -84,7 +86,7 @@ describe('ctypes endpoint (e2e)', () => {
     await app.init()
 
     ctypeService = app.get('CTypeService')
-    idAlice = await Identity.buildFromURI('//Alice')
+    idAlice = Identity.buildFromURI('//Alice')
   }, 30000)
 
   beforeEach(async () => {
@@ -131,7 +133,7 @@ describe('ctypes endpoint (e2e)', () => {
   })
 
   describe('add', () => {
-    const mockedGetOwner = require('@kiltprotocol/sdk-js/build/ctype/CType.chain')
+    const mockedGetOwner = require('@kiltprotocol/core/lib/ctype/CType.chain')
       .getOwner
 
     beforeEach(() => {
@@ -153,29 +155,7 @@ describe('ctypes endpoint (e2e)', () => {
       // it overwrites ctype owner with actual owner
       expect(storedCtypes[0]).toMatchObject({
         ...cTypeRecordA,
-        cType: { ...kiltCTypeA, owner: idAlice.address },
-      })
-    })
-
-    it('overwrites owner with chain owner', async () => {
-      mockedGetOwner.mockResolvedValue('new-owner')
-      const cTypeRecordWithOwner = {
-        ...cTypeRecordA,
-        cType: SDKCType.fromSchema(kiltCTypeA.schema, idAlice.address),
-      }
-      await request(app.getHttpServer())
-        .post(`/ctype`)
-        .send(cTypeRecordWithOwner)
-        .expect(201)
-
-      expect(mockedGetOwner).toHaveBeenCalledWith(kiltCTypeA.hash)
-      const storedCtypes = await ctypeService.findAll()
-      expect(storedCtypes).toBeInstanceOf(Array)
-      expect(storedCtypes).toHaveLength(1)
-      // it overwrites ctype owner with actual owner
-      expect(storedCtypes[0]).toMatchObject({
-        ...cTypeRecordWithOwner,
-        cType: { ...kiltCTypeA, owner: 'new-owner' },
+        cType: { ...kiltCTypeA },
       })
     })
 
@@ -251,7 +231,7 @@ describe('ctypes endpoint (e2e)', () => {
   })
 
   it('register -> get -> reset', async () => {
-    require('@kiltprotocol/sdk-js/build/ctype/CType.chain').getOwner.mockResolvedValue(
+    require('@kiltprotocol/core/lib/ctype/CType.chain').getOwner.mockResolvedValue(
       idAlice.address
     )
 
@@ -266,8 +246,7 @@ describe('ctypes endpoint (e2e)', () => {
       .expect(response => {
         expect(response.body).toMatchObject({
           ...cTypeRecordA,
-          // it overwrites ctype owner with actual owner
-          cType: { ...kiltCTypeA, owner: idAlice.address },
+          cType: { ...kiltCTypeA },
         })
       })
 

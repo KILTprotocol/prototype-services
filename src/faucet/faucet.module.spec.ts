@@ -3,11 +3,8 @@ import {
   FaucetDropDB,
   FaucetDrop,
 } from './interfaces/faucet.interfaces'
-import {
-  Identity,
-  SubmittableExtrinsic,
-  SubmittableResult,
-} from '@kiltprotocol/sdk-js'
+import { Identity } from '@kiltprotocol/core'
+import { ISubmittableResult, SubmittableExtrinsic } from '@kiltprotocol/types'
 import { Test } from '@nestjs/testing'
 import { FaucetController } from './faucet.controller'
 import {
@@ -22,8 +19,11 @@ import { BadRequestException } from '@nestjs/common'
 import { MongoDbFaucetService } from './mongodb-faucet.service'
 import { getModelToken } from '@nestjs/mongoose'
 import { AuthGuard } from '../auth/auth.guard'
+import { cryptoWaitReady } from '@polkadot/util-crypto'
 
-jest.mock('@kiltprotocol/sdk-js/build/balance/Balance.chain', () => {
+jest.useFakeTimers()
+
+jest.mock('@kiltprotocol/core/lib/balance/Balance.chain', () => {
   return {
     makeTransfer: jest.fn(
       async (): Promise<SubmittableExtrinsic> => {
@@ -33,45 +33,54 @@ jest.mock('@kiltprotocol/sdk-js/build/balance/Balance.chain', () => {
   }
 })
 
-jest.mock('@kiltprotocol/sdk-js/build/blockchain/Blockchain.utils', () => {
+jest.mock('@kiltprotocol/chain-helpers/lib/blockchain/Blockchain.utils', () => {
   return {
     __esModule: true,
     submitSignedTx: jest.fn().mockImplementation(
-      async (): Promise<SubmittableResult> => {
-        return { isInBlock: true } as SubmittableResult
+      async (): Promise<ISubmittableResult> => {
+        return { isInBlock: true } as ISubmittableResult
       }
     ),
   }
 })
 
 describe('Faucet Module', () => {
-  const claimerAddress = '5Ded9KnRSDY9zc3QafT7dyueTqgZdqYK43cc5TcSwqACM1dL'
-  const invalidAddress = claimerAddress.replace('5', '7')
-  const testFaucetDrop: FaucetDrop = {
-    amount: 500,
-    address: claimerAddress,
-    requestip: '::ffff:127.0.0.1',
-    dropped: true,
-    error: 0,
-    created: 1598628768759,
-  }
+  let claimerAddress: string
+  let invalidAddress: string
+  let testFaucetDrop: FaucetDrop
   const FAUCET_SEED =
     '0xcdfd6024d2b0eba27d54cc92a44cd9a627c69b2dbda15ed7e58085425119ae03'
   let faucetIdentity: Identity
-  const faucetRequest = {
-    ip: testFaucetDrop.requestip,
-  } as Request
+  let faucetRequest: Request
+
   const KILT_FEMTO_COIN = '1000000000000000'
   const DEFAULT_TOKEN_AMOUNT = 500
+
+  beforeAll(async () => {
+    await cryptoWaitReady()
+    claimerAddress = Identity.buildFromURI('//Bob').address
+    invalidAddress = claimerAddress.replace('4', '7')
+    testFaucetDrop = {
+      amount: 500,
+      address: claimerAddress,
+      requestip: '::ffff:127.0.0.1',
+      dropped: true,
+      error: 0,
+      created: 1598628768759,
+    }
+    faucetRequest = {
+      ip: testFaucetDrop.requestip,
+    } as Request
+  })
 
   describe('Controller', () => {
     let faucetController: FaucetController
     let faucetService: FaucetService
 
-    const mockedMakeTransfer = require('@kiltprotocol/sdk-js/build/balance/Balance.chain')
+    const mockedMakeTransfer = require('@kiltprotocol/core/lib/balance/Balance.chain')
       .makeTransfer
 
-    const mockedsubmitSignedTx = require('@kiltprotocol/sdk-js/build/blockchain/Blockchain.utils')
+    const mockedsubmitSignedTx = require('@kiltprotocol/chain-helpers/lib/blockchain/Blockchain.utils')
       .submitSignedTx
 
     const fakeFaucetService: FaucetService = {
@@ -88,7 +97,8 @@ describe('Faucet Module', () => {
       ),
     }
     beforeAll(async () => {
-      faucetIdentity = await Identity.buildFromSeed(hexToU8a(FAUCET_SEED))
+      await cryptoWaitReady()
+      faucetIdentity = Identity.buildFromSeed(hexToU8a(FAUCET_SEED))
       process.env['FAUCET_ACCOUNT'] = FAUCET_SEED
     })
     beforeEach(async () => {
@@ -114,7 +124,7 @@ describe('Faucet Module', () => {
         const dropSpy = jest.spyOn(fakeFaucetService, 'drop')
         const buildSpy = jest
           .spyOn(Identity, 'buildFromSeed')
-          .mockResolvedValue(faucetIdentity)
+          .mockReturnValue(faucetIdentity)
         expect(
           await faucetController.drop(claimerAddress, faucetRequest)
         ).toEqual(undefined)
@@ -133,10 +143,10 @@ describe('Faucet Module', () => {
       it('updates the database on unsuccessful transfer and throws exception', async () => {
         const buildSpy = jest
           .spyOn(Identity, 'buildFromSeed')
-          .mockResolvedValue(faucetIdentity)
+          .mockReturnValue(faucetIdentity)
         mockedsubmitSignedTx.mockResolvedValue({
           isInBlock: false,
-        } as SubmittableResult)
+        } as ISubmittableResult)
         const updateSpy = jest.spyOn(
           fakeFaucetService,
           'updateOnTransactionFailure'
@@ -199,10 +209,10 @@ describe('Faucet Module', () => {
       it('builds faucet Id and tries to transfer default amount to the given address', async () => {
         const buildSpy = jest
           .spyOn(Identity, 'buildFromSeed')
-          .mockResolvedValue(faucetIdentity)
+          .mockReturnValue(faucetIdentity)
         mockedsubmitSignedTx.mockResolvedValue({
           isInBlock: true,
-        } as SubmittableResult)
+        } as ISubmittableResult)
         expect(
           await faucetController['transferTokens'](claimerAddress)
         ).toEqual(true)
@@ -230,7 +240,7 @@ describe('Faucet Module', () => {
           hexToU8a(process.env.FAUCET_ACCOUNT)
         )
         expect(mockedMakeTransfer).not.toHaveBeenCalled()
-        buildSpy.mockResolvedValue(faucetIdentity)
+        buildSpy.mockReturnValue(faucetIdentity)
         mockedMakeTransfer.mockImplementation(() => {
           throw new Error('makeTransfer failed')
         })
@@ -248,7 +258,7 @@ describe('Faucet Module', () => {
         )
         mockedsubmitSignedTx.mockResolvedValue({
           isInBlock: false,
-        } as SubmittableResult)
+        } as ISubmittableResult)
         expect(
           await faucetController['transferTokens'](claimerAddress)
         ).toEqual(false)

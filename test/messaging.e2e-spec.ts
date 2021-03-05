@@ -1,15 +1,13 @@
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
-import {
-  Identity,
-  Message,
-  MessageBodyType,
-  IEncryptedMessage,
-} from '@kiltprotocol/sdk-js'
+import { Identity } from '@kiltprotocol/core'
+import { MessageBodyType, IEncryptedMessage } from '@kiltprotocol/types'
+import Message from '@kiltprotocol/messaging'
 import supertest from 'supertest'
 import { MessagingService } from '../src/messaging/interfaces/messaging.interfaces'
 import { MessagingModule } from '../src/messaging/messaging.module'
 import { MockMongooseModule, mongodbInstance } from './MockMongooseModule'
+import { cryptoWaitReady } from '@polkadot/util-crypto'
 
 function assertErrorMessageIs(
   message: string,
@@ -44,8 +42,9 @@ describe('messaging (e2e)', () => {
   let message: Message
 
   beforeAll(async () => {
-    sender = await Identity.buildFromURI('//Alice')
-    recipient = await Identity.buildFromURI('//Bob')
+    await cryptoWaitReady()
+    sender = Identity.buildFromURI('//Alice')
+    recipient = Identity.buildFromURI('//Bob')
     message = new Message(
       {
         type: MessageBodyType.REQUEST_TERMS,

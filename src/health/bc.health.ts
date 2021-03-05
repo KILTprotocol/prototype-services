@@ -1,4 +1,4 @@
-import { BlockchainApiConnection } from '@kiltprotocol/sdk-js'
+import { BlockchainApiConnection } from '@kiltprotocol/chain-helpers'
 import { Injectable } from '@nestjs/common'
 import {
   HealthCheckError,
@@ -22,7 +22,7 @@ export class KiltChainConnectionIndicator extends HealthIndicator {
         )
       )
       try {
-        const bc = await BlockchainApiConnection.getCached()
+        const bc = await BlockchainApiConnection.getConnectionOrConnect()
         const stats = await bc.api.rpc.system.health()
         resolve(this.getStatus(key, true, stats))
       } catch (e) {

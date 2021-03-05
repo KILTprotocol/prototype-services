@@ -1,14 +1,15 @@
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
-import { Identity } from '@kiltprotocol/sdk-js'
+import { Identity } from '@kiltprotocol/core'
 import { MockMongooseModule, mongodbInstance } from './MockMongooseModule'
 import { AppModule } from '../src/app.module'
 import { HealthIndicatorResult } from '@nestjs/terminus'
 import { KiltChainConnectionIndicator } from '../src/health/bc.health'
+import { cryptoWaitReady } from '@polkadot/util-crypto'
 
 jest.mock(
-  '@kiltprotocol/sdk-js/build/blockchainApiConnection/BlockchainApiConnection'
+  '@kiltprotocol/chain-helpers/lib/blockchainApiConnection/BlockchainApiConnection'
 )
 jest.mock('../src/mongoose/mongoose.module', () => ({
   MyMongooseModule: MockMongooseModule,
@@ -21,6 +22,7 @@ describe('AppController availability (e2e)', () => {
   }
 
   beforeAll(async () => {
+    await cryptoWaitReady()
     const moduleFixture = await Test.createTestingModule({
       imports: [AppModule],
     })
@@ -57,15 +59,15 @@ describe('AppController availability (e2e)', () => {
       .expect(400)
   })
 
-  it('message inbox endpoint available (GET)', async () => {
-    const idAlice = await Identity.buildFromURI('//Alice')
+  it('message inbox endpoint available (GET)', () => {
+    const idAlice = Identity.buildFromURI('//Alice')
     return request(app.getHttpServer())
       .get(`/messaging/inbox/${idAlice.address}`)
       .expect(200, [])
   })
 
-  it('message outbox endpoint available (GET)', async () => {
-    const idAlice = await Identity.buildFromURI('//Alice')
+  it('message outbox endpoint available (GET)', () => {
+    const idAlice = Identity.buildFromURI('//Alice')
     return request(app.getHttpServer())
       .get(`/messaging/sent/${idAlice.address}`)
       .expect(200, [])

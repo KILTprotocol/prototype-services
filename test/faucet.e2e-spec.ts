@@ -1,19 +1,19 @@
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
-import { Identity, Balance } from '@kiltprotocol/sdk-js'
+import { Identity, Balance } from '@kiltprotocol/core'
 import BN from 'bn.js'
 import { FaucetService } from '../src/faucet/interfaces/faucet.interfaces'
 import { MockMongooseModule, mongodbInstance } from './MockMongooseModule'
 import { FaucetModule } from '../src/faucet/faucet.module'
 
-jest.mock('@kiltprotocol/sdk-js/build/balance/Balance.chain', () => {
+jest.mock('@kiltprotocol/core/lib/balance/Balance.chain', () => {
   return {
     makeTransfer: jest.fn(() => Promise.resolve({})),
   }
 })
 
-jest.mock('@kiltprotocol/sdk-js/build/blockchain/Blockchain.utils', () => {
+jest.mock('@kiltprotocol/chain-helpers/lib/blockchain/Blockchain.utils', () => {
   return {
     __esModules: true,
     submitSignedTx: jest.fn(() => Promise.resolve({ isInBlock: true })),
@@ -37,17 +37,17 @@ describe('faucet endpoint (e2e)', () => {
     await app.init()
 
     faucetService = app.get('FaucetService')
-    idAlice = await Identity.buildFromURI('//Alice')
+    idAlice = Identity.buildFromURI('//Alice')
 
     process.env['FAUCET_ACCOUNT'] = FAUCET_SEED
   }, 30000)
 
   beforeEach(async () => {
     await faucetService.reset()
-    require('@kiltprotocol/sdk-js/build/blockchain/Blockchain.utils').submitSignedTx.mockResolvedValue(
+    require('@kiltprotocol/chain-helpers/lib/blockchain/Blockchain.utils').submitSignedTx.mockResolvedValue(
       { isInBlock: true }
     )
-    require('@kiltprotocol/sdk-js/build/balance/Balance.chain').makeTransfer.mockResolvedValue(
+    require('@kiltprotocol/core/lib/balance/Balance.chain').makeTransfer.mockResolvedValue(
       {}
     )
   })
@@ -60,7 +60,7 @@ describe('faucet endpoint (e2e)', () => {
   })
 
   it('handles invalid destination address / public key', async () => {
-    require('@kiltprotocol/sdk-js/build/balance/Balance.chain').makeTransfer.mockRejectedValue(
+    require('@kiltprotocol/core/lib/balance/Balance.chain').makeTransfer.mockRejectedValue(
       'transfer destination invalid'
     )
     await request(app.getHttpServer())
@@ -71,9 +71,10 @@ describe('faucet endpoint (e2e)', () => {
 
   it('accepts first valid request', async () => {
     const spy = jest.spyOn(Balance, 'makeTransfer')
+    const { address } = idAlice
     await request(app.getHttpServer())
       .post(`/faucet/drop`)
-      .send(`address=${idAlice.address}`)
+      .send({ address })
       .expect(201)
 
     expect(spy).toHaveBeenCalledWith(

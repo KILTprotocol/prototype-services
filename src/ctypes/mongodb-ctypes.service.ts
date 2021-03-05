@@ -1,4 +1,4 @@
-import { ICType } from '@kiltprotocol/sdk-js'
+import { ICType } from '@kiltprotocol/types'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'

@@ -1,5 +1,4 @@
-import { CType as SDKCtype } from '@kiltprotocol/sdk-js'
-import { getOwner } from '@kiltprotocol/sdk-js/build/ctype/CType.chain'
+import { CType as SDKCType } from '@kiltprotocol/core'
 import {
   Body,
   Controller,
@@ -46,43 +45,39 @@ export class CTypesController {
 
   @Post()
   public async register(@Body() cTypeInput: CType) {
-    return this.verifyCTypeAndReturnChainOwner(cTypeInput).then(
-      async verified => {
-        if (verified) {
-          console.log(
-            `All valid => registering cType ` +
-              JSON.stringify({ ...cTypeInput.cType, owner: verified }, null, 4)
+    const verified = await this.verifyCType(cTypeInput)
+    if (verified) {
+      console.log(
+        `All valid => registering cType ` +
+          JSON.stringify(
+            { ...cTypeInput.cType, owner: cTypeInput.cType.owner },
+            null,
+            4
           )
+      )
+    } else {
+      throw new CTypeNotOnChainException()
+    }
 
-          const result = await this.cTypesService.register({
-            ...cTypeInput,
-            cType: { ...cTypeInput.cType, owner: verified },
-          })
+    const result = await this.cTypesService.register({
+      ...cTypeInput,
+    })
 
-          if (!result) {
-            console.log(
-              `The CType with hash: ${
-                cTypeInput.cType.hash
-              } already exists in this DB!`
-            )
-            throw new AlreadyRegisteredException()
-          }
-        } else {
-          throw new CTypeNotOnChainException()
-        }
-      }
-    )
+    if (!result) {
+      console.log(
+        `The CType with hash: ${
+          cTypeInput.cType.hash
+        } already exists in this DB!`
+      )
+      throw new AlreadyRegisteredException()
+    }
   }
 
-  private async verifyCTypeAndReturnChainOwner(
-    cTypeInput: CType
-  ): Promise<string | null> {
+  private async verifyCType(cTypeInput: CType) {
     try {
-      const cType = new SDKCtype(cTypeInput.cType)
-
-      return getOwner(cType.hash)
-    } catch (e) {
-      console.log('error: ' + e)
+      const ctype = new SDKCType(cTypeInput.cType)
+      return ctype.verifyStored()
+    } catch {
       throw new InvalidCtypeDefinitionException()
     }
   }
