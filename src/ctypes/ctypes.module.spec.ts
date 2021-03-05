@@ -11,6 +11,7 @@ import { AlreadyRegisteredException } from './exceptions/already-registered.exce
 import { NotFoundException } from '@nestjs/common/exceptions'
 import { getModelToken } from '@nestjs/mongoose'
 import { MongoDbCTypesService } from './mongodb-ctypes.service'
+import { cryptoWaitReady } from '@polkadot/util-crypto'
 
 jest.mock('@kiltprotocol/core/lib/ctype/CType.chain', () => {
   return {
@@ -92,8 +93,10 @@ describe('CType Module', () => {
     }
 
     beforeAll(
-      async () =>
-        (aliceAddress = (await Identity.buildFromURI('//Alice')).address)
+      async () => (
+        await cryptoWaitReady(),
+        (aliceAddress = Identity.buildFromURI('//Alice').address)
+      )
     )
 
     beforeEach(async () => {
@@ -246,8 +249,10 @@ describe('CType Module', () => {
     let aliceAddress: string
 
     beforeAll(
-      async () =>
-        (aliceAddress = (await Identity.buildFromURI('//Alice')).address)
+      async () => (
+        await cryptoWaitReady(),
+        (aliceAddress = Identity.buildFromURI('//Alice').address)
+      )
     )
 
     beforeEach(async () => {

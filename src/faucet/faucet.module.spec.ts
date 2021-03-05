@@ -19,6 +19,9 @@ import { BadRequestException } from '@nestjs/common'
 import { MongoDbFaucetService } from './mongodb-faucet.service'
 import { getModelToken } from '@nestjs/mongoose'
 import { AuthGuard } from '../auth/auth.guard'
+import { cryptoWaitReady } from '@polkadot/util-crypto'
+
+jest.useFakeTimers()
 
 jest.mock('@kiltprotocol/core/lib/balance/Balance.chain', () => {
   return {
@@ -30,21 +33,19 @@ jest.mock('@kiltprotocol/core/lib/balance/Balance.chain', () => {
   }
 })
 
-jest.mock(
-  '@kiltprotocol/chain-helpers/lib/blockchain/Blockchain.utils',
-  () => {
-    return {
-      __esModule: true,
-      submitSignedTx: jest.fn().mockImplementation(
-        async (): Promise<ISubmittableResult> => {
-          return { isInBlock: true } as ISubmittableResult
-        }
-      ),
-    }
+jest.mock('@kiltprotocol/chain-helpers/lib/blockchain/Blockchain.utils', () => {
+  return {
+    __esModule: true,
+    submitSignedTx: jest.fn().mockImplementation(
+      async (): Promise<ISubmittableResult> => {
+        return { isInBlock: true } as ISubmittableResult
+      }
+    ),
   }
-)
+})
 
-describe('Faucet Module', () => {
+describe('Faucet Module', async () => {
+  await cryptoWaitReady()
   const claimerAddress = Identity.buildFromURI('//Bob').address
   const invalidAddress = claimerAddress.replace('4', '7')
   const testFaucetDrop: FaucetDrop = {
@@ -87,7 +88,8 @@ describe('Faucet Module', () => {
         }
       ),
     }
-    beforeAll(() => {
+    beforeAll(async () => {
+      await cryptoWaitReady()
       faucetIdentity = Identity.buildFromSeed(hexToU8a(FAUCET_SEED))
       process.env['FAUCET_ACCOUNT'] = FAUCET_SEED
     })
