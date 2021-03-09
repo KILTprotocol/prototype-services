@@ -70,7 +70,7 @@ export class FaucetController {
       const faucetAccount: Identity = Identity.buildFromSeed(
         hexToU8a(process.env.FAUCET_ACCOUNT),
         {
-          signingKeyPairType: 'ed25519'
+          signingKeyPairType: 'ed25519',
         }
       )
       const tx = await Balance.makeTransfer(
