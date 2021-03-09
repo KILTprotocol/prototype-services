@@ -68,7 +68,10 @@ export class FaucetController {
     try {
       console.log(`Transfer tokens from faucet to ${address}`)
       const faucetAccount: Identity = Identity.buildFromSeed(
-        hexToU8a(process.env.FAUCET_ACCOUNT)
+        hexToU8a(process.env.FAUCET_ACCOUNT),
+        {
+          signingKeyPairType: 'ed25519',
+        }
       )
       const tx = await Balance.makeTransfer(
         faucetAccount,

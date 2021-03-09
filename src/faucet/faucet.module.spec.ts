@@ -98,7 +98,9 @@ describe('Faucet Module', () => {
     }
     beforeAll(async () => {
       await cryptoWaitReady()
-      faucetIdentity = Identity.buildFromSeed(hexToU8a(FAUCET_SEED))
+      faucetIdentity = Identity.buildFromSeed(hexToU8a(FAUCET_SEED), {
+        signingKeyPairType: 'ed25519',
+      })
       process.env['FAUCET_ACCOUNT'] = FAUCET_SEED
     })
     beforeEach(async () => {
@@ -217,7 +219,10 @@ describe('Faucet Module', () => {
           await faucetController['transferTokens'](claimerAddress)
         ).toEqual(true)
         expect(buildSpy).toHaveBeenCalledWith(
-          hexToU8a(process.env.FAUCET_ACCOUNT)
+          hexToU8a(process.env.FAUCET_ACCOUNT),
+          {
+            signingKeyPairType: 'ed25519',
+          }
         )
         expect(mockedMakeTransfer).toHaveBeenCalledWith(
           faucetIdentity,
@@ -237,7 +242,10 @@ describe('Faucet Module', () => {
           await faucetController['transferTokens'](claimerAddress)
         ).toEqual(false)
         expect(buildSpy).toHaveBeenCalledWith(
-          hexToU8a(process.env.FAUCET_ACCOUNT)
+          hexToU8a(process.env.FAUCET_ACCOUNT),
+          {
+            signingKeyPairType: 'ed25519',
+          }
         )
         expect(mockedMakeTransfer).not.toHaveBeenCalled()
         buildSpy.mockReturnValue(faucetIdentity)
@@ -248,7 +256,10 @@ describe('Faucet Module', () => {
           await faucetController['transferTokens'](claimerAddress)
         ).toEqual(false)
         expect(buildSpy).toHaveBeenCalledWith(
-          hexToU8a(process.env.FAUCET_ACCOUNT)
+          hexToU8a(process.env.FAUCET_ACCOUNT),
+          {
+            signingKeyPairType: 'ed25519',
+          }
         )
         expect(mockedMakeTransfer).toHaveBeenCalledWith(
           faucetIdentity,
@@ -263,7 +274,10 @@ describe('Faucet Module', () => {
           await faucetController['transferTokens'](claimerAddress)
         ).toEqual(false)
         expect(buildSpy).toHaveBeenCalledWith(
-          hexToU8a(process.env.FAUCET_ACCOUNT)
+          hexToU8a(process.env.FAUCET_ACCOUNT),
+          {
+            signingKeyPairType: 'ed25519',
+          }
         )
         expect(mockedMakeTransfer).toHaveBeenCalledWith(
           faucetIdentity,
