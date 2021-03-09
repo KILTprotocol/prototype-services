@@ -13,7 +13,7 @@ import {
 import { Request } from 'express'
 import BN from 'bn.js'
 import { hexToU8a } from '@polkadot/util'
-import { checkAddress } from '@polkadot/util-crypto'
+import { checkAddress, cryptoWaitReady } from '@polkadot/util-crypto'
 
 import { FaucetService } from './interfaces/faucet.interfaces'
 import {
@@ -66,6 +66,7 @@ export class FaucetController {
 
   private async transferTokens(address: string): Promise<boolean> {
     try {
+      await cryptoWaitReady()
       console.log(`Transfer tokens from faucet to ${address}`)
       const faucetAccount: Identity = Identity.buildFromSeed(
         hexToU8a(process.env.FAUCET_ACCOUNT),
