@@ -1,41 +1,17 @@
+name: Release
+
 on:
   release:
     types: [created]
 
-name: Release
-
 jobs:
-  test:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Use Node.js v10
-        uses: actions/setup-node@v1
-        with:
-          node-version: 10.x
-
-      - name: yarn install, lint and test
-        run: |
-          yarn install --frozen-lockfile
-          yarn lint
-          yarn test
-          yarn test:e2e --forceExit
   buildECR:
-    needs: test
-    
     name: Build image and push to Amazon ECR
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-
-    - name: Build image
-      run: |
-        docker build -t kilt/demo-services .
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -47,6 +23,10 @@ jobs:
     - name: Login to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build image
+      run: |
+        docker build -t kilt/demo-services .
 
     - name: Tag, and push image to Amazon ECR
       env:
@@ -60,8 +40,6 @@ jobs:
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
   buildDocker:
-    needs: test
-
     name: Build image and push to Docker Hub
     runs-on: ubuntu-latest
 
