@@ -12,9 +12,7 @@ export class MongoDbMessagingService implements MessagingService {
   ) {}
 
   public async add(message: IEncryptedMessage): Promise<void> {
-    const createdMessage: MessageDB = new this.messageModel(
-      message as MessageDB
-    )
+    const createdMessage: MessageDB = new this.messageModel(message)
     await createdMessage.save()
   }
 
@@ -57,7 +55,7 @@ export class MongoDbMessagingService implements MessagingService {
     singleDBMessage: MessageDB
   ): IEncryptedMessage {
     return {
-      message: singleDBMessage.message,
+      ciphertext: singleDBMessage.ciphertext || singleDBMessage.message,
       nonce: singleDBMessage.nonce,
       createdAt: singleDBMessage.createdAt,
       hash: singleDBMessage.hash,

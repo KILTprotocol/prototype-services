@@ -5,6 +5,7 @@ export const MessageSchema = new mongoose.Schema({
   messageId: String,
   receivedAt: Number,
   message: String,
+  ciphertext: String,
   nonce: String,
   createdAt: Number,
   hash: String,
