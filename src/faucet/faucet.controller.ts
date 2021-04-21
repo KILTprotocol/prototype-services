@@ -75,12 +75,11 @@ export class FaucetController {
         }
       )
       const tx = await Balance.makeTransfer(
-        faucetAccount,
         address,
         new BN(DEFAULT_TOKEN_AMOUNT),
         0
       )
-      const status = await BlockchainUtils.submitSignedTx(tx, {
+      const status = await BlockchainUtils.signAndSubmitTx(tx, faucetAccount, {
         resolveOn: BlockchainUtils.IS_IN_BLOCK,
       })
 
