@@ -179,7 +179,7 @@ describe('messaging (e2e)', () => {
 
       it('rejects request with missing message body', async () => {
         const encrypted = message.encrypt()
-        encrypted.message = undefined
+        encrypted.ciphertext = undefined
         return request
           .post(`/messaging`)
           .send(encrypted)
