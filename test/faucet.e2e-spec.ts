@@ -16,7 +16,7 @@ jest.mock('@kiltprotocol/core/lib/balance/Balance.chain', () => {
 jest.mock('@kiltprotocol/chain-helpers/lib/blockchain/Blockchain.utils', () => {
   return {
     __esModules: true,
-    submitSignedTx: jest.fn(() => Promise.resolve({ isInBlock: true })),
+    signAndSubmitTx: jest.fn(() => Promise.resolve({ isInBlock: true })),
   }
 })
 
@@ -44,7 +44,7 @@ describe('faucet endpoint (e2e)', () => {
 
   beforeEach(async () => {
     await faucetService.reset()
-    require('@kiltprotocol/chain-helpers/lib/blockchain/Blockchain.utils').submitSignedTx.mockResolvedValue(
+    require('@kiltprotocol/chain-helpers/lib/blockchain/Blockchain.utils').signAndSubmitTx.mockResolvedValue(
       { isInBlock: true }
     )
     require('@kiltprotocol/core/lib/balance/Balance.chain').makeTransfer.mockResolvedValue(
@@ -78,7 +78,6 @@ describe('faucet endpoint (e2e)', () => {
       .expect(201)
 
     expect(spy).toHaveBeenCalledWith(
-      expect.objectContaining({ seedAsHex: FAUCET_SEED }),
       idAlice.address,
       expect.any(BN),
       0

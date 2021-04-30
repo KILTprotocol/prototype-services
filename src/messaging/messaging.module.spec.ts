@@ -15,7 +15,7 @@ import { cryptoWaitReady } from '@polkadot/util-crypto'
 
 describe('Messaging Module', () => {
   const encryptedMessage: IEncryptedMessage = {
-    message: '0xa2b61c9a28d3...ced170dc8190a3a1516',
+    ciphertext: '0xa2b61c9a28d3...ced170dc8190a3a1516',
     nonce: '0x7a4a64377cd833416cadc1277a7c914598246e94df541e08',
     createdAt: 1598438707517,
     hash: '0xa46441cfbeb4ebd517c810fe78718eb43e891e1603e1db5665f751a1ef632991',
@@ -219,7 +219,7 @@ describe('Messaging Module', () => {
       const noNonce: IEncryptedMessage = { ...encryptedMessage, nonce: null }
       const noMessage: IEncryptedMessage = {
         ...encryptedMessage,
-        message: null,
+        ciphertext: null,
       }
       const noHash: IEncryptedMessage = { ...encryptedMessage, hash: null }
       const noSignature: IEncryptedMessage = {

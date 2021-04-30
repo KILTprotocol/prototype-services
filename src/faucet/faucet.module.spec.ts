@@ -36,7 +36,7 @@ jest.mock('@kiltprotocol/core/lib/balance/Balance.chain', () => {
 jest.mock('@kiltprotocol/chain-helpers/lib/blockchain/Blockchain.utils', () => {
   return {
     __esModule: true,
-    submitSignedTx: jest.fn().mockImplementation(
+    signAndSubmitTx: jest.fn().mockImplementation(
       async (): Promise<ISubmittableResult> => {
         return { isInBlock: true } as ISubmittableResult
       }
@@ -81,7 +81,7 @@ describe('Faucet Module', () => {
       .makeTransfer
 
     const mockedsubmitSignedTx = require('@kiltprotocol/chain-helpers/lib/blockchain/Blockchain.utils')
-      .submitSignedTx
+      .signAndSubmitTx
 
     const fakeFaucetService: FaucetService = {
       drop: jest.fn(async (): Promise<FaucetDrop> => testFaucetDrop),
@@ -136,7 +136,6 @@ describe('Faucet Module', () => {
           DEFAULT_TOKEN_AMOUNT
         )
         expect(mockedMakeTransfer).toHaveBeenCalledWith(
-          faucetIdentity,
           claimerAddress,
           new BN(DEFAULT_TOKEN_AMOUNT),
           0
@@ -163,7 +162,6 @@ describe('Faucet Module', () => {
           DEFAULT_TOKEN_AMOUNT
         )
         expect(mockedMakeTransfer).toHaveBeenCalledWith(
-          faucetIdentity,
           claimerAddress,
           new BN(DEFAULT_TOKEN_AMOUNT),
           0
@@ -225,7 +223,6 @@ describe('Faucet Module', () => {
           }
         )
         expect(mockedMakeTransfer).toHaveBeenCalledWith(
-          faucetIdentity,
           claimerAddress,
           new BN(DEFAULT_TOKEN_AMOUNT),
           0
@@ -262,7 +259,6 @@ describe('Faucet Module', () => {
           }
         )
         expect(mockedMakeTransfer).toHaveBeenCalledWith(
-          faucetIdentity,
           claimerAddress,
           new BN(DEFAULT_TOKEN_AMOUNT),
           0
@@ -280,7 +276,6 @@ describe('Faucet Module', () => {
           }
         )
         expect(mockedMakeTransfer).toHaveBeenCalledWith(
-          faucetIdentity,
           claimerAddress,
           new BN(DEFAULT_TOKEN_AMOUNT),
           0
