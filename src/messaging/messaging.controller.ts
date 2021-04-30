@@ -83,7 +83,7 @@ export class MessagingController {
       throw new BadRequestException('no receiver address')
     } else if (!message.nonce) {
       throw new BadRequestException('no nonce')
-    } else if (!message.message) {
+    } else if (!message.ciphertext) {
       throw new BadRequestException('no message')
     } else if (!message.hash) {
       throw new BadRequestException('no hash')
