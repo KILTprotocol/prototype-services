@@ -31,15 +31,12 @@ services:
     image: kiltprotocol/mashnet-node:develop
     ports:
       - 9944:9944
-    command: ./target/release/mashnet-node --dev --ws-port 9944 --ws-external
+    command: --dev --ws-port 9944 --ws-external
   services:
     build: .
     image: local/prototype-services
-    environment:
-      - MONGODB_HOST=mongodb
-      - MONGODB_USER=mongoadmin
-      - MONGODB_PASS=secret
-      - BOOT_NODE_ADDRESS=ws://mashnet-node:9944
+    env_file:
+      - environment/docker-compose.env
     volumes:
       - ./src:/app/src
     command: yarn start
