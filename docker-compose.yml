@@ -33,7 +33,9 @@ services:
       - 9944:9944
     command: --dev --ws-port 9944 --ws-external
   services:
-    build: .
+    build: 
+      context: .
+      target: develop
     image: local/prototype-services
     env_file:
       - environment/docker-compose.env
