@@ -1,11 +1,11 @@
 {
   "name": "prototype-services",
-  "version": "0.17.0",
+  "version": "0.18.0",
   "description": "Auxiliary services for the KILT prototype",
   "author": "botlabs",
   "license": "BSD-4-Clause",
   "scripts": {
-    "build": "tsc && cp -r src/assets dist",
+    "build": "tsc -b ./tsconfig.build.json && cp -r src/assets dist",
     "format": "prettier --write \"src/**/*.ts\"",
     "start": "export NODE_ENV=dev-local; export SECRET=s3cr3t; export FAUCET_ACCOUNT=0xcdfd6024d2b0eba27d54cc92a44cd9a627c69b2dbda15ed7e58085425119ae03; ts-node -r tsconfig-paths/register src/main.ts",
     "start:dev": "nodemon",
@@ -20,12 +20,12 @@
   },
   "dependencies": {
     "@godaddy/terminus": "^4.6.0",
-    "@kiltprotocol/chain-helpers": "^0.21.0",
-    "@kiltprotocol/config": "^0.21.0",
-    "@kiltprotocol/core": "^0.21.0",
-    "@kiltprotocol/messaging": "^0.21.0",
-    "@kiltprotocol/types": "^0.21.0",
-    "@kiltprotocol/utils": "^0.21.0",
+    "@kiltprotocol/chain-helpers": "^0.22.0",
+    "@kiltprotocol/config": "^0.22.0",
+    "@kiltprotocol/core": "^0.22.0",
+    "@kiltprotocol/messaging": "^0.22.0",
+    "@kiltprotocol/types": "^0.22.0",
+    "@kiltprotocol/utils": "^0.22.0",
     "@nestjs/common": "^7.6.6",
     "@nestjs/core": "^7.6.6",
     "@nestjs/mongoose": "^7.2.2",
@@ -33,7 +33,7 @@
     "@nestjs/terminus": "^7.0.1",
     "dotenv": "^8.2.0",
     "lodash": "^4.17.19",
-    "mongoose": "^5.11.13",
+    "mongoose": "^5.11.15",
     "reflect-metadata": "^0.1.12",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.3",
@@ -67,8 +67,14 @@
     ],
     "rootDir": "src",
     "testRegex": ".spec.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
+    "preset": "ts-jest/presets/js-with-ts",
+    "transformIgnorePatterns": [
+      "/node_modules/(?!@polkadot|@babel/runtime/helpers/esm/)"
+    ],
+    "globals": {
+      "ts-jest": {
+        "tsConfig": "./tsconfig.spec.json"
+      }
     },
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"

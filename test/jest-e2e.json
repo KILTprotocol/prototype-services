@@ -3,7 +3,13 @@
   "rootDir": ".",
   "testEnvironment": "node",
   "testRegex": ".e2e-spec.ts$",
-  "transform": {
-    "^.+\\.(t|j)s$": "ts-jest"
+  "preset": "ts-jest/presets/js-with-ts",
+  "transformIgnorePatterns": [
+    "/node_modules/(?!@polkadot|@babel/runtime/helpers/esm/)"
+  ],
+  "globals": {
+    "ts-jest": {
+      "tsConfig": "./tsconfig.spec.json"
+    }
   }
 }

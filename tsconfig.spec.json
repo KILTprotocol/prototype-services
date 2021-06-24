@@ -1,7 +1,6 @@
 {
-  "extends": "tsconfig.json",
+  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "types": ["jest", "node"]
+    "allowJs": true
   },
-  "include": ["**/*.spec.ts", "**/*.d.ts"]
 }

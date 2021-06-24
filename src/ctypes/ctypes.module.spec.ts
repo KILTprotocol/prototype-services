@@ -228,7 +228,7 @@ describe('CType Module', () => {
       .mockReturnValue({ exec: async () => [] as CTypeDB[] })
     public static findOne = jest
       .fn()
-      .mockReturnValue({ exec: async (): Promise<CTypeDB> => null })
+      .mockReturnValue({ exec: async () => null })
     public static deleteMany = jest.fn().mockReturnValue({
       exec: async (): Promise<void> => {
         return
@@ -318,7 +318,7 @@ describe('CType Module', () => {
           .spyOn(ctypesService['cTypeDBModel'], 'findOne')
           .mockImplementation(() => {
             return {
-              exec: async (): Promise<CTypeDB> => null,
+              exec: async () => null,
             }
           })
 
