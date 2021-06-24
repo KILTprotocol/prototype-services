@@ -253,10 +253,10 @@ describe('Contact Module', () => {
       .mockReturnValue({ exec: async (): Promise<ContactDB[]> => [] })
     public static findOne = jest
       .fn()
-      .mockReturnValue({ exec: async (): Promise<ContactDB> => null })
+      .mockReturnValue({ exec: async () => null })
     public static replaceOne = jest
       .fn()
-      .mockReturnValue({ exec: async (): Promise<void> => {} })
+      .mockReturnValue({ exec: async (): Promise<void> => undefined })
     public static deleteMany = jest.fn().mockReturnValue({
       exec: async () => {
         return
@@ -346,7 +346,7 @@ describe('Contact Module', () => {
       it('queries database and converts match', async () => {
         const findOneSpy = jest
           .spyOn(contactsService['contactModel'], 'findOne')
-          .mockReturnValue({ exec: async (): Promise<ContactDB> => null })
+          .mockReturnValue({ exec: async () => null })
         expect(await contactsService.findByAddress(address)).toEqual(
           Optional.ofNullable<Contact>(null)
         )

@@ -84,7 +84,7 @@ describe('Messaging Module', () => {
         'layer donor village public cruel caution learn bronze fish come embrace hurt',
         { signingKeyPairType: 'ed25519' }
       )
-      receiverSignature = receiverIdentity.signStr(encryptedMessage.messageId)
+      receiverSignature = receiverIdentity.signStr(encryptedMessage.messageId!)
     })
     describe('removeMessage', () => {
       it('removes a message for an id from the service', async () => {
@@ -184,11 +184,11 @@ describe('Messaging Module', () => {
       it('sets messageId, receival Date and calls messagingService.add for valid message', async () => {
         const uuidv4Spy = jest
           .spyOn(Controller, 'uuidv4')
-          .mockReturnValue(encryptedMessage.messageId)
+          .mockReturnValue(encryptedMessage.messageId!)
 
         const nowSpy = jest
           .spyOn(Date, 'now')
-          .mockReturnValue(encryptedMessage.receivedAt)
+          .mockReturnValue(encryptedMessage.receivedAt!)
         const addSpy = jest
           .spyOn(messagesService, 'add')
           .mockResolvedValue(undefined)
@@ -208,49 +208,37 @@ describe('Messaging Module', () => {
       })
     })
     it('throws BadRequestException on invalid message', async () => {
-      const noSender: IEncryptedMessage = {
-        ...encryptedMessage,
-        senderAddress: null,
-      }
-      const noReceiver: IEncryptedMessage = {
-        ...encryptedMessage,
-        receiverAddress: null,
-      }
-      const noNonce: IEncryptedMessage = { ...encryptedMessage, nonce: null }
-      const noMessage: IEncryptedMessage = {
-        ...encryptedMessage,
-        ciphertext: null,
-      }
-      const noHash: IEncryptedMessage = { ...encryptedMessage, hash: null }
-      const noSignature: IEncryptedMessage = {
-        ...encryptedMessage,
-        signature: null,
-      }
+      const { senderAddress, ...noSender } = encryptedMessage
+      const { receiverAddress, ...noReceiver } = encryptedMessage
+      const { nonce, ...noNonce } = encryptedMessage
+      const { ciphertext, ...noMessage } = encryptedMessage
+      const { hash, ...noHash } = encryptedMessage
+      const { signature, ...noSignature } = encryptedMessage
 
-      await expect(messagesController.sendMessage(noSender)).rejects.toThrow(
-        BadRequestException
-      )
-      await expect(messagesController.sendMessage(noReceiver)).rejects.toThrow(
-        BadRequestException
-      )
-      await expect(messagesController.sendMessage(noNonce)).rejects.toThrow(
-        BadRequestException
-      )
-      await expect(messagesController.sendMessage(noMessage)).rejects.toThrow(
-        BadRequestException
-      )
-      await expect(messagesController.sendMessage(noHash)).rejects.toThrow(
-        BadRequestException
-      )
-      await expect(messagesController.sendMessage(noSignature)).rejects.toThrow(
-        BadRequestException
-      )
+      await expect(
+        messagesController.sendMessage(noSender as IEncryptedMessage)
+      ).rejects.toThrow(BadRequestException)
+      await expect(
+        messagesController.sendMessage(noReceiver as IEncryptedMessage)
+      ).rejects.toThrow(BadRequestException)
+      await expect(
+        messagesController.sendMessage(noNonce as IEncryptedMessage)
+      ).rejects.toThrow(BadRequestException)
+      await expect(
+        messagesController.sendMessage(noMessage as IEncryptedMessage)
+      ).rejects.toThrow(BadRequestException)
+      await expect(
+        messagesController.sendMessage(noHash as IEncryptedMessage)
+      ).rejects.toThrow(BadRequestException)
+      await expect(
+        messagesController.sendMessage(noSignature as IEncryptedMessage)
+      ).rejects.toThrow(BadRequestException)
     })
   })
 
   class MessageModel {
     public static findOne = jest.fn().mockReturnValue({
-      exec: async (): Promise<MessageDB> => {
+      exec: async () => {
         return null
       },
     })
@@ -263,9 +251,7 @@ describe('Messaging Module', () => {
       },
     })
     public static deleteMany = jest.fn().mockReturnValue({
-      exec: (): Promise<void> => {
-        return
-      },
+      exec: async (): Promise<void> => undefined,
     })
     public static save = jest
       .fn()
@@ -327,7 +313,7 @@ describe('Messaging Module', () => {
         const findOneSpy = jest
           .spyOn(messagingService['messageModel'], 'findOne')
           .mockReturnValue({
-            exec: async (): Promise<MessageDB> => {
+            exec: async () => {
               return null
             },
           })
@@ -437,7 +423,7 @@ describe('Messaging Module', () => {
               return
             },
           })
-        await messagingService.remove(encryptedMessage.messageId)
+        await messagingService.remove(encryptedMessage.messageId!)
         expect(deleteOneSpy).toHaveBeenCalledTimes(1)
         expect(deleteOneSpy).toHaveBeenCalledWith({
           messageId: encryptedMessage.messageId,

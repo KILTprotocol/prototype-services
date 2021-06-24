@@ -3,6 +3,7 @@ import { Test } from '@nestjs/testing'
 import { Identity } from '@kiltprotocol/core'
 import { MessageBodyType, IEncryptedMessage } from '@kiltprotocol/types'
 import Message from '@kiltprotocol/messaging'
+import { Crypto } from '@kiltprotocol/utils'
 import supertest from 'supertest'
 import { MessagingService } from '../src/messaging/interfaces/messaging.interfaces'
 import { MessagingModule } from '../src/messaging/messaging.module'
@@ -48,9 +49,9 @@ describe('messaging (e2e)', () => {
     message = new Message(
       {
         type: MessageBodyType.REQUEST_TERMS,
-        content: { cTypeHash: 'CTYPEHASH' },
+        content: { cTypeHash: Crypto.hashStr('CTYPEHASH') },
       },
-      sender,
+      sender.getPublicIdentity(),
       recipient.getPublicIdentity()
     )
   })
@@ -66,7 +67,7 @@ describe('messaging (e2e)', () => {
       })
 
       it('accepts valid send request', async () => {
-        const encrypted = message.encrypt()
+        const encrypted = message.encrypt(sender, recipient.getPublicIdentity())
         await request
           .post(`/messaging`)
           .send(encrypted)
@@ -86,7 +87,7 @@ describe('messaging (e2e)', () => {
       })
 
       it('returns message id & timestamp', async () => {
-        const encrypted = message.encrypt()
+        const encrypted = message.encrypt(sender, recipient.getPublicIdentity())
         await request
           .post(`/messaging`)
           .send(encrypted)
@@ -106,7 +107,7 @@ describe('messaging (e2e)', () => {
       })
 
       it('shows message in sent & inbox after sending', async () => {
-        const encrypted = message.encrypt()
+        const encrypted = message.encrypt(sender, recipient.getPublicIdentity())
         function responseContainsSentMessage(
           response: supertest.Response
         ): void {
@@ -144,8 +145,9 @@ describe('messaging (e2e)', () => {
       })
 
       it('rejects request with missing sender address', async () => {
-        const encrypted = message.encrypt()
-        encrypted.senderAddress = undefined
+        const encrypted = message.encrypt(sender, recipient.getPublicIdentity())
+        // @ts-ignore
+        delete encrypted.senderAddress
         return request
           .post(`/messaging`)
           .send(encrypted)
@@ -156,8 +158,9 @@ describe('messaging (e2e)', () => {
       })
 
       it('rejects request with missing recipient address', async () => {
-        const encrypted = message.encrypt()
-        encrypted.receiverAddress = undefined
+        const encrypted = message.encrypt(sender, recipient.getPublicIdentity())
+        // @ts-ignore
+        delete encrypted.receiverAddress
         return request
           .post(`/messaging`)
           .send(encrypted)
@@ -168,8 +171,9 @@ describe('messaging (e2e)', () => {
       })
 
       it('rejects request with missing nonce', async () => {
-        const encrypted = message.encrypt()
-        encrypted.nonce = undefined
+        const encrypted = message.encrypt(sender, recipient.getPublicIdentity())
+        // @ts-ignore
+        delete encrypted.nonce
         return request
           .post(`/messaging`)
           .send(encrypted)
@@ -178,8 +182,9 @@ describe('messaging (e2e)', () => {
       })
 
       it('rejects request with missing message body', async () => {
-        const encrypted = message.encrypt()
-        encrypted.ciphertext = undefined
+        const encrypted = message.encrypt(sender, recipient.getPublicIdentity())
+        // @ts-ignore
+        delete encrypted.ciphertext
         return request
           .post(`/messaging`)
           .send(encrypted)
@@ -188,8 +193,9 @@ describe('messaging (e2e)', () => {
       })
 
       it('rejects request with missing hash', async () => {
-        const encrypted = message.encrypt()
-        encrypted.hash = undefined
+        const encrypted = message.encrypt(sender, recipient.getPublicIdentity())
+        // @ts-ignore
+        delete encrypted.hash
         return request
           .post(`/messaging`)
           .send(encrypted)
@@ -198,8 +204,9 @@ describe('messaging (e2e)', () => {
       })
 
       it('rejects request with missing signature', async () => {
-        const encrypted = message.encrypt()
-        encrypted.signature = undefined
+        const encrypted = message.encrypt(sender, recipient.getPublicIdentity())
+        // @ts-ignore
+        delete encrypted.signature
         return request
           .post(`/messaging`)
           .send(encrypted)
@@ -214,9 +221,9 @@ describe('messaging (e2e)', () => {
     let message2: IEncryptedMessage
 
     beforeEach(async () => {
-      message1 = message.encrypt()
+      message1 = message.encrypt(sender, recipient.getPublicIdentity())
       message1.messageId = 'id1'
-      message2 = message.encrypt()
+      message2 = message.encrypt(sender, recipient.getPublicIdentity())
       message2.messageId = 'id2'
       await messagingService.removeAll()
       await messagingService.add(message1)
@@ -295,12 +302,12 @@ describe('messaging (e2e)', () => {
     it('lists incoming messages', async () => {
       await request.get(`/messaging/inbox/${recipient.address}`).expect(200, [])
       const message1: IEncryptedMessage = {
-        ...message.encrypt(),
+        ...message.encrypt(sender, recipient.getPublicIdentity()),
         messageId: 'id1',
         receivedAt: Date.now(),
       }
       const message2: IEncryptedMessage = {
-        ...message.encrypt(),
+        ...message.encrypt(sender, recipient.getPublicIdentity()),
         messageId: 'id2',
         receivedAt: Date.now(),
       }
@@ -336,12 +343,12 @@ describe('messaging (e2e)', () => {
 
     it('lists outgoing messages', async () => {
       const message1: IEncryptedMessage = {
-        ...message.encrypt(),
+        ...message.encrypt(sender, recipient.getPublicIdentity()),
         messageId: 'id1',
         receivedAt: Date.now(),
       }
       const message2: IEncryptedMessage = {
-        ...message.encrypt(),
+        ...message.encrypt(sender, recipient.getPublicIdentity()),
         messageId: 'id2',
         receivedAt: Date.now(),
       }
@@ -369,7 +376,7 @@ describe('messaging (e2e)', () => {
 
   it('send -> receive -> decrypt -> delete', async () => {
     await messagingService.removeAll()
-    const encrypted = message.encrypt()
+    const encrypted = message.encrypt(sender, recipient.getPublicIdentity())
     const messageId: string = await request
       .post(`/messaging`)
       .send(encrypted)

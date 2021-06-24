@@ -152,10 +152,10 @@ describe('contacts endpoint (e2e)', () => {
     })
 
     it('rejects if address missing', async () => {
-      const corruptedContact: Contact = {
+      const corruptedContact = {
         ...contactA,
         publicIdentity: { ...contactA.publicIdentity, address: undefined },
-      }
+      } as unknown as Contact
       await request(app.getHttpServer())
         .post(`/contacts`)
         .send(corruptedContact)
@@ -165,13 +165,13 @@ describe('contacts endpoint (e2e)', () => {
     })
 
     it('rejects if boxPublicKeyAsHex missing', async () => {
-      const corruptedContact: Contact = {
+      const corruptedContact = {
         ...contactA,
         publicIdentity: {
           ...contactA.publicIdentity,
           boxPublicKeyAsHex: undefined,
         },
-      }
+      } as unknown as Contact
       await request(app.getHttpServer())
         .post(`/contacts`)
         .send(corruptedContact)
@@ -181,12 +181,11 @@ describe('contacts endpoint (e2e)', () => {
     })
 
     it('rejects if name missing', async () => {
-      const corruptedContact: Contact = {
+      const corruptedContact = {
         ...contactA,
         metaData: {
-          name: undefined,
         },
-      }
+      } as Contact
       await request(app.getHttpServer())
         .post(`/contacts`)
         .send(corruptedContact)
