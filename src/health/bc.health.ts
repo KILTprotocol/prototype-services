@@ -28,7 +28,7 @@ export class KiltChainConnectionIndicator extends HealthIndicator {
       } catch (e) {
         reject(e)
       }
-    }).catch(e =>
+    }).catch((e) =>
       Promise.reject(
         new HealthCheckError(
           'Error with Kilt chain connection',

@@ -16,13 +16,12 @@ export class MongoDbMContactsService implements ContactsService {
   ) {}
 
   public async add(contact: Contact): Promise<void> {
-    const registeredContact: Optional<
-      ContactDB & { signature?: string }
-    > = Optional.ofNullable<ContactDB & { signature?: string }>(
-      await this.contactModel
-        .findOne({ 'publicIdentity.address': contact.publicIdentity.address })
-        .exec()
-    )
+    const registeredContact: Optional<ContactDB & { signature?: string }> =
+      Optional.ofNullable<ContactDB & { signature?: string }>(
+        await this.contactModel
+          .findOne({ 'publicIdentity.address': contact.publicIdentity.address })
+          .exec()
+      )
     if (registeredContact.isPresent()) {
       const registered = registeredContact.get()
       // If the contact was already registered we want to replace the document, as it could exist in outdated format! Signature is still valid.

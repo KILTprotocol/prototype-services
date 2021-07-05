@@ -35,11 +35,9 @@ describe('Messaging Module', () => {
     let receiverSignature: string
 
     const fakeMessagingService: MessagingService = {
-      add: jest.fn(
-        async (): Promise<void> => {
-          return
-        }
-      ),
+      add: jest.fn(async (): Promise<void> => {
+        return
+      }),
       findById: jest.fn(async () =>
         Optional.ofNullable<IEncryptedMessage>(null)
       ),
@@ -49,16 +47,12 @@ describe('Messaging Module', () => {
       findByReceiverAddress: jest.fn(
         async (): Promise<IEncryptedMessage[]> => []
       ),
-      remove: jest.fn(
-        async (): Promise<void> => {
-          return
-        }
-      ),
-      removeAll: jest.fn(
-        async (): Promise<void> => {
-          return
-        }
-      ),
+      remove: jest.fn(async (): Promise<void> => {
+        return
+      }),
+      removeAll: jest.fn(async (): Promise<void> => {
+        return
+      }),
     }
 
     beforeEach(async () => {
