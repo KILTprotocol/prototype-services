@@ -32,7 +32,6 @@
     "@nestjs/platform-express": "^7.6.6",
     "@nestjs/terminus": "^7.0.1",
     "dotenv": "^8.2.0",
-    "lodash": "^4.17.19",
     "mongoose": "^5.11.15",
     "reflect-metadata": "^0.1.12",
     "rimraf": "^3.0.2",
