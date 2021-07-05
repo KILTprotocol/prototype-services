@@ -19,7 +19,6 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@godaddy/terminus": "^4.6.0",
     "@kiltprotocol/chain-helpers": "^0.22.0",
     "@kiltprotocol/config": "^0.22.0",
     "@kiltprotocol/core": "^0.22.0",
@@ -34,7 +33,6 @@
     "dotenv": "^8.2.0",
     "mongoose": "^5.11.15",
     "reflect-metadata": "^0.1.12",
-    "rxjs": "^6.6.3",
     "typescript-optional": "^2.0.1"
   },
   "devDependencies": {
@@ -56,7 +54,8 @@
     "tslint-config-prettier": "^1.17.0",
     "tslint-plugin-prettier": "^2.0.1",
     "typescript": "^4.1.3",
-    "rimraf": "^3.0.2"
+    "rimraf": "^3.0.2",
+    "rxjs": "^6.6.3"
   },
   "jest": {
     "moduleFileExtensions": [
