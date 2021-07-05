@@ -48,17 +48,6 @@ jobs:
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$ECR_IMAGE_TAG"
         echo "::set-output name=image-sha::$ECR_REGISTRY/$ECR_REPOSITORY:$SHA_IMAGE_TAG"
 
-    - name: Configure Kubernetes
-      run: |
-        mkdir -p '${{ github.workspace }}/.kube' \
-          && echo '${{ secrets.KUBE_CONFIG}}' | base64 -d > $KUBECONFIG
-
-    - name: Set new image
-      env:
-        IMAGE: ${{ steps.build-image.outputs.image-sha }}
-      run: |
-        kubectl -n devnet set image deployment/services-deployment services-container=$IMAGE
-
   publish_to_docker:
     name: Publish develop image to docker
     needs: deploy
