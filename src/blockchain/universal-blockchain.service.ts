@@ -7,7 +7,8 @@ import { BlockchainService } from './interfaces/blockchain.interfaces'
 
 @Injectable()
 export class UniversalBlockchainService
-  implements BlockchainService, OnApplicationBootstrap {
+  implements BlockchainService, OnApplicationBootstrap
+{
   private static instance: Promise<Blockchain>
   constructor(
     @Inject('ConfigService') private readonly configService: ConfigService

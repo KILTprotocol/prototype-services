@@ -65,9 +65,7 @@ export class CTypesController {
 
     if (!result) {
       console.log(
-        `The CType with hash: ${
-          cTypeInput.cType.hash
-        } already exists in this DB!`
+        `The CType with hash: ${cTypeInput.cType.hash} already exists in this DB!`
       )
       throw new AlreadyRegisteredException()
     }

@@ -76,8 +76,8 @@ describe('CType Module', () => {
 
     const blockchainApi = require('@kiltprotocol/chain-helpers/lib/blockchainApiConnection/BlockchainApiConnection')
 
-    const mockedGetOwner = require('@kiltprotocol/core/lib/ctype/CType.chain')
-      .getOwner
+    const mockedGetOwner =
+      require('@kiltprotocol/core/lib/ctype/CType.chain').getOwner
 
     const fakeCTypeService: CTypeService = {
       findByHash: jest.fn(
@@ -85,11 +85,9 @@ describe('CType Module', () => {
       ),
       findAll: jest.fn(async (): Promise<CType[]> => []),
       register: jest.fn(async (): Promise<boolean> => true),
-      removeAll: jest.fn(
-        async (): Promise<void> => {
-          return
-        }
-      ),
+      removeAll: jest.fn(async (): Promise<void> => {
+        return
+      }),
     }
 
     beforeAll(

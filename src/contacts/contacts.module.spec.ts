@@ -95,24 +95,20 @@ describe('Contact Module', () => {
     let contactsController: ContactsController
     let contactsService: ContactsService
 
-    const mockedVerifyDidDocumentSignature = require('@kiltprotocol/core/lib/did/Did')
-      .verifyDidDocumentSignature
+    const mockedVerifyDidDocumentSignature =
+      require('@kiltprotocol/core/lib/did/Did').verifyDidDocumentSignature
     const fakeContactService: ContactsService = {
-      add: jest.fn(
-        async (): Promise<void> => {
-          return
-        }
-      ),
+      add: jest.fn(async (): Promise<void> => {
+        return
+      }),
       findByAddress: jest.fn(
         async (): Promise<Optional<Contact>> =>
           Optional.ofNullable<Contact>(null)
       ),
       list: jest.fn(async (): Promise<Contact[]> => []),
-      removeAll: jest.fn(
-        async (): Promise<void> => {
-          return
-        }
-      ),
+      removeAll: jest.fn(async (): Promise<void> => {
+        return
+      }),
     }
 
     beforeEach(async () => {
@@ -262,7 +258,7 @@ describe('Contact Module', () => {
         return
       },
     })
-    public static save = jest.fn().mockImplementation(async object => object)
+    public static save = jest.fn().mockImplementation(async (object) => object)
     public save = jest
       .fn()
       .mockImplementation(async () => ContactModel.save(this))
@@ -310,11 +306,11 @@ describe('Contact Module', () => {
           .spyOn(contactsService['contactModel'], 'findOne')
           .mockReturnValueOnce({
             exec: async (): Promise<ContactDB> =>
-              (({
+              ({
                 ...deprecatedDIDFormat,
                 _id: 0,
                 toObject: () => deprecatedDIDFormat,
-              } as any) as ContactDB),
+              } as any as ContactDB),
           })
         const replaceOne = jest.spyOn(
           contactsService['contactModel'],
@@ -355,10 +351,10 @@ describe('Contact Module', () => {
         })
         findOneSpy.mockReturnValue({
           exec: async (): Promise<ContactDB> =>
-            (({
+            ({
               ...testContact,
               toObject: () => testContact,
-            } as any) as ContactDB),
+            } as any as ContactDB),
         })
         expect(await contactsService.findByAddress(address)).toEqual(
           Optional.ofNullable<Contact>(testContact)
@@ -368,10 +364,10 @@ describe('Contact Module', () => {
         })
         findOneSpy.mockReturnValue({
           exec: async (): Promise<ContactDB> =>
-            (({
+            ({
               ...deprecatedDIDFormat,
               toObject: () => deprecatedDIDFormat,
-            } as any) as ContactDB),
+            } as any as ContactDB),
         })
         expect(await contactsService.findByAddress(address)).toEqual(
           Optional.ofNullable<Contact>(contactWithDid)
@@ -387,10 +383,10 @@ describe('Contact Module', () => {
           .mockReturnValue({
             exec: async (): Promise<ContactDB[]> => {
               return [
-                ({
+                {
                   ...testContact,
                   toObject: () => testContact,
-                } as any) as ContactDB,
+                } as any as ContactDB,
               ]
             },
           })

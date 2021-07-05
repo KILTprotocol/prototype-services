@@ -18,7 +18,7 @@ import { ForbiddenMessageAccessException } from './exceptions/message-forbidden.
 import { MessageNotFoundException } from './exceptions/message-not-found.exception'
 
 export const uuidv4 = () => {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
     const r = (Math.random() * 16) | 0
     const v = c === 'x' ? r : (r & 0x3) | 0x8
     return v.toString(16)
@@ -37,9 +37,9 @@ export class MessagingController {
     @Param('id') id,
     @Headers('signature') signature
   ): Promise<void> {
-    const { receiverAddress } = (await this.messagingService.findById(
-      id
-    )).orElseThrow(() => {
+    const { receiverAddress } = (
+      await this.messagingService.findById(id)
+    ).orElseThrow(() => {
       throw new MessageNotFoundException()
     })
 

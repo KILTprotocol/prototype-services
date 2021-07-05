@@ -25,22 +25,20 @@ jest.useFakeTimers()
 
 jest.mock('@kiltprotocol/core/lib/balance/Balance.chain', () => {
   return {
-    makeTransfer: jest.fn(
-      async (): Promise<SubmittableExtrinsic> => {
-        return {} as SubmittableExtrinsic
-      }
-    ),
+    makeTransfer: jest.fn(async (): Promise<SubmittableExtrinsic> => {
+      return {} as SubmittableExtrinsic
+    }),
   }
 })
 
 jest.mock('@kiltprotocol/chain-helpers/lib/blockchain/Blockchain.utils', () => {
   return {
     __esModule: true,
-    signAndSubmitTx: jest.fn().mockImplementation(
-      async (): Promise<ISubmittableResult> => {
+    signAndSubmitTx: jest
+      .fn()
+      .mockImplementation(async (): Promise<ISubmittableResult> => {
         return { isInBlock: true } as ISubmittableResult
-      }
-    ),
+      }),
   }
 })
 
@@ -77,24 +75,20 @@ describe('Faucet Module', () => {
     let faucetController: FaucetController
     let faucetService: FaucetService
 
-    const mockedMakeTransfer = require('@kiltprotocol/core/lib/balance/Balance.chain')
-      .makeTransfer
+    const mockedMakeTransfer =
+      require('@kiltprotocol/core/lib/balance/Balance.chain').makeTransfer
 
-    const mockedsubmitSignedTx = require('@kiltprotocol/chain-helpers/lib/blockchain/Blockchain.utils')
-      .signAndSubmitTx
+    const mockedsubmitSignedTx =
+      require('@kiltprotocol/chain-helpers/lib/blockchain/Blockchain.utils').signAndSubmitTx
 
     const fakeFaucetService: FaucetService = {
       drop: jest.fn(async (): Promise<FaucetDrop> => testFaucetDrop),
-      updateOnTransactionFailure: jest.fn(
-        async (): Promise<void> => {
-          return
-        }
-      ),
-      reset: jest.fn(
-        async (): Promise<void> => {
-          return
-        }
-      ),
+      updateOnTransactionFailure: jest.fn(async (): Promise<void> => {
+        return
+      }),
+      reset: jest.fn(async (): Promise<void> => {
+        return
+      }),
     }
     beforeAll(async () => {
       await cryptoWaitReady()
